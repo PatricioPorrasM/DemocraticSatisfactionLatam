@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 *.env
+*.venv
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -430,9 +431,10 @@ FodyWeavers.xsd
 
 # Data Files
 *.dta
-/data/processed/**
 /data/loaded/**
+/data/processed/**
 /data/raw-latinobarometro/*
 !/data/raw-latinobarometro/.gitkeep
 /data/raw_v-dem/*
 !/data/raw_v-dem/.gitkeep
+/results/**
