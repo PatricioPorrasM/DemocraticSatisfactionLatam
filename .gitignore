@@ -427,3 +427,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Data Files
+*.dta
+/data/processed/**
+/data/loaded/**
+/data/raw-latinobarometro/**
+/data/raw_v-dem/**

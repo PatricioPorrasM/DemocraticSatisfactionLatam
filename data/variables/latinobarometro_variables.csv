@@ -1,0 +1,961 @@
+year;variable;question;label
+1995;A_001_001;p20;Apoyo a la democracia
+1996;A_001_001;p19;Apoyo a la democracia
+1997;A_001_001;sp31;Apoyo a la democracia
+1998;A_001_001;sp28;Apoyo a la democracia
+2000;A_001_001;P29ST;Apoyo a la democracia
+2001;A_001_001;p46st;Apoyo a la democracia
+2002;A_001_001;p32st;Apoyo a la democracia
+2003;A_001_001;p14st;Apoyo a la democracia
+2004;A_001_001;p13st;Apoyo a la democracia
+2005;A_001_001;p16st;Apoyo a la democracia
+2006;A_001_001;p17st;Apoyo a la democracia
+2007;A_001_001;p9st;Apoyo a la democracia
+2008;A_001_001;p13st;Apoyo a la democracia
+2009;A_001_001;p10st;Apoyo a la democracia
+2010;A_001_001;P10ST;Apoyo a la democracia
+2011;A_001_001;P13ST;Apoyo a la democracia
+2013;A_001_001;P12STGBS;Apoyo a la democracia
+2015;A_001_001;P11STGBS;Apoyo a la democracia
+2016;A_001_001;P8STGBS;Apoyo a la democracia
+2017;A_001_001;P8STGBS;Apoyo a la democracia
+2018;A_001_001;P12STGBS;Apoyo a la democracia
+2020;A_001_001;P10STGBS;Apoyo a la democracia
+2023;A_001_001;P10STGBS;Apoyo a la democracia
+2024;A_001_001;P11STGBS;Apoyo a la democracia
+1995;A_003_021;;Escala de desarrollo de democracia
+1996;A_003_021;;Escala de desarrollo de democracia
+1997;A_003_021;np34;Escala de desarrollo de democracia
+1998;A_003_021;;Escala de desarrollo de democracia
+2000;A_003_021;;Escala de desarrollo de democracia
+2001;A_003_021;;Escala de desarrollo de democracia
+2002;A_003_021;;Escala de desarrollo de democracia
+2003;A_003_021;;Escala de desarrollo de democracia
+2004;A_003_021;;Escala de desarrollo de democracia
+2005;A_003_021;p19st;Escala de desarrollo de democracia
+2006;A_003_021;p18st;Escala de desarrollo de democracia
+2007;A_003_021;p10st;Escala de desarrollo de democracia
+2008;A_003_021;p18st;Escala de desarrollo de democracia
+2009;A_003_021;p51st_a;Escala de desarrollo de democracia
+2010;A_003_021;P44ST_A;Escala de desarrollo de democracia
+2011;A_003_021;P49ST_A;Escala de desarrollo de democracia
+2013;A_003_021;P50TGB_A;Escala de desarrollo de democracia
+2015;A_003_021;P17STGBS;Escala de desarrollo de democracia
+2016;A_003_021;P11STGBS;Escala de desarrollo de democracia
+2017;A_003_021;P11STGBSC;Escala de desarrollo de democracia
+2018;A_003_021;;Escala de desarrollo de democracia
+2020;A_003_021;;Escala de desarrollo de democracia
+2023;A_003_021;;Escala de desarrollo de democracia
+2024;A_003_021;;Escala de desarrollo de democracia
+1995;A_003_031;p21;Satisfacción con la democracia
+1996;A_003_031;p20;Satisfacción con la democracia
+1997;A_003_031;sp32;Satisfacción con la democracia
+1998;A_003_031;sp29;Satisfacción con la democracia
+2000;A_003_031;P30ST;Satisfacción con la democracia
+2001;A_003_031;p45st;Satisfacción con la democracia
+2002;A_003_031;p33st;Satisfacción con la democracia
+2003;A_003_031;p15st;Satisfacción con la democracia
+2004;A_003_031;p14st;Satisfacción con la democracia
+2005;A_003_031;p18st;Satisfacción con la democracia
+2006;A_003_031;p21st;Satisfacción con la democracia
+2007;A_003_031;p12st;Satisfacción con la democracia
+2008;A_003_031;p22st_a;Satisfacción con la democracia
+2009;A_003_031;p12st_a;Satisfacción con la democracia
+2010;A_003_031;P11ST_A;Satisfacción con la democracia
+2011;A_003_031;P14ST_A;Satisfacción con la democracia
+2013;A_003_031;P13TGB_A;Satisfacción con la democracia
+2015;A_003_031;P12TG_A;Satisfacción con la democracia
+2016;A_003_031;P9STGBSA;Satisfacción con la democracia
+2017;A_003_031;P9STGBSC_A;Satisfacción con la democracia
+2018;A_003_031;P13STGBS.A;Satisfacción con la democracia
+2020;A_003_031;P11STGBS_A;Satisfacción con la democracia
+2023;A_003_031;P11STGBS_A;Satisfacción con la democracia
+2024;A_003_031;P12STGBS.A;Satisfacción con la democracia
+1995;A_007_001;p62;Interés en política
+1996;A_007_001;p64;Interés en política
+1997;A_007_001;sp41;Interés en política
+1998;A_007_001;sp36;Interés en política
+2000;A_007_001;P63ST;Interés en política
+2001;A_007_001;p56st;Interés en política
+2002;A_007_001;;Interés en política
+2003;A_007_001;p61st;Interés en política
+2004;A_007_001;p29st;Interés en política
+2005;A_007_001;p37st;Interés en política
+2006;A_007_001;;Interés en política
+2007;A_007_001;p59st;Interés en política
+2008;A_007_001;;Interés en política
+2009;A_007_001;p32st;Interés en política
+2010;A_007_001;P23ST;Interés en política
+2011;A_007_001;;Interés en política
+2013;A_007_001;P20STGBS;Interés en política
+2015;A_007_001;;Interés en política
+2016;A_007_001;;Interés en política
+2017;A_007_001;;Interés en política
+2018;A_007_001;;Interés en política
+2020;A_007_001;P46STGBS;Interés en política
+2023;A_007_001;P40STGBS;Interés en política
+2024;A_007_001;P36STGBS;Interés en política
+1995;A_007_071;p31;Escala Izquierda-Derecha
+1996;A_007_071;p38;Escala Izquierda-Derecha
+1997;A_007_071;sp56;Escala Izquierda-Derecha
+1998;A_007_071;sp52;Escala Izquierda-Derecha
+2000;A_007_071;P52ST;Escala Izquierda-Derecha
+2001;A_007_071;p54st;Escala Izquierda-Derecha
+2002;A_007_071;p64st;Escala Izquierda-Derecha
+2003;A_007_071;p60st;Escala Izquierda-Derecha
+2004;A_007_071;p87st;Escala Izquierda-Derecha
+2005;A_007_071;p34st;Escala Izquierda-Derecha
+2006;A_007_071;p47st;Escala Izquierda-Derecha
+2007;A_007_071;p67st;Escala Izquierda-Derecha
+2008;A_007_071;p56st;Escala Izquierda-Derecha
+2009;A_007_071;p69st;Escala Izquierda-Derecha
+2010;A_007_071;P60ST;Escala Izquierda-Derecha
+2011;A_007_071;P76ST;Escala Izquierda-Derecha
+2013;A_007_071;P41ST;Escala Izquierda-Derecha
+2015;A_007_071;P27ST;Escala Izquierda-Derecha
+2016;A_007_071;A_008_001;Escala Izquierda-Derecha
+2017;A_007_071;P19STC;Escala Izquierda-Derecha
+2018;A_007_071;P22ST;Escala Izquierda-Derecha
+2020;A_007_071;P18ST;Escala Izquierda-Derecha
+2023;A_007_071;P16ST;Escala Izquierda-Derecha
+2024;A_007_071;P16ST;Escala Izquierda-Derecha
+1995;B_001_101;;País para todos o para los poderosos
+1996;B_001_101;;País para todos o para los poderosos
+1997;B_001_101;;País para todos o para los poderosos
+1998;B_001_101;;País para todos o para los poderosos
+2000;B_001_101;;País para todos o para los poderosos
+2001;B_001_101;;País para todos o para los poderosos
+2002;B_001_101;;País para todos o para los poderosos
+2003;B_001_101;;País para todos o para los poderosos
+2004;B_001_101;p24wvs;País para todos o para los poderosos
+2005;B_001_101;p22st;País para todos o para los poderosos
+2006;B_001_101;p20stm;País para todos o para los poderosos
+2007;B_001_101;p16st;País para todos o para los poderosos
+2008;B_001_101;p25st;País para todos o para los poderosos
+2009;B_001_101;p22st;País para todos o para los poderosos
+2010;B_001_101;P17ST;País para todos o para los poderosos
+2011;B_001_101;P19ST;País para todos o para los poderosos
+2013;B_001_101;P14ST;País para todos o para los poderosos
+2015;B_001_101;P14ST;País para todos o para los poderosos
+2016;B_001_101;P10ST;País para todos o para los poderosos
+2017;B_001_101;P10ST;País para todos o para los poderosos
+2018;B_001_101;P14ST;País para todos o para los poderosos
+2020;B_001_101;P12ST;País para todos o para los poderosos
+2023;B_001_101;P12ST;País para todos o para los poderosos
+2024;B_001_101;P13ST;País para todos o para los poderosos
+1995;B_006_061;;Aprobación de la gestión del gobierno que encabeza el Presidente
+1996;B_006_061;;Aprobación de la gestión del gobierno que encabeza el Presidente
+1997;B_006_061;;Aprobación de la gestión del gobierno que encabeza el Presidente
+1998;B_006_061;;Aprobación de la gestión del gobierno que encabeza el Presidente
+2000;B_006_061;;Aprobación de la gestión del gobierno que encabeza el Presidente
+2001;B_006_061;;Aprobación de la gestión del gobierno que encabeza el Presidente
+2002;B_006_061;p18no2;Aprobación de la gestión del gobierno que encabeza el Presidente
+2003;B_006_061;p24st;Aprobación de la gestión del gobierno que encabeza el Presidente
+2004;B_006_061;p46st;Aprobación de la gestión del gobierno que encabeza el Presidente
+2005;B_006_061;p29st;Aprobación de la gestión del gobierno que encabeza el Presidente
+2006;B_006_061;p43st;Aprobación de la gestión del gobierno que encabeza el Presidente
+2007;B_006_061;p32sta;Aprobación de la gestión del gobierno que encabeza el Presidente
+2008;B_006_061;p32st_a;Aprobación de la gestión del gobierno que encabeza el Presidente
+2009;B_006_061;p68st_a;Aprobación de la gestión del gobierno que encabeza el Presidente
+2010;B_006_061;P59ST_A;Aprobación de la gestión del gobierno que encabeza el Presidente
+2011;B_006_061;P36ST;Aprobación de la gestión del gobierno que encabeza el Presidente
+2013;B_006_061;P38STGBS;Aprobación de la gestión del gobierno que encabeza el Presidente
+2015;B_006_061;P48STGBS;Aprobación de la gestión del gobierno que encabeza el Presidente
+2016;B_006_061;P16STGBS;Aprobación de la gestión del gobierno que encabeza el Presidente
+2017;B_006_061;P17STGBSC;Aprobación de la gestión del gobierno que encabeza el Presidente
+2018;B_006_061;P20STGBSC;Aprobación de la gestión del gobierno que encabeza el Presidente
+2020;B_006_061;P17STGBS;Aprobación de la gestión del gobierno que encabeza el Presidente
+2023;B_006_061;P15STGBS;Aprobación de la gestión del gobierno que encabeza el Presidente
+2024;B_006_061;P15STGBS;Aprobación de la gestión del gobierno que encabeza el Presidente
+1995;C_001_031;;Problema más importante en el país
+1996;C_001_031;;Problema más importante en el país
+1997;C_001_031;;Problema más importante en el país
+1998;C_001_031;;Problema más importante en el país
+2000;C_001_031;;Problema más importante en el país
+2001;C_001_031;;Problema más importante en el país
+2002;C_001_031;;Problema más importante en el país
+2003;C_001_031;;Problema más importante en el país
+2004;C_001_031;p10st;Problema más importante en el país
+2005;C_001_031;p8st;Problema más importante en el país
+2006;C_001_031;p10st;Problema más importante en el país
+2007;C_001_031;p7st;Problema más importante en el país
+2008;C_001_031;p9st;Problema más importante en el país
+2009;C_001_031;p2st;Problema más importante en el país
+2010;C_001_031;P2ST;Problema más importante en el país
+2011;C_001_031;P2ST;Problema más importante en el país
+2013;C_001_031;P9STGBS;Problema más importante en el país
+2015;C_001_031;P9STGBS;Problema más importante en el país
+2016;C_001_031;P3STGBS;Problema más importante en el país
+2017;C_001_031;P3STGBS;Problema más importante en el país
+2018;C_001_031;P3STGBSC;Problema más importante en el país
+2020;C_001_031;P3STGBS;Problema más importante en el país
+2023;C_001_031;P4STGBS;Problema más importante en el país
+2024;C_001_031;P5STGBS;Problema más importante en el país
+1995;C_003_003_011;s12b;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+1996;C_003_003_011;p14;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+1997;C_003_003_011;sp81;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+1998;C_003_003_011;sp78;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2000;C_003_003_011;P75ST;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2001;C_003_003_011;p35st;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2002;C_003_003_011;p26st;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2003;C_003_003_011;p89st;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2004;C_003_003_011;p88st;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2005;C_003_003_011;p85st;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2006;C_003_003_011;p91st;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2007;C_003_003_011;s1;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2008;C_003_003_011;s1;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2009;C_003_003_011;s1;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2010;C_003_003_011;S3;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2011;C_003_003_011;S9;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2013;C_003_003_011;S5;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2015;C_003_003_011;S3;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2016;C_003_003_011;S3;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2017;C_003_003_011;S4;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2018;C_003_003_011;S3;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2020;C_003_003_011;S3;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2023;C_003_003_011;S4;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+2024;C_003_003_011;S4;Preocupación de quedar sin trabajo dentro de los próximo doce meses
+1995;C_006_003_011;;Es justa la distribución del ingreso
+1996;C_006_003_011;;Es justa la distribución del ingreso
+1997;C_006_003_011;nsp20;Es justa la distribución del ingreso
+1998;C_006_003_011;;Es justa la distribución del ingreso
+2000;C_006_003_011;;Es justa la distribución del ingreso
+2001;C_006_003_011;p11st;Es justa la distribución del ingreso
+2002;C_006_003_011;p16st;Es justa la distribución del ingreso
+2003;C_006_003_011;;Es justa la distribución del ingreso
+2004;C_006_003_011;;Es justa la distribución del ingreso
+2005;C_006_003_011;;Es justa la distribución del ingreso
+2006;C_006_003_011;;Es justa la distribución del ingreso
+2007;C_006_003_011;p17st;Es justa la distribución del ingreso
+2008;C_006_003_011;;Es justa la distribución del ingreso
+2009;C_006_003_011;p14st;Es justa la distribución del ingreso
+2010;C_006_003_011;P12ST;Es justa la distribución del ingreso
+2011;C_006_003_011;P12ST;Es justa la distribución del ingreso
+2013;C_006_003_011;P27ST;Es justa la distribución del ingreso
+2015;C_006_003_011;P18ST;Es justa la distribución del ingreso
+2016;C_006_003_011;P21ST;Es justa la distribución del ingreso
+2017;C_006_003_011;P20ST;Es justa la distribución del ingreso
+2018;C_006_003_011;P23ST;Es justa la distribución del ingreso
+2020;C_006_003_011;P19ST_A;Es justa la distribución del ingreso
+2023;C_006_003_011;P17ST;Es justa la distribución del ingreso
+2024;C_006_003_011;P17ST;Es justa la distribución del ingreso
+1995;D_001_001;p1;Situación económica actual del país
+1996;D_001_001;p1;Situación económica actual del país
+1997;D_001_001;sp1;Situación económica actual del país
+1998;D_001_001;sp1;Situación económica actual del país
+2000;D_001_001;P1ST;Situación económica actual del país
+2001;D_001_001;p1st;Situación económica actual del país
+2002;D_001_001;p2sta;Situación económica actual del país
+2003;D_001_001;p1st;Situación económica actual del país
+2004;D_001_001;p2st;Situación económica actual del país
+2005;D_001_001;p2st;Situación económica actual del país
+2006;D_001_001;p2st;Situación económica actual del país
+2007;D_001_001;p100st;Situación económica actual del país
+2008;D_001_001;p4st;Situación económica actual del país
+2009;D_001_001;p3st_a;Situación económica actual del país
+2010;D_001_001;P3ST_A;Situación económica actual del país
+2011;D_001_001;P3ST_A;Situación económica actual del país
+2013;D_001_001;P3STGBS;Situación económica actual del país
+2015;D_001_001;P3STGBS;Situación económica actual del país
+2016;D_001_001;P4STGBS;Situación económica actual del país
+2017;D_001_001;P4STGBSC;Situación económica actual del país
+2018;D_001_001;P6STGBSC;Situación económica actual del país
+2020;D_001_001;P4STGBS;Situación económica actual del país
+2023;D_001_001;P5STGBS;Situación económica actual del país
+2024;D_001_001;P6STGBS;Situación económica actual del país
+1995;D_001_021;;Situación económica del país comparada con pasada
+1996;D_001_021;;Situación económica del país comparada con pasada
+1997;D_001_021;;Situación económica del país comparada con pasada
+1998;D_001_021;;Situación económica del país comparada con pasada
+2000;D_001_021;;Situación económica del país comparada con pasada
+2001;D_001_021;p2st;Situación económica del país comparada con pasada
+2002;D_001_021;p2stb;Situación económica del país comparada con pasada
+2003;D_001_021;p2st;Situación económica del país comparada con pasada
+2004;D_001_021;p3st;Situación económica del país comparada con pasada
+2005;D_001_021;p3st;Situación económica del país comparada con pasada
+2006;D_001_021;p3st;Situación económica del país comparada con pasada
+2007;D_001_021;;Situación económica del país comparada con pasada
+2008;D_001_021;p5st;Situación económica del país comparada con pasada
+2009;D_001_021;p4st;Situación económica del país comparada con pasada
+2010;D_001_021;P4ST;Situación económica del país comparada con pasada
+2011;D_001_021;P4ST;Situación económica del país comparada con pasada
+2013;D_001_021;P4STGBS;Situación económica del país comparada con pasada
+2015;D_001_021;P4STGBS;Situación económica del país comparada con pasada
+2016;D_001_021;P5STGBS;Situación económica del país comparada con pasada
+2017;D_001_021;P5STGBS;Situación económica del país comparada con pasada
+2018;D_001_021;P7STGBSC;Situación económica del país comparada con pasada
+2020;D_001_021;P5STGBS;Situación económica del país comparada con pasada
+2023;D_001_021;P6STGBS;Situación económica del país comparada con pasada
+2024;D_001_021;P7STGBS;Situación económica del país comparada con pasada
+1995;D_001_041;;Situación económica futura del país comparada con actual
+1996;D_001_041;;Situación económica futura del país comparada con actual
+1997;D_001_041;;Situación económica futura del país comparada con actual
+1998;D_001_041;;Situación económica futura del país comparada con actual
+2000;D_001_041;;Situación económica futura del país comparada con actual
+2001;D_001_041;p3st;Situación económica futura del país comparada con actual
+2002;D_001_041;p2stc;Situación económica futura del país comparada con actual
+2003;D_001_041;p3st;Situación económica futura del país comparada con actual
+2004;D_001_041;p4st;Situación económica futura del país comparada con actual
+2005;D_001_041;p4st;Situación económica futura del país comparada con actual
+2006;D_001_041;p4st;Situación económica futura del país comparada con actual
+2007;D_001_041;p2st;Situación económica futura del país comparada con actual
+2008;D_001_041;p6st;Situación económica futura del país comparada con actual
+2009;D_001_041;p5st;Situación económica futura del país comparada con actual
+2010;D_001_041;P5ST_A;Situación económica futura del país comparada con actual
+2011;D_001_041;P5STIC1A;Situación económica futura del país comparada con actual
+2013;D_001_041;;Situación económica futura del país comparada con actual
+2015;D_001_041;P5STICC1;Situación económica futura del país comparada con actual
+2016;D_001_041;P6STICC1;Situación económica futura del país comparada con actual
+2017;D_001_041;P6STICC1;Situación económica futura del país comparada con actual
+2018;D_001_041;P8STIC;Situación económica futura del país comparada con actual
+2020;D_001_041;P6ST;Situación económica futura del país comparada con actual
+2023;D_001_041;P7ST;Situación económica futura del país comparada con actual
+2024;D_001_041;P8ST;Situación económica futura del país comparada con actual
+1995;D_001_061;p4;Situación económica personal actual
+1996;D_001_061;p4;Situación económica personal actual
+1997;D_001_061;sp4;Situación económica personal actual
+1998;D_001_061;sp4;Situación económica personal actual
+2000;D_001_061;P4ST;Situación económica personal actual
+2001;D_001_061;p4st;Situación económica personal actual
+2002;D_001_061;p2std;Situación económica personal actual
+2003;D_001_061;p4st;Situación económica personal actual
+2004;D_001_061;p5st;Situación económica personal actual
+2005;D_001_061;p5st;Situación económica personal actual
+2006;D_001_061;p5st;Situación económica personal actual
+2007;D_001_061;;Situación económica personal actual
+2008;D_001_061;p7st;Situación económica personal actual
+2009;D_001_061;p6st;Situación económica personal actual
+2010;D_001_061;P6ST;Situación económica personal actual
+2011;D_001_061;P6ST;Situación económica personal actual
+2013;D_001_061;P6STGBS;Situación económica personal actual
+2015;D_001_061;P6STGBS;Situación económica personal actual
+2016;D_001_061;;Situación económica personal actual
+2017;D_001_061;;Situación económica personal actual
+2018;D_001_061;;Situación económica personal actual
+2020;D_001_061;;Situación económica personal actual
+2023;D_001_061;;Situación económica personal actual
+2024;D_001_061;;Situación económica personal actual
+1995;D_001_091;;Situación económica futura del entrevistado y su familia
+1996;D_001_091;;Situación económica futura del entrevistado y su familia
+1997;D_001_091;;Situación económica futura del entrevistado y su familia
+1998;D_001_091;;Situación económica futura del entrevistado y su familia
+2000;D_001_091;;Situación económica futura del entrevistado y su familia
+2001;D_001_091;p6st;Situación económica futura del entrevistado y su familia
+2002;D_001_091;p2stf;Situación económica futura del entrevistado y su familia
+2003;D_001_091;p6st;Situación económica futura del entrevistado y su familia
+2004;D_001_091;p7st;Situación económica futura del entrevistado y su familia
+2005;D_001_091;p7st;Situación económica futura del entrevistado y su familia
+2006;D_001_091;p7st;Situación económica futura del entrevistado y su familia
+2007;D_001_091;p99st;Situación económica futura del entrevistado y su familia
+2008;D_001_091;p11st;Situación económica futura del entrevistado y su familia
+2009;D_001_091;p8st;Situación económica futura del entrevistado y su familia
+2010;D_001_091;P8ST;Situación económica futura del entrevistado y su familia
+2011;D_001_091;P8STICC4;Situación económica futura del entrevistado y su familia
+2013;D_001_091;P8STGBS;Situación económica futura del entrevistado y su familia
+2015;D_001_091;P8STGBS;Situación económica futura del entrevistado y su familia
+2016;D_001_091;P7STGBS;Situación económica futura del entrevistado y su familia
+2017;D_001_091;P7STGBS;Situación económica futura del entrevistado y su familia
+2018;D_001_091;P9STGBSC;Situación económica futura del entrevistado y su familia
+2020;D_001_091;P7STGBS;Situación económica futura del entrevistado y su familia
+2023;D_001_091;P8STGBS;Situación económica futura del entrevistado y su familia
+2024;D_001_091;P9STGBS;Situación económica futura del entrevistado y su familia
+1995;D_001_131;p76;Ingreso subjetivo
+1996;D_001_131;p78;Ingreso subjetivo
+1997;D_001_131;sp87;Ingreso subjetivo
+1998;D_001_131;sp83;Ingreso subjetivo
+2000;D_001_131;P78ST;Ingreso subjetivo
+2001;D_001_131;p88st;Ingreso subjetivo
+2002;D_001_131;p67st;Ingreso subjetivo
+2003;D_001_131;p90st;Ingreso subjetivo
+2004;D_001_131;p89st;Ingreso subjetivo
+2005;D_001_131;s1;Ingreso subjetivo
+2006;D_001_131;s1;Ingreso subjetivo
+2007;D_001_131;s2;Ingreso subjetivo
+2008;D_001_131;s2;Ingreso subjetivo
+2009;D_001_131;s2;Ingreso subjetivo
+2010;D_001_131;S4;Ingreso subjetivo
+2011;D_001_131;S10ICC12;Ingreso subjetivo
+2013;D_001_131;S6;Ingreso subjetivo
+2015;D_001_131;S4;Ingreso subjetivo
+2016;D_001_131;S4;Ingreso subjetivo
+2017;D_001_131;;Ingreso subjetivo
+2018;D_001_131;;Ingreso subjetivo
+2020;D_001_131;;Ingreso subjetivo
+2023;D_001_131;;Ingreso subjetivo
+2024;D_001_131;;Ingreso subjetivo
+1995;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+1996;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+1997;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+1998;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+2000;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+2001;G_002_011;p18nb;Usted o su familia han sabido de algún acto de corrupción
+2002;G_002_011;p8stb;Usted o su familia han sabido de algún acto de corrupción
+2003;G_002_011;p75stb;Usted o su familia han sabido de algún acto de corrupción
+2004;G_002_011;p51stb;Usted o su familia han sabido de algún acto de corrupción
+2005;G_002_011;p82stb;Usted o su familia han sabido de algún acto de corrupción
+2006;G_002_011;p68st_b;Usted o su familia han sabido de algún acto de corrupción
+2007;G_002_011;p71st_b;Usted o su familia han sabido de algún acto de corrupción
+2008;G_002_011;p72st_d;Usted o su familia han sabido de algún acto de corrupción
+2009;G_002_011;p73st_d;Usted o su familia han sabido de algún acto de corrupción
+2010;G_002_011;P70ST_E;Usted o su familia han sabido de algún acto de corrupción
+2011;G_002_011;P80ST_F;Usted o su familia han sabido de algún acto de corrupción
+2013;G_002_011;P63TGBSM;Usted o su familia han sabido de algún acto de corrupción
+2015;G_002_011;P66ST;Usted o su familia han sabido de algún acto de corrupción
+2016;G_002_011;P38STA;Usted o su familia han sabido de algún acto de corrupción
+2017;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+2018;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+2020;G_002_011;P68ST;Usted o su familia han sabido de algún acto de corrupción
+2023;G_002_011;;Usted o su familia han sabido de algún acto de corrupción
+2024;G_002_011;P50ST.B;Usted o su familia han sabido de algún acto de corrupción
+1995;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+1996;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+1997;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+1998;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2000;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2001;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2002;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2003;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2004;G_005_001;p54st;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2005;G_005_001;p83st;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2006;G_005_001;p33st;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2007;G_005_001;p72st;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2008;G_005_001;p73st;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2009;G_005_001;p74st;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2010;G_005_001;P68ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2011;G_005_001;P81ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2013;G_005_001;P69ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2015;G_005_001;P67ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2016;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2017;G_005_001;P38ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2018;G_005_001;;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2020;G_005_001;P70ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2023;G_005_001;P60ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+2024;G_005_001;P55ST;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
+1995;H_001_011;;Confianza Interpersonal
+1996;H_001_011;p12;Confianza Interpersonal
+1997;H_001_011;sp21;Confianza Interpersonal
+1998;H_001_011;sp20;Confianza Interpersonal
+2000;H_001_011;P17ST;Confianza Interpersonal
+2001;H_001_011;p42st;Confianza Interpersonal
+2002;H_001_011;p29st;Confianza Interpersonal
+2003;H_001_011;p20st;Confianza Interpersonal
+2004;H_001_011;p43st;Confianza Interpersonal
+2005;H_001_011;p14st;Confianza Interpersonal
+2006;H_001_011;p45st;Confianza Interpersonal
+2007;H_001_011;p23st;Confianza Interpersonal
+2008;H_001_011;p21wvsst;Confianza Interpersonal
+2009;H_001_011;p58st;Confianza Interpersonal
+2010;H_001_011;P55ST;Confianza Interpersonal
+2011;H_001_011;P25ST;Confianza Interpersonal
+2013;H_001_011;P29STGBS;Confianza Interpersonal
+2015;H_001_011;P15STGBS;Confianza Interpersonal
+2016;H_001_011;P12STGBS;Confianza Interpersonal
+2017;H_001_011;P13STGBS;Confianza Interpersonal
+2018;H_001_011;P11STGBS;Confianza Interpersonal
+2020;H_001_011;P9STGBS;Confianza Interpersonal
+2023;H_001_011;P9STGBS;Confianza Interpersonal
+2024;H_001_011;P10STGBS;Confianza Interpersonal
+1995;H_002_011;p27i;Confianza en el Congreso
+1996;H_002_011;p33i;Confianza en el Congreso
+1997;H_002_011;sp63f;Confianza en el Congreso
+1998;H_002_011;sp38f;Confianza en el Congreso
+2000;H_002_011;P35ST_F;Confianza en el Congreso
+2001;H_002_011;p61stf;Confianza en el Congreso
+2002;H_002_011;p36std;Confianza en el Congreso
+2003;H_002_011;p21stf;Confianza en el Congreso
+2004;H_002_011;p34stf;Confianza en el Congreso
+2005;H_002_011;p45sta;Confianza en el Congreso
+2006;H_002_011;p24st_f;Confianza en el Congreso
+2007;H_002_011;p24st_f;Confianza en el Congreso
+2008;H_002_011;p28st_a;Confianza en el Congreso
+2009;H_002_011;p26st_a;Confianza en el Congreso
+2010;H_002_011;P20ST_A;Confianza en el Congreso
+2011;H_002_011;P22ST_A;Confianza en el Congreso
+2013;H_002_011;P26TGB_C;Confianza en el Congreso
+2015;H_002_011;P16ST_F;Confianza en el Congreso
+2016;H_002_011;P13STD;Confianza en el Congreso
+2017;H_002_011;P14ST_D;Confianza en el Congreso
+2018;H_002_011;P15STGBSC.D;Confianza en el Congreso
+2020;H_002_011;P13ST_D;Confianza en el Congreso
+2023;H_002_011;P13ST_D;Confianza en el Congreso
+2024;H_002_011;P14ST.D;Confianza en el Congreso
+1995;H_002_031;p27m;Confianza en el Gobierno
+1996;H_002_031;p33m;Confianza en el Gobierno
+1997;H_002_031;;Confianza en el Gobierno
+1998;H_002_031;;Confianza en el Gobierno
+2000;H_002_031;;Confianza en el Gobierno
+2001;H_002_031;;Confianza en el Gobierno
+2002;H_002_031;p34std;Confianza en el Gobierno
+2003;H_002_031;p23stg;Confianza en el Gobierno
+2004;H_002_031;p32std;Confianza en el Gobierno
+2005;H_002_031;p45stc;Confianza en el Gobierno
+2006;H_002_031;p32st_a;Confianza en el Gobierno
+2007;H_002_031;p24st_a;Confianza en el Gobierno
+2008;H_002_031;p31s_ta;Confianza en el Gobierno
+2009;H_002_031;p24st_a;Confianza en el Gobierno
+2010;H_002_031;P18ST_A;Confianza en el Gobierno
+2011;H_002_031;P20ST_A;Confianza en el Gobierno
+2013;H_002_031;P26TGB_B;Confianza en el Gobierno
+2015;H_002_031;P16ST_G;Confianza en el Gobierno
+2016;H_002_031;P13STE;Confianza en el Gobierno
+2017;H_002_031;P14ST_E;Confianza en el Gobierno
+2018;H_002_031;P15STGBSC.E;Confianza en el Gobierno
+2020;H_002_031;P13ST_E;Confianza en el Gobierno
+2023;H_002_031;P13ST_E;Confianza en el Gobierno
+2024;H_002_031;P14ST.E;Confianza en el Gobierno
+1995;H_002_041;p27d;Confianza en el Poder Judicial
+1996;H_002_041;p33d;Confianza en el Poder Judicial
+1997;H_002_041;sp63c;Confianza en el Poder Judicial
+1998;H_002_041;sp38c;Confianza en el Poder Judicial
+2000;H_002_041;P35ST_C;Confianza en el Poder Judicial
+2001;H_002_041;p61stc;Confianza en el Poder Judicial
+2002;H_002_041;p34stc;Confianza en el Poder Judicial
+2003;H_002_041;p21ste;Confianza en el Poder Judicial
+2004;H_002_041;p34stb;Confianza en el Poder Judicial
+2005;H_002_041;p42std;Confianza en el Poder Judicial
+2006;H_002_041;p24st_a;Confianza en el Poder Judicial
+2007;H_002_041;p24st_d;Confianza en el Poder Judicial
+2008;H_002_041;p28st_b;Confianza en el Poder Judicial
+2009;H_002_041;p26st_b;Confianza en el Poder Judicial
+2010;H_002_041;P20ST_B;Confianza en el Poder Judicial
+2011;H_002_041;P22ST_B;Confianza en el Poder Judicial
+2013;H_002_041;P26TGB_E;Confianza en el Poder Judicial
+2015;H_002_041;P16ST_H;Confianza en el Poder Judicial
+2016;H_002_041;P13STF;Confianza en el Poder Judicial
+2017;H_002_041;P14ST_F;Confianza en el Poder Judicial
+2018;H_002_041;P15STGBSC.F;Confianza en el Poder Judicial
+2020;H_002_041;P13ST_F;Confianza en el Poder Judicial
+2023;H_002_041;P13ST_F;Confianza en el Poder Judicial
+2024;H_002_041;P14ST.F;Confianza en el Poder Judicial
+1995;H_002_101;p27a;Confianza en la Iglesia
+1996;H_002_101;p33a;Confianza en la Iglesia
+1997;H_002_101;sp63a;Confianza en la Iglesia
+1998;H_002_101;sp38a;Confianza en la Iglesia
+2000;H_002_101;P35ST_A;Confianza en la Iglesia
+2001;H_002_101;p61sta;Confianza en la Iglesia
+2002;H_002_101;p34sta;Confianza en la Iglesia
+2003;H_002_101;p21sta;Confianza en la Iglesia
+2004;H_002_101;p32stc;Confianza en la Iglesia
+2005;H_002_101;p42sta;Confianza en la Iglesia
+2006;H_002_101;p32st_d;Confianza en la Iglesia
+2007;H_002_101;p27st_c;Confianza en la Iglesia
+2008;H_002_101;p28st_g;Confianza en la Iglesia
+2009;H_002_101;p26st_g;Confianza en la Iglesia
+2010;H_002_101;P20ST_G;Confianza en la Iglesia
+2011;H_002_101;P22ST_G;Confianza en la Iglesia
+2013;H_002_101;P28ST_E;Confianza en la Iglesia
+2015;H_002_101;P16ST_E;Confianza en la Iglesia
+2016;H_002_101;P13STC;Confianza en la Iglesia
+2017;H_002_101;P14ST_C;Confianza en la Iglesia
+2018;H_002_101;P15STGBSC.C;Confianza en la Iglesia
+2020;H_002_101;P13ST_C;Confianza en la Iglesia
+2023;H_002_101;P13ST_C;Confianza en la Iglesia
+2024;H_002_101;P14ST.C;Confianza en la Iglesia
+1995;H_002_111;p27h;Confianza en la Policía 
+1996;H_002_111;p33h;Confianza en la Policía 
+1997;H_002_111;sp63e;Confianza en la Policía 
+1998;H_002_111;sp38e;Confianza en la Policía 
+2000;H_002_111;P35ST_E;Confianza en la Policía 
+2001;H_002_111;p61ste;Confianza en la Policía 
+2002;H_002_111;p36ste;Confianza en la Policía 
+2003;H_002_111;p21stb;Confianza en la Policía 
+2004;H_002_111;p32stb;Confianza en la Policía 
+2005;H_002_111;p42stf;Confianza en la Policía 
+2006;H_002_111;p24st_d;Confianza en la Policía 
+2007;H_002_111;p27st_f;Confianza en la Policía 
+2008;H_002_111;p31st_c;Confianza en la Policía 
+2009;H_002_111;p24st_c;Confianza en la Policía 
+2010;H_002_111;P18ST_C;Confianza en la Policía 
+2011;H_002_111;P20ST_C;Confianza en la Policía 
+2013;H_002_111;P28TGB_B;Confianza en la Policía 
+2015;H_002_111;P16TGB_B;Confianza en la Policía 
+2016;H_002_111;P13STGBSB;Confianza en la Policía 
+2017;H_002_111;P14STGBS_B;Confianza en la Policía 
+2018;H_002_111;P15STGBSC.B;Confianza en la Policía 
+2020;H_002_111;P13STGBS_B;Confianza en la Policía 
+2023;H_002_111;P13STGBS_B;Confianza en la Policía 
+2024;H_002_111;P14STGBS.B;Confianza en la Policía 
+1995;H_002_131;p27l;Confianza en la Televisión
+1996;H_002_131;p33l;Confianza en la Televisión
+1997;H_002_131;sp63h;Confianza en la Televisión
+1998;H_002_131;sp38h;Confianza en la Televisión
+2000;H_002_131;P35ST_H;Confianza en la Televisión
+2001;H_002_131;p63sta;Confianza en la Televisión
+2002;H_002_131;p36sta;Confianza en la Televisión
+2003;H_002_131;p21stc;Confianza en la Televisión
+2004;H_002_131;p32stf;Confianza en la Televisión
+2005;H_002_131;p45stb;Confianza en la Televisión
+2006;H_002_131;p35st_c;Confianza en la Televisión
+2007;H_002_131;p24st_i;Confianza en la Televisión
+2008;H_002_131;p31st_e;Confianza en la Televisión
+2009;H_002_131;p24st_e;Confianza en la Televisión
+2010;H_002_131;P18ST_E;Confianza en la Televisión
+2011;H_002_131;P20ST_E;Confianza en la Televisión
+2013;H_002_131;P28TGB_D;Confianza en la Televisión
+2015;H_002_131;P16TGB_D;Confianza en la Televisión
+2016;H_002_131;;Confianza en la Televisión
+2017;H_002_131;;Confianza en la Televisión
+2018;H_002_131;;Confianza en la Televisión
+2020;H_002_131;;Confianza en la Televisión
+2023;H_002_131;;Confianza en la Televisión
+2024;H_002_131;P14ST.K;Confianza en la Televisión
+1995;H_002_161;p27b;Confianza en las Fuerzas Armadas
+1996;H_002_161;p33b;Confianza en las Fuerzas Armadas
+1997;H_002_161;sp63b;Confianza en las Fuerzas Armadas
+1998;H_002_161;sp38b;Confianza en las Fuerzas Armadas
+2000;H_002_161;P35ST_B;Confianza en las Fuerzas Armadas
+2001;H_002_161;p61stb;Confianza en las Fuerzas Armadas
+2002;H_002_161;p36stb;Confianza en las Fuerzas Armadas
+2003;H_002_161;p21stg;Confianza en las Fuerzas Armadas
+2004;H_002_161;p32stg;Confianza en las Fuerzas Armadas
+2005;H_002_161;p42stb;Confianza en las Fuerzas Armadas
+2006;H_002_161;p32st_e;Confianza en las Fuerzas Armadas
+2007;H_002_161;p27st_d;Confianza en las Fuerzas Armadas
+2008;H_002_161;p28st_d;Confianza en las Fuerzas Armadas
+2009;H_002_161;p26st_d;Confianza en las Fuerzas Armadas
+2010;H_002_161;P20ST_D;Confianza en las Fuerzas Armadas
+2011;H_002_161;P22ST_D;Confianza en las Fuerzas Armadas
+2013;H_002_161;P28TGB_A;Confianza en las Fuerzas Armadas
+2015;H_002_161;P16TGB_A;Confianza en las Fuerzas Armadas
+2016;H_002_161;P13STGBSA;Confianza en las Fuerzas Armadas
+2017;H_002_161;P14STGBS_A;Confianza en las Fuerzas Armadas
+2018;H_002_161;P15STGBSC.A;Confianza en las Fuerzas Armadas
+2020;H_002_161;P13STGBS_A;Confianza en las Fuerzas Armadas
+2023;H_002_161;P13STGBS_A;Confianza en las Fuerzas Armadas
+2024;H_002_161;P14STGBS.A;Confianza en las Fuerzas Armadas
+1995;H_002_241;p27j;Confianza en los Partidos Políticos
+1996;H_002_241;p33j;Confianza en los Partidos Políticos
+1997;H_002_241;sp63g;Confianza en los Partidos Políticos
+1998;H_002_241;sp38g;Confianza en los Partidos Políticos
+2000;H_002_241;P35ST_G;Confianza en los Partidos Políticos
+2001;H_002_241;p61stg;Confianza en los Partidos Políticos
+2002;H_002_241;p34stf;Confianza en los Partidos Políticos
+2003;H_002_241;p21std;Confianza en los Partidos Políticos
+2004;H_002_241;p34std;Confianza en los Partidos Políticos
+2005;H_002_241;p47stb;Confianza en los Partidos Políticos
+2006;H_002_241;p24st_c;Confianza en los Partidos Políticos
+2007;H_002_241;p27st_e;Confianza en los Partidos Políticos
+2008;H_002_241;p28st_c;Confianza en los Partidos Políticos
+2009;H_002_241;p26st_c;Confianza en los Partidos Políticos
+2010;H_002_241;P20ST_C;Confianza en los Partidos Políticos
+2011;H_002_241;P22ST_C;Confianza en los Partidos Políticos
+2013;H_002_241;P26TGB_G;Confianza en los Partidos Políticos
+2015;H_002_241;P19ST_C;Confianza en los Partidos Políticos
+2016;H_002_241;P13STG;Confianza en los Partidos Políticos
+2017;H_002_241;P14ST_G;Confianza en los Partidos Políticos
+2018;H_002_241;P15STGBSC.G;Confianza en los Partidos Políticos
+2020;H_002_241;P13ST_G;Confianza en los Partidos Políticos
+2023;H_002_241;P13ST_G;Confianza en los Partidos Políticos
+2024;H_002_241;P14ST.G;Confianza en los Partidos Políticos
+1995;I_001_001;p17;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+1996;I_001_001;p16;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+1997;I_001_001;sp24;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+1998;I_001_001;sp22;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2000;I_001_001;;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2001;I_001_001;p18na;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2002;I_001_001;p8sta;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2003;I_001_001;p75sta;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2004;I_001_001;p51sta;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2005;I_001_001;p82sta;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2006;I_001_001;p68st_a;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2007;I_001_001;p71st_a;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2008;I_001_001;p72st_a;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2009;I_001_001;p73stm_a;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2010;I_001_001;P70ST_A;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2011;I_001_001;P80ST_A;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2013;I_001_001;P68ST_A;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2015;I_001_001;P60ST;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2016;I_001_001;P37ST;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2017;I_001_001;P65ST_B;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2018;I_001_001;P69ST.2;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2020;I_001_001;P64ST;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2023;I_001_001;P58ST;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+2024;I_001_001;P50ST.A;Usted o su familia han sido víctimas de un delito en los últimos doce meses
+1995;S_001;s1;Sexo entrevistado
+1996;S_001;s1;Sexo entrevistado
+1997;S_001;s1;Sexo entrevistado
+1998;S_001;s1;Sexo entrevistado
+2000;S_001;S1;Sexo entrevistado
+2001;S_001;s1;Sexo entrevistado
+2002;S_001;s1;Sexo entrevistado
+2003;S_001;s1;Sexo entrevistado
+2004;S_001;s1;Sexo entrevistado
+2005;S_001;s6;Sexo entrevistado
+2006;S_001;s6;Sexo entrevistado
+2007;S_001;s10;Sexo entrevistado
+2008;S_001;s8;Sexo entrevistado
+2009;S_001;s5;Sexo entrevistado
+2010;S_001;S7;Sexo entrevistado
+2011;S_001;S16;Sexo entrevistado
+2013;S_001;S10;Sexo entrevistado
+2015;S_001;S12;Sexo entrevistado
+2016;S_001;SEXO;Sexo entrevistado
+2017;S_001;SEXO;Sexo entrevistado
+2018;S_001;SEXO;Sexo entrevistado
+2020;S_001;SEXO;Sexo entrevistado
+2023;S_001;SEXO;Sexo entrevistado
+2024;S_001;SEXO;Sexo entrevistado
+1995;S_002;s2;Edad
+1996;S_002;s2;Edad
+1997;S_002;s2;Edad
+1998;S_002;s2;Edad
+2000;S_002;S2;Edad
+2001;S_002;s2;Edad
+2002;S_002;s2;Edad
+2003;S_002;s2;Edad
+2004;S_002;s2;Edad
+2005;S_002;s7;Edad
+2006;S_002;s7;Edad
+2007;S_002;s11;Edad
+2008;S_002;s9;Edad
+2009;S_002;s6;Edad
+2010;S_002;S8;Edad
+2011;S_002;S17;Edad
+2013;S_002;S11;Edad
+2015;S_002;S13;Edad
+2016;S_002;EDAD;Edad
+2017;S_002;EDAD;Edad
+2018;S_002;EDAD;Edad
+2020;S_002;EDAD;Edad
+2023;S_002;EDAD;Edad
+2024;S_002;EDAD;Edad
+1995;S_101;s20;Nivel de estudios alcanzado - Entrevistado (recodificado)
+1996;S_101;s16a;Nivel de estudios alcanzado - Entrevistado (recodificado)
+1997;S_101;s12a;Nivel de estudios alcanzado - Entrevistado (recodificado)
+1998;S_101;s14a;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2000;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2001;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2002;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2003;S_101;s18;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2004;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2005;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2006;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2007;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2008;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2009;S_101;reeduc1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2010;S_101;REEDUC1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2011;S_101;REEDUC1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2013;S_101;REEDUC_1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2015;S_101;REEDUC_1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2016;S_101;REEDUC_1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2017;S_101;REEDUC_1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2018;S_101;;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2020;S_101;REEDUC_1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2023;S_101;REEEDUC_1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+2024;S_101;REEDUC.1;Nivel de estudios alcanzado - Entrevistado (recodificado)
+1995;S_200;s10;Estado ocupacional
+1996;S_200;s7a;Estado ocupacional
+1997;S_200;s7a;Estado ocupacional
+1998;S_200;s7a;Estado ocupacional
+2000;S_200;S8A;Estado ocupacional
+2001;S_200;s8a;Estado ocupacional
+2002;S_200;s8a;Estado ocupacional
+2003;S_200;s8a;Estado ocupacional
+2004;S_200;s8a;Estado ocupacional
+2005;S_200;s13a;Estado ocupacional
+2006;S_200;s13a;Estado ocupacional
+2007;S_200;s17a;Estado ocupacional
+2008;S_200;s17a;Estado ocupacional
+2009;S_200;s14a;Estado ocupacional
+2010;S_200;S16A;Estado ocupacional
+2011;S_200;S23A;Estado ocupacional
+2013;S_200;S19_A;Estado ocupacional
+2015;S_200;S21_A;Estado ocupacional
+2016;S_200;S18A;Estado ocupacional
+2017;S_200;S18_A;Estado ocupacional
+2018;S_200;S14A;Estado ocupacional
+2020;S_200;S24_A;Estado ocupacional
+2023;S_200;S18_A;Estado ocupacional
+2024;S_200;S18.A;Estado ocupacional
+1995;S_301;s24;Apreciación nivel socioeconómico (realizado por el encuestador) 
+1996;S_301;s20;Apreciación nivel socioeconómico (realizado por el encuestador) 
+1997;S_301;s16;Apreciación nivel socioeconómico (realizado por el encuestador) 
+1998;S_301;s18;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2000;S_301;S16;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2001;S_301;s16a;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2002;S_301;s20;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2003;S_301;s16;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2004;S_301;s18;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2005;S_301;s24;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2006;S_301;s24;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2007;S_301;s28;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2008;S_301;s26;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2009;S_301;s26;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2010;S_301;S28;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2011;S_301;S34;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2013;S_301;S27;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2015;S_301;S29;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2016;S_301;S22;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2017;S_301;S22;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2018;S_301;S26;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2020;S_301;S30;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2023;S_301;S24;Apreciación nivel socioeconómico (realizado por el encuestador) 
+2024;S_301;S24;Apreciación nivel socioeconómico (realizado por el encuestador) 
+1995;S_700;p9;Religión
+1996;S_700;p7;Religión
+1997;S_700;sp85;Religión
+1998;S_700;sp80;Religión
+2000;S_700;P76ST;Religión
+2001;S_700;p86st;Religión
+2002;S_700;p65st;Religión
+2003;S_700;p91st;Religión
+2004;S_700;p90st;Religión
+2005;S_700;s2;Religión
+2006;S_700;s2;Religión
+2007;S_700;s4;Religión
+2008;S_700;s5;Religión
+2009;S_700;s7;Religión
+2010;S_700;S9;Religión
+2011;S_700;S18;Religión
+2013;S_700;S14;Religión
+2015;S_700;S16;Religión
+2016;S_700;S8;Religión
+2017;S_700;S9;Religión
+2018;S_700;S5;Religión
+2020;S_700;S10;Religión
+2023;S_700;S1;Religión
+2024;S_700;S1;Religión
+1995;S_701;p10;Práctica religiosa
+1996;S_701;p8;Práctica religiosa
+1997;S_701;;Práctica religiosa
+1998;S_701;sp81;Práctica religiosa
+2000;S_701;P77ST;Práctica religiosa
+2001;S_701;p87st;Práctica religiosa
+2002;S_701;p66st;Práctica religiosa
+2003;S_701;p92st;Práctica religiosa
+2004;S_701;p91st;Práctica religiosa
+2005;S_701;s3;Práctica religiosa
+2006;S_701;s3;Práctica religiosa
+2007;S_701;s5;Práctica religiosa
+2008;S_701;s6;Práctica religiosa
+2009;S_701;s8;Práctica religiosa
+2010;S_701;S10;Práctica religiosa
+2011;S_701;S18_A;Práctica religiosa
+2013;S_701;S14_A;Práctica religiosa
+2015;S_701;S16_A;Práctica religiosa
+2016;S_701;S8A;Práctica religiosa
+2017;S_701;S9_A;Práctica religiosa
+2018;S_701;S5A;Práctica religiosa
+2020;S_701;S11_A;Práctica religiosa
+2023;S_701;S1A;Práctica religiosa
+2024;S_701;S1A;Práctica religiosa
+1995;X_001;pais;País 
+1996;X_001;pais;País 
+1997;X_001;idenpa;País 
+1998;X_001;idenpa;País 
+2000;X_001;IDENPA;País 
+2001;X_001;idenpa;País 
+2002;X_001;idenpa;País 
+2003;X_001;idenpa;País 
+2004;X_001;idenpa;País 
+2005;X_001;IDENPA;País 
+2006;X_001;idenpa;País 
+2007;X_001;idenpa;País 
+2008;X_001;idenpa;País 
+2009;X_001;idenpa;País 
+2010;X_001;IDENPA;País 
+2011;X_001;IDENPA;País 
+2013;X_001;IDENPA;País 
+2015;X_001;IDENPA;País 
+2016;X_001;IDENPA;País 
+2017;X_001;IDENPA;País 
+2018;X_001;IDENPA;País 
+2020;X_001;IDENPA;País 
+2023;X_001;IDENPA;País 
+2024;X_001;IDENPA;País 
+1995;X_002;numero;Año de investigación
+1996;X_002;numero;Año de investigación
+1997;X_002;numinves;Año de investigación
+1998;X_002;numinves;Año de investigación
+2000;X_002;NUMINVES;Año de investigación
+2001;X_002;numinves;Año de investigación
+2002;X_002;numinves;Año de investigación
+2003;X_002;numinves;Año de investigación
+2004;X_002;numinves;Año de investigación
+2005;X_002;numinves;Año de investigación
+2006;X_002;numinves;Año de investigación
+2007;X_002;numinves;Año de investigación
+2008;X_002;numinves;Año de investigación
+2009;X_002;numinves;Año de investigación
+2010;X_002;NUMINVES;Año de investigación
+2011;X_002;NUMINVES;Año de investigación
+2013;X_002;NUMINVES;Año de investigación
+2015;X_002;NUMINVES;Año de investigación
+2016;X_002;NUMINVES;Año de investigación
+2017;X_002;NUMINVES;Año de investigación
+2018;X_002;NUMINVES;Año de investigación
+2020;X_002;NUMINVES;Año de investigación
+2023;X_002;NUMINVES;Año de investigación
+2024;X_002;NUMINVES;Año de investigación
+1995;X_004;region;Región/Área geográfica
+1996;X_004;region;Región/Área geográfica
+1997;X_004;reg;Región/Área geográfica
+1998;X_004;reg;Región/Área geográfica
+2000;X_004;REG;Región/Área geográfica
+2001;X_004;reg;Región/Área geográfica
+2002;X_004;reg;Región/Área geográfica
+2003;X_004;reg;Región/Área geográfica
+2004;X_004;reg;Región/Área geográfica
+2005;X_004;reg;Región/Área geográfica
+2006;X_004;reg;Región/Área geográfica
+2007;X_004;reg;Región/Área geográfica
+2008;X_004;reg;Región/Área geográfica
+2009;X_004;reg;Región/Área geográfica
+2010;X_004;REG;Región/Área geográfica
+2011;X_004;REG;Región/Área geográfica
+2013;X_004;REG;Región/Área geográfica
+2015;X_004;REG;Región/Área geográfica
+2016;X_004;REG;Región/Área geográfica
+2017;X_004;REG;Región/Área geográfica
+2018;X_004;REG;Región/Área geográfica
+2020;X_004;REG;Región/Área geográfica
+2023;X_004;REG;Región/Área geográfica
+2024;X_004;REG;Región/Área geográfica
+1995;X_008;;Tamaño ciudad
+1996;X_008;;Tamaño ciudad
+1997;X_008;;Tamaño ciudad
+1998;X_008;;Tamaño ciudad
+2000;X_008;;Tamaño ciudad
+2001;X_008;tamciud;Tamaño ciudad
+2002;X_008;tamciud;Tamaño ciudad
+2003;X_008;tamciud;Tamaño ciudad
+2004;X_008;tamciud;Tamaño ciudad
+2005;X_008;tamciud;Tamaño ciudad
+2006;X_008;tamciud;Tamaño ciudad
+2007;X_008;tamciud;Tamaño ciudad
+2008;X_008;tamciud;Tamaño ciudad
+2009;X_008;tamciud;Tamaño ciudad
+2010;X_008;TAMCIUD;Tamaño ciudad
+2011;X_008;TAMCIUD;Tamaño ciudad
+2013;X_008;TAMCIUD;Tamaño ciudad
+2015;X_008;TAMCIUD;Tamaño ciudad
+2016;X_008;TAMCIUD;Tamaño ciudad
+2017;X_008;TAMCIUD;Tamaño ciudad
+2018;X_008;TAMCIUD;Tamaño ciudad
+2020;X_008;TAMCIUD;Tamaño ciudad
+2023;X_008;TAMCIUD;Tamaño ciudad
+2024;X_008;TAMCIUD;Tamaño ciudad
+1995;X_020;wt;Ponderación
+1996;X_020;wt;Ponderación
+1997;X_020;wt;Ponderación
+1998;X_020;pondera;Ponderación
+2000;X_020;WT;Ponderación
+2001;X_020;wt;Ponderación
+2002;X_020;wt;Ponderación
+2003;X_020;wt;Ponderación
+2004;X_020;wt;Ponderación
+2005;X_020;wt;Ponderación
+2006;X_020;wt;Ponderación
+2007;X_020;wt;Ponderación
+2008;X_020;wt;Ponderación
+2009;X_020;wt;Ponderación
+2010;X_020;wt;Ponderación
+2011;X_020;WT;Ponderación
+2013;X_020;WT;Ponderación
+2015;X_020;WT;Ponderación
+2016;X_020;WT;Ponderación
+2017;X_020;WT;Ponderación
+2018;X_020;WT;Ponderación
+2020;X_020;WT;Ponderación
+2023;X_020;WT;Ponderación
+2024;X_020;WT;Ponderación
