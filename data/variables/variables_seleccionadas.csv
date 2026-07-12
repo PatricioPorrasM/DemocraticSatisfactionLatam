@@ -1,41 +1,48 @@
-﻿dataset;variable;label
-lb;A_001_001;Apoyo a la democracia
-lb;A_003_021;Escala de desarrollo de democracia
-lb;A_003_031;Satisfacción con la democracia
-lb;A_007_001;Interés en política
-lb;A_007_071;Escala Izquierda-Derecha
-lb;B_001_101;País para todos o para los poderosos
-lb;B_006_061;Aprobación de la gestión del gobierno que encabeza el Presidente
-lb;C_001_031;Problema más importante en el país
-lb;C_003_003_011;Preocupación de quedar sin trabajo dentro de los próximo doce meses
-lb;C_006_003_011;Es justa la distribución del ingreso
-lb;D_001_001;Situación económica actual del país
-lb;D_001_021;Situación económica del país comparada con pasada
-lb;D_001_041;Situación económica futura del país comparada con actual
-lb;D_001_061;Situación económica personal actual
-lb;D_001_091;Situación económica futura del entrevistado y su familia
-lb;D_001_131;Ingreso subjetivo
-lb;G_002_011;Usted o su familia han sabido de algún acto de corrupción
-lb;G_005_001;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años
-lb;H_001_011;Confianza Interpersonal
-lb;H_002_011;Confianza en el Congreso
-lb;H_002_031;Confianza en el Gobierno
-lb;H_002_041;Confianza en el Poder Judicial
-lb;H_002_101;Confianza en la Iglesia
-lb;H_002_111;Confianza en la Policía 
-lb;H_002_131;Confianza en la Televisión
-lb;H_002_161;Confianza en las Fuerzas Armadas
-lb;H_002_241;Confianza en los Partidos Políticos
-lb;I_001_001;Usted o su familia han sido víctimas de un delito en los últimos doce meses
-lb;S_001;Sexo entrevistado
-lb;S_002;Edad
-lb;S_101;Nivel de estudios alcanzado - Entrevistado (recodificado)
-lb;S_200;Estado ocupacional
-lb;S_301;Apreciación nivel socioeconómico (realizado por el encuestador) 
-lb;S_700;Religión
-lb;S_701;Práctica religiosa
-lb;X_001;País 
-lb;X_002;Año de investigación
-lb;X_004;Región/Área geográfica
-lb;X_008;Tamaño ciudad
-lb;X_020;Ponderación
+﻿dataset;variable;label;column_name
+lb;A_001_001;Apoyo a la democracia;
+lb;A_003_021;Escala de desarrollo de democracia;
+lb;A_003_031;Satisfacción con la democracia;
+lb;A_007_001;Interés en política;
+lb;A_007_071;Escala Izquierda-Derecha;
+lb;B_001_101;País para todos o para los poderosos;
+lb;B_006_061;Aprobación de la gestión del gobierno que encabeza el Presidente;
+lb;C_001_031;Problema más importante en el país;
+lb;C_003_003_011;Preocupación de quedar sin trabajo dentro de los próximo doce meses;
+lb;C_006_003_011;Es justa la distribución del ingreso;
+lb;D_001_001;Situación económica actual del país;
+lb;D_001_021;Situación económica del país comparada con pasada;
+lb;D_001_041;Situación económica futura del país comparada con actual;
+lb;D_001_061;Situación económica personal actual;
+lb;D_001_091;Situación económica futura del entrevistado y su familia;
+lb;D_001_131;Ingreso subjetivo;
+lb;G_002_011;Usted o su familia han sabido de algún acto de corrupción;
+lb;G_005_001;Progreso en la reducción de corrupción en las instituciones del Estado en los últimos 2 años;
+lb;H_001_011;Confianza Interpersonal;
+lb;H_002_011;Confianza en el Congreso;
+lb;H_002_031;Confianza en el Gobierno;
+lb;H_002_041;Confianza en el Poder Judicial;
+lb;H_002_101;Confianza en la Iglesia;
+lb;H_002_111;Confianza en la Policía ;
+lb;H_002_131;Confianza en la Televisión;
+lb;H_002_161;Confianza en las Fuerzas Armadas;
+lb;H_002_241;Confianza en los Partidos Políticos;
+lb;I_001_001;Usted o su familia han sido víctimas de un delito en los últimos doce meses;
+lb;S_001;Sexo entrevistado;
+lb;S_002;Edad;
+lb;S_101;Nivel de estudios alcanzado - Entrevistado (recodificado);
+lb;S_200;Estado ocupacional;
+lb;S_301;Apreciación nivel socioeconómico (realizado por el encuestador) ;
+lb;S_700;Religión;
+lb;S_701;Práctica religiosa;
+lb;X_001;País ;
+lb;X_002;Año de investigación;
+lb;X_004;Región/Área geográfica;
+lb;X_008;Tamaño ciudad;
+lb;X_020;Ponderación;
+vdem;country_name;Nombre del país en inglés;
+vdem;country_text_id;Código ISO3 del país;
+vdem;country_id;ID numérico V-Dem;
+vdem;year;Año;
+vdem;COWcode;Correlates of War code (útil para merge con otras fuentes);
+vdem;v2x_polyarchy;Democracia electoral (poliarquía);
+vdem;v2x_libdem;Democracia liberal;
