@@ -1,9 +1,44 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
+from pathlib import Path
 
+# ====================================================
+# PATHS
+# ====================================================
 
-SEED = 42
+PARAMETERS = {
+    "SEED": 42,
+    "YEAR_START": 1995,
+    "YEAR_END": 2024,
+}
+
+# ====================================================
+# PATHS
+# ====================================================
+
+PATHS = {
+    # --- Configuración de rutas ----------------------------------------------
+    "FOLDER_RAW_ZIP": Path("..") / "data"/ "raw_zip",
+    "FOLDER_RAW_LB": Path("..") / "data" / "raw_latinobarometro",
+    "FOLDER_RAW_VDEM": Path("..") / "data" / "raw_v-dem",
+    "FOLDER_BASE": Path("..") / "data" / "base",
+    "FOLDER_PROCS": Path("..") / "data" / "processed",
+    "FOLDER_MODELS": Path("..") / "models",
+    "FOLDER_RESULTS": Path("..") / "results",
+    "FOLDER_RESULTS_FIGURES": Path("..") / "results" / "figures",
+    "FOLDER_RESULTS_METRICS": Path("..") / "results" / "metrics",
+    "FOLDER_RESULTS_TABLES": Path("..") / "results" / "tables",
+    "FILE_RAW_VDEM": Path("..") / "data" / "raw_v-dem" / "V-Dem-CY-Core-v16.csv",
+    "FILE_BASE_VDEM": Path("..") / "data" / "base" / "v-dem.csv",
+    "FILE_BASE_LB": Path("..") / "data" / "base" / "latinobarometro.csv",
+    "FILE_LB_VAR_MAPPING": Path("..") / "data" / "variables" / "latinobarometro_variable_mapping.csv",
+    "FILE_VAR_SELECTION": Path("..") / "data" / "variables" / "variables_selection.csv",
+    "FILE_FREQUENCY_TABLE": Path("..") / "data" / "base" / "lb_frecuencia_valores_por_ola.csv",
+    "FILE_SAMPLE": Path("..") / "data" / "base" / "latinobarometro_muestra.csv",
+    "FILE_RESULTS_MODEL_CSV": Path("..") / "data" / "results" / "resultados_modelos.csv",
+    "FILE_RESULTS_MODEL_PARQUET": Path("..") / "data" / "results" / "resultados_modelos.parquet",
+}
 
 # ====================================================
 # TEMAS
@@ -31,6 +66,13 @@ THEME = {
         "text": "#303030",
         "background": "#FFFFFF"
     },
+    "blocks": {
+        "Confianza institucional"        : "#1E3A5F",
+        "Evaluación económica"           : "#0D9488",
+        "Percepción política"            : "#2E74B5",
+        "Corrupción y seguridad"         : "#DC2626",
+        "Características sociodemográficas": "#78716C",
+    }
 }
 
 
