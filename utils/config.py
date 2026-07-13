@@ -29,6 +29,7 @@ PATHS = {
     "FOLDER_RESULTS_FIGURES": Path("..") / "results" / "figures",
     "FOLDER_RESULTS_METRICS": Path("..") / "results" / "metrics",
     "FOLDER_RESULTS_TABLES": Path("..") / "results" / "tables",
+    "FOLDER_RESULTS_SHAP": Path("..") / "results" / "shap",
     "FILE_RAW_VDEM": Path("..") / "data" / "raw_v-dem" / "V-Dem-CY-Core-v16.csv",
     "FILE_BASE_VDEM": Path("..") / "data" / "base" / "v-dem.csv",
     "FILE_BASE_LB": Path("..") / "data" / "base" / "latinobarometro.csv",
