@@ -440,6 +440,6 @@ FodyWeavers.xsd
 !/data/raw_v-dem/.gitkeep
 /results/**
 
-
+#Logs para ejecución de notebooks
 /logs/*
 !/logs/.gitkeep
