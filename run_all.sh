@@ -15,21 +15,21 @@ cd notebooks
 
 mkdir -p output
 
-papermill notebooks/01_carga_datos.ipynb \
-           notebooks/output/01_carga_datos.ipynb
+papermill 01_carga_datos.ipynb \
+           output/01_carga_datos.ipynb
 
-papermill notebooks/02_preprocesamiento_entrenamiento.ipynb \
-           notebooks/output/02_preprocesamiento_entrenamiento.ipynb
+papermill 02_preprocesamiento_entrenamiento.ipynb \
+           output/02_preprocesamiento_entrenamiento.ipynb
 
-papermill notebooks/03_evaluacion_comparativa.ipynb \
-           notebooks/output/03_evaluacion_comparativa.ipynb
+papermill 03_evaluacion_comparativa.ipynb \
+           output/03_evaluacion_comparativa.ipynb
 
-papermill notebooks/04_explicabilidad_xai.ipynb \
-           notebooks/output/04_explicabilidad_xai.ipynb
+papermill 04_explicabilidad_xai.ipynb \
+           output/04_explicabilidad_xai.ipynb
 
-papermill notebooks/05_estabilidad_temporal_regional.ipynb \
-           notebooks/output/05_estabilidad_temporal_regional.ipynb
+papermill 05_estabilidad_temporal_regional.ipynb \
+           output/05_estabilidad_temporal_regional.ipynb
 
-papermill notebooks/06_contraste_teorico.ipynb \
-           notebooks/output/06_contraste_teorico.ipynb
+papermill 06_contraste_teorico.ipynb \
+           output/06_contraste_teorico.ipynb
            
