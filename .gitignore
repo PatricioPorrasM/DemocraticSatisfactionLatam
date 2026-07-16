@@ -430,16 +430,18 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+
+#Logs para ejecución de notebooks
+/logs/*
+!/logs/.gitkeep
+
+
 # Data Files
 *.dta
-/data/loaded/**
+/data/base/**
 /data/processed/**
 /data/raw-latinobarometro/*
 !/data/raw-latinobarometro/.gitkeep
 /data/raw_v-dem/*
 !/data/raw_v-dem/.gitkeep
 /results/**
-
-#Logs para ejecución de notebooks
-/logs/*
-!/logs/.gitkeep
