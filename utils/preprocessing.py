@@ -109,6 +109,27 @@ def imputar(
     assert X_val_imp.isnull().sum().sum() == 0, "NaN residuales tras imputación (val)"
     assert X_te_imp.isnull().sum().sum()  == 0, "NaN residuales tras imputación (test)"
 
+    # Documentar variables que fueron imputadas totalmente en val o test
+    # (100% NaN antes de imputar → todos los valores son sintéticos)
+    vars_100nan_val  = [c for c in cols_num if X_val[c].isna().all()]
+    vars_100nan_test = [c for c in cols_num if X_te[c].isna().all()]
+    if vars_100nan_val:
+        import warnings as _w
+        _w.warn(
+            f"imputar(): las siguientes variables tienen 100% NaN en el conjunto "
+            f"de validación y fueron imputadas totalmente: {vars_100nan_val}. "
+            f"Los valores resultantes son completamente sintéticos.",
+            UserWarning, stacklevel=2,
+        )
+    if vars_100nan_test:
+        import warnings as _w
+        _w.warn(
+            f"imputar(): las siguientes variables tienen 100% NaN en el conjunto "
+            f"de prueba y fueron imputadas totalmente: {vars_100nan_test}. "
+            f"Los valores resultantes son completamente sintéticos.",
+            UserWarning, stacklevel=2,
+        )
+
     return X_tr_imp, X_val_imp, X_te_imp, imp_num, imp_cat
 
 
@@ -168,9 +189,15 @@ def aplicar_transformaciones_deterministas(
             mask = df[col].between(1, 5)
             df.loc[mask, col] = 6 - df.loc[mask, col]
 
+    # Recodificaciones binarias: np.select en lugar de .map() para evitar
+    # que valores no contemplados se conviertan silenciosamente a NaN.
     for col, mapeo in tr.get("binarias", {}).items():
-        if col in df.columns:
-            df[col] = df[col].map({float(k): v for k, v in mapeo.items()})
+        if col not in df.columns:
+            continue
+        mapeo_float = {float(k): v for k, v in mapeo.items()}
+        condiciones = [df[col] == k for k in mapeo_float]
+        valores     = list(mapeo_float.values())
+        df[col]     = np.select(condiciones, valores, default=np.nan)
 
     if "I_001_001" in df.columns:
         col   = "I_001_001"
@@ -187,13 +214,16 @@ def aplicar_transformaciones_deterministas(
         df[col] = nueva
 
     if "G_002_011" in df.columns:
-        col = "G_002_011"
+        col   = "G_002_011"
+        nueva = np.full(len(df), np.nan)
         if año_encuesta == 2013:
-            df.loc[df[col] == 1, col] = 1
-            df.loc[df[col] >  1, col] = 0
+            nueva[df[col].values == 1] = 1
+            nueva[(df[col].values >  1) & (~np.isnan(df[col].values.astype(float)))] = 0
         else:
-            df.loc[df[col] == 1, col] = 1
-            df.loc[df[col] == 2, col] = 0
+            nueva[df[col].values == 1] = 1
+            nueva[df[col].values == 2] = 0
+            # Valores fuera de {1, 2} quedan como NaN (explícito)
+        df[col] = nueva
 
     for col in tr.get("vdem_invertir", []):
         if col in df.columns:
