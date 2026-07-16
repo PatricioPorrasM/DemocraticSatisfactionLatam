@@ -37,8 +37,8 @@ PATHS = {
     "FILE_VAR_SELECTION": Path("..") / "data" / "variables" / "variables_selection.csv",
     "FILE_FREQUENCY_TABLE": Path("..") / "data" / "base" / "lb_frecuencia_valores_por_ola.csv",
     "FILE_SAMPLE": Path("..") / "data" / "base" / "latinobarometro_muestra.csv",
-    "FILE_RESULTS_MODEL_CSV": Path("..") / "data" / "results" / "resultados_modelos.csv",
-    "FILE_RESULTS_MODEL_PARQUET": Path("..") / "data" / "results" / "resultados_modelos.parquet",
+    "FILE_RESULTS_MODEL_CSV": Path("..") / "results" / "resultados_modelos.csv",
+    "FILE_RESULTS_MODEL_PARQUET": Path("..") / "results" / "resultados_modelos.parquet",
 }
 
 # ====================================================

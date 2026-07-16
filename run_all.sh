@@ -2,7 +2,18 @@
 
 set -e
 
+# Ir a la raíz del proyecto
+cd "$(dirname "$0")"
+
+# Activar el entorno virtual
 source .venv/bin/activate
+
+mkdir -p logs
+
+# Ejecutar los notebooks desde la carpeta notebooks
+cd notebooks
+
+mkdir -p output
 
 papermill notebooks/01_carga_datos.ipynb \
            notebooks/output/01_carga_datos.ipynb

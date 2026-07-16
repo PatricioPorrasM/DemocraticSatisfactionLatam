@@ -432,8 +432,7 @@ FodyWeavers.xsd
 
 
 #Logs para ejecución de notebooks
-/logs/*
-!/logs/.gitkeep
+/logs/**
 
 
 # Data Files
