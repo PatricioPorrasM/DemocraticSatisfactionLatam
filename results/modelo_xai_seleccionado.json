@@ -1,0 +1,5 @@
+{
+  "modelo_xai": "CatBoost",
+  "metrica": "kappa_cuadratico",
+  "subperiodo_referencia": "SP3"
+}
