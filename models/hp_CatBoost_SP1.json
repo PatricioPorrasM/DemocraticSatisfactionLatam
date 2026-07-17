@@ -1,1 +1,1 @@
-{"iterations": 600, "depth": 7, "learning_rate": 0.021902526850614334, "l2_leaf_reg": 2.55034174646266, "bagging_temperature": 0.3486463758722129, "border_count": 67, "random_strength": 2.2478458814530993}
+{"iterations": 900, "depth": 7, "learning_rate": 0.010625116081692107, "l2_leaf_reg": 6.413431637472845, "bagging_temperature": 0.012868418827304412, "border_count": 72, "random_strength": 7.177098559000658}

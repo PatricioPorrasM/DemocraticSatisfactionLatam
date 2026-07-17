@@ -1,46 +1,46 @@
 variable,etiqueta,bloque,shap_medio
-A_001_001,Apoyo a la democracia,Percepción política,0.2885408034946636
-D_001_001,Situación económica país,Evaluación económica,0.2817457245282595
-B_001_101,País para todos / poderosos,Percepción política,0.19236940610826248
-H_002_031,Confianza Gobierno,Confianza institucional,0.17424858061502538
-B_006_061,Aprobación gobierno,Percepción política,0.161650246804517
-I_001_001,Victimización delictiva,Corrupción y seguridad,0.1557311373830509
-G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.14842413322316556
-D_001_041,Expectativa económica país,Evaluación económica,0.14412647791743355
-H_002_041,Confianza Poder Judicial,Confianza institucional,0.1413419120862816
-H_002_011,Confianza Congreso,Confianza institucional,0.12098114999360561
-C_006_003_011,Distribución ingreso justa,Evaluación económica,0.11939407889267312
-v2xeg_eqdr,Distribución igualitaria,Contexto democrático · Mid-level,0.09903687732123705
-D_001_021,Economía país vs. año anterior,Evaluación económica,0.09076968737203951
-H_002_111,Confianza Policía,Confianza institucional,0.09015737934120484
-D_001_091,Expectativa económica personal,Evaluación económica,0.08098674201058406
-A_007_001,Interés en política,Percepción política,0.07674566348787935
-A_007_071,Escala Izquierda-Derecha,Percepción política,0.07501205028504535
-H_002_131,Confianza Televisión,Confianza institucional,0.07316168141267851
-S_002,Edad,Características sociodemográficas,0.06889814038922411
-v2x_egal,Componente igualitario,Contexto democrático · Mid-level,0.06836905971544262
-S_101,Nivel educativo,Características sociodemográficas,0.067657013592794
-H_002_241,Confianza Partidos Políticos,Confianza institucional,0.05770831273479781
-v2x_jucon,Independencia judicial,Contexto democrático · Mid-level,0.05494150124287338
-H_002_101,Confianza Iglesia Católica,Confianza institucional,0.05335217332016027
-H_002_161,Confianza FF.AA.,Confianza institucional,0.04994974496623976
-S_701,Práctica religiosa,Características sociodemográficas,0.04915332446041705
-v2xlg_legcon,Control legislativo,Contexto democrático · Mid-level,0.04465166271192497
-v2xcl_rol,Igualdad ante la ley,Contexto democrático · Mid-level,0.044395967076903416
-X_008,Tamaño municipio (urbano-rural),Características sociodemográficas,0.04334879478685489
-v2x_cspart,Participación soc. civil,Contexto democrático · Mid-level,0.04303858873626168
-v2xcs_ccsi,Índice soc. civil (CSI),Contexto democrático · Mid-level,0.042658324490909096
-C_003_003_011,Preocupación desempleo,Evaluación económica,0.04154026430041582
-v2x_gender,Empoderamiento político mujeres,Contexto democrático · Mid-level,0.04134699909173339
-v2x_rule,Estado de derecho,Contexto democrático · Mid-level,0.04064137582455431
-H_001_011,Confianza interpersonal,Confianza institucional,0.04039526319348914
-S_301,Nivel socioeconómico,Características sociodemográficas,0.038206087998232725
-v2x_pubcorr,Integridad sector público,Contexto democrático · Mid-level,0.031545437022168256
-v2x_freexp_altinf,Libertad de expresión,Contexto democrático · Mid-level,0.02945819359890493
-S_001,Sexo,Características sociodemográficas,0.02845659504789234
-v2x_polyarchy,Democracia electoral,Contexto democrático · High-level,0.026793974944754693
-v2x_accountability_osp,Rendición de cuentas,Contexto democrático · Mid-level,0.02409835728078246
-v2x_execorr,Integridad ejecutiva,Contexto democrático · Mid-level,0.020069653829840856
-G_002_011,Conoce caso de corrupción,Corrupción y seguridad,0.016816686136918526
-S_200,Situación ocupacional,Características sociodemográficas,0.01669037188758925
-v2x_corr,Integridad institucional,Contexto democrático · Mid-level,0.012932583637859058
+A_001_001,Apoyo a la democracia,Percepción política,0.2467505466907884
+D_001_001,Situación económica país,Evaluación económica,0.22366386033757363
+H_002_031,Confianza Gobierno,Confianza institucional,0.1653169131126071
+B_001_101,País para todos / poderosos,Percepción política,0.15888044146378932
+B_006_061,Aprobación gobierno,Percepción política,0.15123607663445535
+C_006_003_011,Distribución ingreso justa,Evaluación económica,0.11719127011401098
+D_001_021,Economía país vs. año anterior,Evaluación económica,0.08417444507135993
+v2x_egal,Componente igualitario,Contexto democrático · Mid-level,0.08342127945376374
+v2xeg_eqdr,Distribución igualitaria,Contexto democrático · Mid-level,0.07899302655982154
+H_002_011,Confianza Congreso,Confianza institucional,0.0758461985477387
+G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.07114424731788208
+H_002_241,Confianza Partidos Políticos,Confianza institucional,0.0667191688083974
+H_002_041,Confianza Poder Judicial,Confianza institucional,0.05736760188397968
+D_001_041,Expectativa económica país,Evaluación económica,0.056446206807099525
+H_001_011,Confianza interpersonal,Confianza institucional,0.032983167049846954
+H_002_111,Confianza Policía,Confianza institucional,0.024445231909072968
+v2x_jucon,Independencia judicial,Contexto democrático · Mid-level,0.023962365979237097
+H_002_131,Confianza Televisión,Confianza institucional,0.023400927861645254
+v2xcl_rol,Igualdad ante la ley,Contexto democrático · Mid-level,0.02264795171711476
+v2x_gender,Empoderamiento político mujeres,Contexto democrático · Mid-level,0.022607310555091013
+A_007_001,Interés en política,Percepción política,0.020624796915267373
+D_001_091,Expectativa económica personal,Evaluación económica,0.01826675127766538
+A_007_071,Escala Izquierda-Derecha,Percepción política,0.01403604223274049
+v2x_rule,Estado de derecho,Contexto democrático · Mid-level,0.013180224687068589
+v2xlg_legcon,Control legislativo,Contexto democrático · Mid-level,0.01304639852768018
+v2x_pubcorr,Integridad sector público,Contexto democrático · Mid-level,0.010957223297055072
+v2x_execorr,Integridad ejecutiva,Contexto democrático · Mid-level,0.008926620694451088
+v2xcs_ccsi,Índice soc. civil (CSI),Contexto democrático · Mid-level,0.008553420327011965
+v2x_cspart,Participación soc. civil,Contexto democrático · Mid-level,0.0072306591934642814
+H_002_161,Confianza FF.AA.,Confianza institucional,0.006062334112755987
+S_701,Práctica religiosa,Características sociodemográficas,0.005976853497731209
+X_008,Tamaño municipio (urbano-rural),Características sociodemográficas,0.005460336266332237
+v2x_corr,Integridad institucional,Contexto democrático · Mid-level,0.004383726434576294
+I_001_001,Victimización delictiva,Corrupción y seguridad,0.004361164640558743
+v2x_polyarchy,Democracia electoral,Contexto democrático · High-level,0.0020498783450672003
+H_002_101,Confianza Iglesia Católica,Confianza institucional,0.0016848111552522837
+v2x_freexp_altinf,Libertad de expresión,Contexto democrático · Mid-level,0.0011542496409365128
+C_003_003_011,Preocupación desempleo,Evaluación económica,0.0008865989785538855
+v2x_accountability_osp,Rendición de cuentas,Contexto democrático · Mid-level,0.0004152176953562056
+S_301,Nivel socioeconómico,Características sociodemográficas,0.0
+S_200,Situación ocupacional,Características sociodemográficas,0.0
+S_001,Sexo,Características sociodemográficas,0.0
+G_002_011,Conoce caso de corrupción,Corrupción y seguridad,0.0
+S_101,Nivel educativo,Características sociodemográficas,0.0
+S_002,Edad,Características sociodemográficas,0.0
