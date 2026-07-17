@@ -1,3 +1,6 @@
+import os
+import glob
+import shutil
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
@@ -8,6 +11,7 @@ from pathlib import Path
 # ====================================================
 
 PARAMETERS = {
+    "LOAD_SAMPLE": True,
     "SEED": 42,
     "YEAR_START": 1995,
     "YEAR_END": 2024,
@@ -36,7 +40,7 @@ PATHS = {
     "FILE_LB_VAR_MAPPING": Path("..") / "data" / "variables" / "latinobarometro_variable_mapping.csv",
     "FILE_VAR_SELECTION": Path("..") / "data" / "variables" / "variables_selection.csv",
     "FILE_FREQUENCY_TABLE": Path("..") / "data" / "base" / "lb_frecuencia_valores_por_ola.csv",
-    "FILE_SAMPLE": Path("..") / "data" / "base" / "latinobarometro_muestra.csv",
+    "FILE_BASE_LB_SAMPLE": Path("..") / "data" / "base" / "latinobarometro_muestra.csv",
     "FILE_RESULTS_MODEL_CSV": Path("..") / "results" / "resultados_modelos.csv",
     "FILE_RESULTS_MODEL_PARQUET": Path("..") / "results" / "resultados_modelos.parquet",
 }
@@ -339,3 +343,66 @@ def bloque_de(var: str) -> str:
         if var in variables:
             return bloque
     return "Sin clasificar"
+
+
+def delete_files(patron, descripcion):
+    archivos = glob.glob(patron)
+    if not archivos:
+        print(f"  [vacío] {descripcion}")
+        return
+    for f in archivos:
+        os.remove(f)
+    print(f"  [ok] {descripcion}: {len(archivos)} archivo(s) eliminado(s)")
+
+def emty_folders(ruta, descripcion):
+    if not os.path.isdir(ruta):
+        print(f"  [no existe] {ruta}")
+        return
+    items = list(os.scandir(ruta))
+    if not items:
+        print(f"  [vacío] {descripcion}")
+        return
+    for item in items:
+        if item.is_dir():
+            shutil.rmtree(item.path)
+        else:
+            os.remove(item.path)
+    print(f"  [ok] {descripcion}: {len(items)} elemento(s) eliminado(s)")
+
+
+def clean_process_folders():
+    BASE = os.path.dirname(os.getcwd())  # sube un nivel desde notebooks/
+
+    print("=== Limpieza de carpetas ===\n")
+
+    # data/base — todos los archivos
+    delete_files(os.path.join(BASE, "data/base/*"),
+                    "data/base")
+
+    # data/processed — todos los archivos
+    delete_files(os.path.join(BASE, "data/processed/*"),
+                    "data/processed")
+
+    # data/raw_latinobarometro — sólo .dta
+    delete_files(os.path.join(BASE, "data/raw_latinobarometro/*.dta"),
+                    "data/raw_latinobarometro (*.dta)")
+
+    # data/raw_c-dem — sólo .csv
+    delete_files(os.path.join(BASE, "data/raw_c-dem/*.csv"),
+                    "data/raw_c-dem (*.csv)")
+
+    # models — todos los archivos
+    delete_files(os.path.join(BASE, "models/*"),
+                    "models")
+
+    # notebooks/catboost_info y notebooks/output — vaciado completo
+    emty_folders(os.path.join(BASE, "notebooks/catboost_info"),
+                "notebooks/catboost_info")
+    emty_folders(os.path.join(BASE, "notebooks/output"),
+                "notebooks/output")
+
+    # results — carpeta completa con subcarpetas
+    emty_folders(os.path.join(BASE, "results"),
+                "results")
+
+    print("\nListo.")
