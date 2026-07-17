@@ -11,7 +11,7 @@ from pathlib import Path
 # ====================================================
 
 PARAMETERS = {
-    "LOAD_SAMPLE": True,
+    "LOAD_SAMPLE": False,
     "SEED": 42,
     "YEAR_START": 1995,
     "YEAR_END": 2024,
