@@ -24,19 +24,20 @@ from .config import PATHS
 # PIPELINES
 # ─────────────────────────────────────────────────────────────────────────────
 
-def cargar_pipeline(nombre_modelo: str) -> Dict:
+def cargar_pipeline(nombre_modelo: str, estrategia: str = "sin_balanceo") -> Dict:
     """
-    Carga el artefacto completo de pipeline para un modelo.
+    Carga el artefacto completo de pipeline para un modelo y estrategia.
 
     Parámetros
     ----------
     nombre_modelo : 'OLO', 'XGBoost', 'CatBoost', 'LightGBM' o 'TabNet'
+    estrategia    : 'sin_balanceo', 'pesos_clase' o 'smotenc'
 
     Retorna
     -------
     dict con todos los componentes del artefacto.
     """
-    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}.pkl"
+    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{estrategia}.pkl"
     if not ruta.exists():
         raise FileNotFoundError(
             f"Pipeline no encontrado: {ruta}\n"
