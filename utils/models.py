@@ -227,8 +227,8 @@ def entrenar_catboost(
 
 
 def entrenar_lightgbm(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str,
-    pesos_clase: dict, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    pesos_clase: dict, sp: str, cfg: dict,
     
 ) -> Tuple:
     nombre  = "LightGBM"
