@@ -270,7 +270,8 @@ def entrenar_lightgbm(
             }
             m = lgb.LGBMClassifier(
                 **p, objective="multiclass", num_class=N_CLASES,
-                class_weight=pesos_clase, random_state=seed,
+                # class_weight=pesos_clase, 
+                random_state=seed,
                 n_jobs=cfg["n_jobs"], verbose=-1,
                 device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
             )
@@ -288,7 +289,8 @@ def entrenar_lightgbm(
 
     clf = lgb.LGBMClassifier(
         **best_hp, objective="multiclass", num_class=N_CLASES,
-        class_weight=pesos_clase, random_state=seed,
+        # class_weight=pesos_clase, 
+        random_state=seed,
         n_jobs=cfg["n_jobs"], verbose=-1,
         device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
     )
@@ -396,10 +398,10 @@ def entrenar_tabnet(
 def predecir(
     datos_crudos: dict,
     nombre_modelo: str = "XGBoost",
-    subperiodo: str    = "SP3",
+    # Naming simplificado: pipeline_{modelo}.pkl
     año_encuesta: int  = 2024,
 ) -> dict:
-    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{subperiodo}.pkl"
+    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}.pkl"
     assert ruta.exists(), f"Pipeline no encontrado: {ruta}"
     art  = joblib.load(ruta)
     tipo = art["tipo_modelo"]
@@ -441,5 +443,5 @@ def predecir(
         "etiqueta"       : ets[clase],
         "probabilidades" : {ets[i]: float(p) for i, p in enumerate(y_prob)},
         "modelo"         : nombre_modelo,
-        "subperiodo"     : subperiodo,
+        # Campo de split ya no aplica en diseño de validación único
     }

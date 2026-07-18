@@ -3,14 +3,12 @@ utils/io.py
 ===========
 Funciones de entrada/salida para el proyecto de tesis.
 
-Proporciona acceso centralizado a:
-- Pipelines entrenados (artefactos completos por modelo y subperiodo)
-- Resultados de métricas (CSV y Parquet)
-- Splits procesados (Parquet por subperiodo)
-- Valores SHAP calculados (Parquet por modelo y subperiodo)
-
-Todas las rutas se resuelven desde PATHS definido en config.py,
-de modo que el proyecto sea portable entre entornos.
+Con el rediseño a split único, los artefactos ya no llevan
+sufijo de subperiodo (SP1/SP2/SP3). Los nombres de archivo son:
+  - pipeline_{modelo}.pkl
+  - train.parquet, val.parquet, test.parquet
+  - shap_{modelo}.parquet
+  - resultados_modelos.parquet / .csv
 """
 
 import joblib
@@ -26,32 +24,23 @@ from .config import PATHS
 # PIPELINES
 # ─────────────────────────────────────────────────────────────────────────────
 
-def cargar_pipeline(nombre_modelo: str, subperiodo: str) -> Dict:
+def cargar_pipeline(nombre_modelo: str) -> Dict:
     """
-    Carga el artefacto completo de pipeline para un modelo y subperiodo.
-
-    El artefacto incluye el modelo entrenado, los preprocesadores ajustados
-    (imputer, scaler), las features esperadas, los bloques temáticos, las
-    etiquetas de features y la metadata de entrenamiento.
+    Carga el artefacto completo de pipeline para un modelo.
 
     Parámetros
     ----------
     nombre_modelo : 'OLO', 'XGBoost', 'CatBoost', 'LightGBM' o 'TabNet'
-    subperiodo    : 'SP1', 'SP2' o 'SP3'
 
     Retorna
     -------
     dict con todos los componentes del artefacto.
-
-    Lanza
-    -----
-    FileNotFoundError si el archivo no existe.
     """
-    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{subperiodo}.pkl"
+    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}.pkl"
     if not ruta.exists():
         raise FileNotFoundError(
             f"Pipeline no encontrado: {ruta}\n"
-            f"Asegúrate de haber ejecutado el notebook 02 de entrenamiento."
+            f"Asegúrate de haber ejecutado el notebook 02."
         )
     try:
         import torch
@@ -70,26 +59,18 @@ def cargar_pipeline(nombre_modelo: str, subperiodo: str) -> Dict:
 
 
 def listar_pipelines_disponibles() -> pd.DataFrame:
-    """
-    Devuelve un DataFrame con todos los pipelines disponibles en FOLDER_MODELS.
-
-    Retorna
-    -------
-    pd.DataFrame con columnas: modelo, subperiodo, ruta, tamaño_kb.
-    """
+    """Devuelve un DataFrame con todos los pipelines disponibles."""
     patron = PATHS["FOLDER_MODELS"].glob("pipeline_*.pkl")
     filas = []
     for ruta in sorted(patron):
-        partes = ruta.stem.replace("pipeline_", "").rsplit("_", 1)
-        if len(partes) == 2:
-            filas.append({
-                "modelo"     : partes[0],
-                "subperiodo" : partes[1],
-                "ruta"       : str(ruta),
-                "tamaño_kb"  : round(ruta.stat().st_size / 1024, 1),
-            })
+        nombre_modelo = ruta.stem.replace("pipeline_", "")
+        filas.append({
+            "modelo":     nombre_modelo,
+            "ruta":       str(ruta),
+            "tamaño_kb":  round(ruta.stat().st_size / 1024, 1),
+        })
     return pd.DataFrame(filas) if filas else pd.DataFrame(
-        columns=["modelo", "subperiodo", "ruta", "tamaño_kb"])
+        columns=["modelo", "ruta", "tamaño_kb"])
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -98,7 +79,7 @@ def listar_pipelines_disponibles() -> pd.DataFrame:
 
 def cargar_resultados(split: str = "test") -> pd.DataFrame:
     """
-    Carga el DataFrame de resultados de métricas generado en el notebook 02.
+    Carga el DataFrame de resultados generado en el notebook 02.
 
     Parámetros
     ----------
@@ -106,25 +87,20 @@ def cargar_resultados(split: str = "test") -> pd.DataFrame:
 
     Retorna
     -------
-    pd.DataFrame con columnas: modelo, subperiodo, split, balanced_accuracy,
-    f1_macro, f1_weighted, kappa_lineal, kappa_cuadratico, mae_ordinal,
-    auroc_macro.
-
-    Lanza
-    -----
-    FileNotFoundError si el archivo Parquet no existe.
+    pd.DataFrame con columnas: modelo, estrategia_balanceo, variante_target,
+    split, accuracy, balanced_accuracy, f1_macro, f1_weighted,
+    kappa_lineal, kappa_cuadratico, mae_ordinal, auroc_macro.
     """
-    ruta = PATHS["FOLDER_RESULTS"] / "resultados_modelos.parquet"
+    ruta = PATHS["FILE_RESULTS_MODEL_PARQUET"]
     if not ruta.exists():
-        # Intentar fallback a CSV
-        ruta_csv = PATHS["FOLDER_RESULTS"] / "resultados_modelos.csv"
+        ruta_csv = PATHS["FILE_RESULTS_MODEL_CSV"]
         if ruta_csv.exists():
             df = pd.read_csv(ruta_csv)
         else:
             raise FileNotFoundError(
                 f"Archivo de resultados no encontrado.\n"
                 f"Rutas probadas:\n  {ruta}\n  {ruta_csv}\n"
-                f"Asegúrate de haber ejecutado el notebook 02."
+                f"Ejecuta el notebook 02."
             )
     else:
         df = pd.read_parquet(ruta)
@@ -134,71 +110,52 @@ def cargar_resultados(split: str = "test") -> pd.DataFrame:
     return df
 
 
-def cargar_mejor_modelo(subperiodo: str = "SP3",
-                        metrica: str = "kappa_cuadratico") -> str:
+def cargar_mejor_modelo(metrica: str = "kappa_cuadratico",
+                        estrategia: str = None,
+                        variante: str = None) -> str:
     """
-    Retorna el nombre del modelo con mayor valor en la métrica indicada
-    para el subperiodo y split de test especificados.
+    Retorna el nombre del modelo con mayor valor en la métrica indicada.
 
     Parámetros
     ----------
-    subperiodo : 'SP1', 'SP2' o 'SP3'.
-    metrica    : columna de métrica a maximizar (default: 'kappa_cuadratico').
-
-    Retorna
-    -------
-    str con el nombre del modelo ganador.
+    metrica    : columna a maximizar (default: 'kappa_cuadratico').
+    estrategia : filtrar por estrategia_balanceo (opcional).
+    variante   : filtrar por variante_target (opcional).
     """
     df = cargar_resultados(split="test")
-    sub = df[df["subperiodo"] == subperiodo]
-    if sub.empty:
-        raise ValueError(f"No hay resultados para subperiodo '{subperiodo}'.")
-    return sub.loc[sub[metrica].idxmax(), "modelo"]
+    if estrategia and "estrategia_balanceo" in df.columns:
+        df = df[df["estrategia_balanceo"] == estrategia]
+    if variante and "variante_target" in df.columns:
+        df = df[df["variante_target"] == variante]
+    if df.empty:
+        raise ValueError("No hay resultados con los filtros indicados.")
+    return df.loc[df[metrica].idxmax(), "modelo"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SPLITS PROCESADOS (Parquet)
+# SPLITS PROCESADOS
 # ─────────────────────────────────────────────────────────────────────────────
 
-def cargar_split_parquet(subperiodo: str,
-                         split: str = "test") -> pd.DataFrame:
+def cargar_split_parquet(split: str = "test") -> pd.DataFrame:
     """
-    Carga un conjunto procesado (train o test) desde Parquet.
-
-    Los archivos Parquet son generados por el notebook 02 y contienen
-    las features transformadas más la columna 'target'.
+    Carga un conjunto procesado desde Parquet.
 
     Parámetros
     ----------
-    subperiodo : 'SP1', 'SP2' o 'SP3'.
-    split      : 'train' o 'test'.
-
-    Retorna
-    -------
-    pd.DataFrame con features + columna 'target'.
+    split : 'train', 'val' o 'test'.
     """
-    ruta = PATHS["FOLDER_PROCS"] / f"{subperiodo}_{split}.parquet"
+    ruta = PATHS["FOLDER_PROCS"] / f"{split}.parquet"
     if not ruta.exists():
         raise FileNotFoundError(
             f"Split Parquet no encontrado: {ruta}\n"
-            f"Ejecuta el notebook 02 para generarlo."
+            f"Ejecuta el notebook 02."
         )
     return pd.read_parquet(ruta)
 
 
-def cargar_pesos_train(subperiodo: str) -> np.ndarray:
-    """
-    Carga los sample_weights del conjunto de entrenamiento para un subperiodo.
-
-    Parámetros
-    ----------
-    subperiodo : 'SP1', 'SP2' o 'SP3'.
-
-    Retorna
-    -------
-    np.ndarray con los pesos de cada registro.
-    """
-    ruta = PATHS["FOLDER_PROCS"] / f"{subperiodo}_train_weights.parquet"
+def cargar_pesos_train() -> np.ndarray:
+    """Carga los sample_weights del conjunto de entrenamiento."""
+    ruta = PATHS["FOLDER_PROCS"] / "train_weights.parquet"
     if not ruta.exists():
         raise FileNotFoundError(f"Pesos no encontrados: {ruta}")
     return pd.read_parquet(ruta)["sample_weight"].values
@@ -211,66 +168,35 @@ def cargar_pesos_train(subperiodo: str) -> np.ndarray:
 def guardar_shap_values(shap_array: np.ndarray,
                         feature_names: list,
                         nombre_modelo: str,
-                        subperiodo: str,
                         clase: Optional[int] = None) -> None:
     """
-    Persiste los valores SHAP en formato Parquet para reutilización
-    entre notebooks sin necesidad de recalcularlos.
-
-    Los valores SHAP pueden ser bidimensionales (n_muestras × n_features)
-    para un análisis por clase específica, o tridimensionales
-    (n_muestras × n_features × n_clases) para el análisis global.
-    En el caso tridimensional se guarda la media absoluta entre clases.
+    Persiste los valores SHAP en formato Parquet.
 
     Parámetros
     ----------
-    shap_array    : array NumPy de valores SHAP.
-    feature_names : lista de nombres de features en el mismo orden que las
-                    columnas de shap_array.
+    shap_array    : array NumPy (n_muestras × n_features) o
+                    (n_muestras × n_features × n_clases).
+    feature_names : lista de nombres de features.
     nombre_modelo : nombre del modelo.
-    subperiodo    : 'SP1', 'SP2' o 'SP3'.
-    clase         : índice de clase (0–3) si se guardan valores por clase;
-                    None para guardar la media absoluta entre clases.
+    clase         : índice de clase (0–3) o None para media absoluta.
     """
     PATHS["FOLDER_RESULTS_SHAP"].mkdir(parents=True, exist_ok=True)
-
-    # Reducir a 2D si el array es 3D (n_muestras x n_features x n_clases)
     if shap_array.ndim == 3:
         arr_2d = np.abs(shap_array).mean(axis=2)
     else:
         arr_2d = shap_array
-
     sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}_{subperiodo}{sufijo}.parquet"
+    nombre = f"shap_{nombre_modelo}{sufijo}.parquet"
     ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
-
-    df = pd.DataFrame(arr_2d, columns=feature_names)
-    df.to_parquet(ruta, index=False)
+    pd.DataFrame(arr_2d, columns=feature_names).to_parquet(ruta, index=False)
     print(f"  ✓ SHAP guardado: {nombre} ({ruta.stat().st_size / 1024:.0f} KB)")
 
 
 def cargar_shap_values(nombre_modelo: str,
-                       subperiodo: str,
                        clase: Optional[int] = None) -> pd.DataFrame:
-    """
-    Carga los valores SHAP previamente calculados y guardados.
-
-    Parámetros
-    ----------
-    nombre_modelo : nombre del modelo.
-    subperiodo    : 'SP1', 'SP2' o 'SP3'.
-    clase         : índice de clase o None para la media absoluta.
-
-    Retorna
-    -------
-    pd.DataFrame con forma (n_muestras × n_features).
-
-    Lanza
-    -----
-    FileNotFoundError si los valores no han sido calculados aún.
-    """
+    """Carga los valores SHAP previamente calculados."""
     sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}_{subperiodo}{sufijo}.parquet"
+    nombre = f"shap_{nombre_modelo}{sufijo}.parquet"
     ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
     if not ruta.exists():
         raise FileNotFoundError(
@@ -280,12 +206,8 @@ def cargar_shap_values(nombre_modelo: str,
     return pd.read_parquet(ruta)
 
 
-def shap_disponible(nombre_modelo: str, subperiodo: str,
-                    clase: Optional[int] = None) -> bool:
-    """
-    Verifica si los valores SHAP ya están calculados para un modelo
-    y subperiodo sin lanzar excepción.
-    """
+def shap_disponible(nombre_modelo: str, clase: Optional[int] = None) -> bool:
+    """Verifica si los valores SHAP ya están calculados."""
     sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}_{subperiodo}{sufijo}.parquet"
+    nombre = f"shap_{nombre_modelo}{sufijo}.parquet"
     return (PATHS["FOLDER_RESULTS_SHAP"] / nombre).exists()
