@@ -229,6 +229,7 @@ def entrenar_catboost(
 def entrenar_lightgbm(
     X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str,
     pesos_clase: dict, cfg: dict,
+    
 ) -> Tuple:
     nombre  = "LightGBM"
     ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
@@ -270,8 +271,7 @@ def entrenar_lightgbm(
             }
             m = lgb.LGBMClassifier(
                 **p, objective="multiclass", num_class=N_CLASES,
-                # class_weight=pesos_clase, 
-                random_state=seed,
+                class_weight=pesos_clase, random_state=seed,
                 n_jobs=cfg["n_jobs"], verbose=-1,
                 device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
             )
@@ -289,8 +289,7 @@ def entrenar_lightgbm(
 
     clf = lgb.LGBMClassifier(
         **best_hp, objective="multiclass", num_class=N_CLASES,
-        # class_weight=pesos_clase, 
-        random_state=seed,
+        class_weight=pesos_clase, random_state=seed,
         n_jobs=cfg["n_jobs"], verbose=-1,
         device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
     )
