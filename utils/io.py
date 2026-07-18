@@ -53,6 +53,19 @@ def cargar_pipeline(nombre_modelo: str, subperiodo: str) -> Dict:
             f"Pipeline no encontrado: {ruta}\n"
             f"Asegúrate de haber ejecutado el notebook 02 de entrenamiento."
         )
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            _orig_load = torch.load
+            torch.load = lambda f, *a, **kw: _orig_load(
+                f, *a, **{**kw, "map_location": kw.get("map_location", "cpu")}
+            )
+            try:
+                return joblib.load(ruta)
+            finally:
+                torch.load = _orig_load
+    except ImportError:
+        pass
     return joblib.load(ruta)
 
 
