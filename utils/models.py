@@ -112,6 +112,9 @@ def entrenar_xgboost(
         best_hp = json.loads(ruta_hp.read_text())
         print(f"  HPs cargados: {best_hp}")
     else:
+        _xgb_obj   = "binary:logistic" if variante_target == "binario" else "multi:softprob"
+        _xgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
+
         def obj(trial):
             p = {
                 "n_estimators"    : trial.suggest_int("n_estimators", 200, 1000, step=100),
@@ -122,7 +125,7 @@ def entrenar_xgboost(
                 "min_child_weight": trial.suggest_int("min_child_weight", 1, 10),
                 "reg_alpha"       : trial.suggest_float("reg_alpha", 1e-8, 10.0, log=True),
                 "reg_lambda"      : trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
-                "objective": "multi:softprob", "num_class": N_CLASES,
+                "objective": _xgb_obj, **_xgb_extra,
                 "tree_method": "hist",
                 "device"     : cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
                 "random_state": seed, "n_jobs": cfg["n_jobs"], "verbosity": 0,
@@ -130,7 +133,10 @@ def entrenar_xgboost(
             m = xgb.XGBClassifier(**p)
             m.fit(X_tr, y_tr, sample_weight=w_tr,
                   eval_set=[(X_val, y_val)], verbose=False)
-            return cohen_kappa_score(y_val, m.predict(X_val), weights="quadratic")
+            y_p = m.predict(X_val)
+            if hasattr(y_p, "ndim") and y_p.ndim > 1:
+                y_p = y_p.argmax(axis=1)
+            return cohen_kappa_score(y_val, y_p, weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
         study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
@@ -140,7 +146,8 @@ def entrenar_xgboost(
 
     clf = xgb.XGBClassifier(
         **best_hp,
-        objective="multi:softprob", num_class=N_CLASES,
+        objective="binary:logistic" if variante_target == "binario" else "multi:softprob",
+        **({"num_class": N_CLASES} if variante_target != "binario" else {}),
         tree_method="hist",
         device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
         random_state=seed, n_jobs=cfg["n_jobs"], verbosity=0,
@@ -197,7 +204,8 @@ def entrenar_catboost(
             }
             pool_tr  = Pool(X_tr_c, label=y_tr.values, weight=w_tr, cat_features=cat_idx)
             pool_val = Pool(X_val_c, label=y_val.values, cat_features=cat_idx)
-            m = CatBoostClassifier(**p, loss_function="MultiClass",
+            _cb_loss = "Logloss" if variante_target == "binario" else "MultiClass"
+            m = CatBoostClassifier(**p, loss_function=_cb_loss,
                                    random_seed=seed, verbose=False,
                                    task_type="GPU" if cfg["usar_gpu"] else "CPU")
             m.fit(pool_tr, eval_set=pool_val)
@@ -209,9 +217,10 @@ def entrenar_catboost(
         print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
         ruta_hp.write_text(json.dumps(best_hp))
 
+    _cb_loss_final = "Logloss" if variante_target == "binario" else "MultiClass"
     pool_tr  = Pool(X_tr_c, label=y_tr.values, weight=w_tr, cat_features=cat_idx)
     pool_val = Pool(X_val_c, label=y_val.values, cat_features=cat_idx)
-    clf = CatBoostClassifier(**best_hp, loss_function="MultiClass",
+    clf = CatBoostClassifier(**best_hp, loss_function=_cb_loss_final,
                               random_seed=seed, verbose=False,
                               task_type="GPU" if cfg["usar_gpu"] else "CPU")
     clf.fit(pool_tr, eval_set=pool_val)
@@ -269,8 +278,10 @@ def entrenar_lightgbm(
                 "reg_lambda"       : trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
                 "min_child_samples": trial.suggest_int("min_child_samples", 20, 100),
             }
+            _lgb_obj   = "binary" if variante_target == "binario" else "multiclass"
+            _lgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
             m = lgb.LGBMClassifier(
-                **p, objective="multiclass", num_class=N_CLASES,
+                **p, objective=_lgb_obj, **_lgb_extra,
                 random_state=seed,
                 n_jobs=cfg["n_jobs"], verbose=-1,
                 device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
@@ -296,8 +307,10 @@ def entrenar_lightgbm(
         print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
         ruta_hp.write_text(json.dumps(best_hp))
 
+    _lgb_obj_final   = "binary" if variante_target == "binario" else "multiclass"
+    _lgb_extra_final = {} if variante_target == "binario" else {"num_class": N_CLASES}
     clf = lgb.LGBMClassifier(
-        **best_hp, objective="multiclass", num_class=N_CLASES,
+        **best_hp, objective=_lgb_obj_final, **_lgb_extra_final,
         random_state=seed,
         n_jobs=cfg["n_jobs"], verbose=-1,
         device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
