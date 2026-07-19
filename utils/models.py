@@ -267,7 +267,7 @@ def entrenar_lightgbm(
                 "colsample_bytree" : trial.suggest_float("colsample_bytree", 0.6, 1.0),
                 "reg_alpha"        : trial.suggest_float("reg_alpha", 1e-8, 10.0, log=True),
                 "reg_lambda"       : trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
-                "min_child_samples": trial.suggest_int("min_child_samples", 5, 100),
+                "min_child_samples": trial.suggest_int("min_child_samples", 20, 100),
             }
             m = lgb.LGBMClassifier(
                 **p, objective="multiclass", num_class=N_CLASES,
@@ -275,14 +275,23 @@ def entrenar_lightgbm(
                 n_jobs=cfg["n_jobs"], verbose=-1,
                 device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
             )
-            m.fit(X_tr_l, y_tr, sample_weight=w_tr,
-                  eval_set=[(X_val_l, y_val)],
-                  callbacks=[lgb.early_stopping(50, verbose=False),
-                             lgb.log_evaluation(-1)])
+            try:
+                m.fit(X_tr_l, y_tr, sample_weight=w_tr,
+                      eval_set=[(X_val_l, y_val)],
+                      callbacks=[lgb.early_stopping(50, verbose=False),
+                                 lgb.log_evaluation(-1)])
+            except lgb.basic.LightGBMError:
+                raise optuna.exceptions.TrialPruned()
             return cohen_kappa_score(y_val, m.predict(X_val_l), weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
         study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
+        completed = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
+        if not completed:
+            raise ValueError(
+                f"LightGBM ({estrategia}): todos los trials de Optuna fallaron. "
+                "Revisar datos o aumentar min_child_samples."
+            )
         best_hp = study.best_params
         print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
         ruta_hp.write_text(json.dumps(best_hp))
