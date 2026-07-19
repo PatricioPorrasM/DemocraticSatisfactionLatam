@@ -123,7 +123,7 @@ def plot_metricas_comparativas(
     fig, axes = plt.subplots(1, len(metricas), figsize=(16, 5))
     fig.suptitle(
         "Rendimiento comparativo de modelos\n"
-        "(Expanding Window Walk-Forward Validation — conjunto de prueba)",
+        "(conjunto de prueba)",
         fontsize=13, fontweight="bold",
     )
 
@@ -136,7 +136,7 @@ def plot_metricas_comparativas(
                     marker="o", linewidth=2, markersize=7,
                     label=modelo, color=model_color(modelo))
         ax.set_title(titulo, fontweight="bold")
-        ax.set_xlabel("Subperiodo")
+        ax.set_xlabel("Estrategia de Balanceo")
         ax.legend(fontsize=8)
         ax.grid(True, alpha=0.3)
         if metrica == "mae_ordinal":
@@ -473,7 +473,7 @@ def plot_heatmap_estabilidad(
         cbar_kws={"label": metrica, "shrink": 0.6},
     )
     ax_heat.set_title(titulo, fontweight="bold", pad=12)
-    ax_heat.set_xlabel("Subperiodo")
+    ax_heat.set_xlabel("Subregión")
     ax_heat.set_ylabel("")
     ax_heat.tick_params(axis="y", labelsize=9)
 

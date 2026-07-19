@@ -3,9 +3,9 @@ utils/io.py
 ===========
 Funciones de entrada/salida para el proyecto de tesis.
 
-Con el rediseño a split único, los artefactos ya no llevan
-sufijo de subperiodo (SP1/SP2/SP3). Los nombres de archivo son:
-  - pipeline_{modelo}.pkl
+Diseño de split único (train 1995-2018, val 2020, test 2023-2024).
+Convención de nombres de archivo:
+  - pipeline_{modelo}_{estrategia}.pkl   (estrategia: sin_balanceo | pesos_clase | smotenc)
   - train.parquet, val.parquet, test.parquet
   - shap_{modelo}.parquet
   - resultados_modelos.parquet / .csv

@@ -271,7 +271,7 @@ def entrenar_lightgbm(
             }
             m = lgb.LGBMClassifier(
                 **p, objective="multiclass", num_class=N_CLASES,
-                class_weight=pesos_clase, random_state=seed,
+                random_state=seed,
                 n_jobs=cfg["n_jobs"], verbose=-1,
                 device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
             )
@@ -289,7 +289,7 @@ def entrenar_lightgbm(
 
     clf = lgb.LGBMClassifier(
         **best_hp, objective="multiclass", num_class=N_CLASES,
-        class_weight=pesos_clase, random_state=seed,
+        random_state=seed,
         n_jobs=cfg["n_jobs"], verbose=-1,
         device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
     )
@@ -397,10 +397,10 @@ def entrenar_tabnet(
 def predecir(
     datos_crudos: dict,
     nombre_modelo: str = "XGBoost",
-    # Naming simplificado: pipeline_{modelo}.pkl
+    estrategia: str    = "pesos_clase",
     año_encuesta: int  = 2024,
 ) -> dict:
-    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}.pkl"
+    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{estrategia}.pkl"
     assert ruta.exists(), f"Pipeline no encontrado: {ruta}"
     art  = joblib.load(ruta)
     tipo = art["tipo_modelo"]
@@ -429,6 +429,12 @@ def predecir(
             for col in art.get("vars_categoricas", []):
                 if col in X_in.columns:
                     X_in[col] = X_in[col].fillna(-999).astype(int).astype(str)
+        elif nombre_modelo == "LightGBM":
+            for col in art.get("vars_categoricas", []):
+                if col in X_in.columns:
+                    cats = sorted(X_in[col].dropna().unique().tolist())
+                    ct = pd.CategoricalDtype(categories=cats, ordered=False)
+                    X_in[col] = X_in[col].astype(ct)
         y_raw  = art["modelo"].predict(X_in)
         y_pred = y_raw.flatten() if hasattr(y_raw, "flatten") else y_raw
         y_prob = art["modelo"].predict_proba(X_in)

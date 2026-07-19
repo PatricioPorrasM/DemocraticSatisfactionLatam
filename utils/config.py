@@ -378,7 +378,7 @@ def delete_files(patron, descripcion):
     print(f"  [ok] {descripcion}: {len(archivos)} archivo(s) eliminado(s)")
 
 
-def emty_folders(ruta, descripcion):
+def empty_folders(ruta, descripcion):
     if not os.path.isdir(ruta):
         print(f"  [no existe] {ruta}")
         return
@@ -400,9 +400,9 @@ def clean_process_folders():
     delete_files(os.path.join(BASE, "data/base/*"),              "data/base")
     delete_files(os.path.join(BASE, "data/processed/*"),         "data/processed")
     delete_files(os.path.join(BASE, "data/raw_latinobarometro/*.dta"), "data/raw_latinobarometro (*.dta)")
-    delete_files(os.path.join(BASE, "data/raw_c-dem/*.csv"),     "data/raw_c-dem (*.csv)")
+    delete_files(os.path.join(BASE, "data/raw_v-dem/*.csv"),     "data/raw_v-dem (*.csv)")
     delete_files(os.path.join(BASE, "models/*"),                  "models")
-    emty_folders(os.path.join(BASE, "notebooks/catboost_info"), "notebooks/catboost_info")
-    emty_folders(os.path.join(BASE, "notebooks/output"),        "notebooks/output")
-    emty_folders(os.path.join(BASE, "results"),                  "results")
+    empty_folders(os.path.join(BASE, "notebooks/catboost_info"), "notebooks/catboost_info")
+    empty_folders(os.path.join(BASE, "notebooks/output"),        "notebooks/output")
+    empty_folders(os.path.join(BASE, "results"),                  "results")
     print("\nListo.")
