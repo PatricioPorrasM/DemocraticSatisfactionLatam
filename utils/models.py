@@ -44,13 +44,13 @@ except ImportError:
 
 
 def entrenar_olo(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, estrategia: str, cfg: dict,
 ) -> Tuple:
     nombre   = "OLO"
-    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed     = PARAMETERS["SEED"]
 
-    print(f"{'='*52}  Entrenando {nombre} — {sp}  {'='*52}")
+    print(f"{'='*52}  Entrenando {nombre} — {estrategia}  {'='*52}")
 
     if not cfg["ejecutar_hp"] and ruta_hp.exists():
         best_hp = json.loads(ruta_hp.read_text())
@@ -90,21 +90,19 @@ def entrenar_olo(
     y_pred_te  = clf.predict(np.array(X_te))
     y_prob_te  = clf.predict_proba(np.array(X_te))
 
-    joblib.dump(clf, PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.pkl")
-    print(f"  ✓ Guardado: {nombre}_{sp}.pkl")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_xgboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, estrategia: str, cfg: dict,
 ) -> Tuple:
     nombre  = "XGBoost"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
     if not cfg["ejecutar_hp"] and ruta_hp.exists():
         best_hp = json.loads(ruta_hp.read_text())
@@ -151,21 +149,19 @@ def entrenar_xgboost(
     y_pred_te  = clf.predict(X_te)
     y_prob_te  = clf.predict_proba(X_te)
 
-    joblib.dump(clf, PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.pkl")
-    print(f"  ✓ Guardado: {nombre}_{sp}.pkl")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_catboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, estrategia: str, cfg: dict,
 ) -> Tuple:
     nombre  = "CatBoost"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
     def prep_cat(X):
         X = X.copy()
@@ -219,23 +215,21 @@ def entrenar_catboost(
     y_pred_te  = clf.predict(X_te_c).flatten()
     y_prob_te  = clf.predict_proba(X_te_c)
 
-    clf.save_model(str(PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.cbm"))
-    print(f"  ✓ Guardado: {nombre}_{sp}.cbm")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_lightgbm(
     X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
-    pesos_clase: dict, sp: str, cfg: dict,
+    pesos_clase: dict, estrategia: str, cfg: dict,
     
 ) -> Tuple:
     nombre  = "LightGBM"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
     def prep_lgb(Xa, Xb, Xc):
         Xa, Xb, Xc = Xa.copy(), Xb.copy(), Xc.copy()
@@ -303,22 +297,20 @@ def entrenar_lightgbm(
     y_pred_te  = clf.predict(X_te_l)
     y_prob_te  = clf.predict_proba(X_te_l)
 
-    joblib.dump(clf, PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.pkl")
-    print(f"  ✓ Guardado: {nombre}_{sp}.pkl")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_tabnet(
     X_tr_sc, y_tr, X_val_sc, y_val, X_te_sc, y_te,
-    sp: str, cat_idxs: list, cat_dims: list, cfg: dict,
+    estrategia: str, cat_idxs: list, cat_dims: list, cfg: dict,
 ) -> Tuple:
     nombre  = "TabNet"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
     print(f"  Dispositivo: {cfg['dispositivo_tn']}")
 
     if not cfg["ejecutar_hp"] and ruta_hp.exists():
@@ -386,13 +378,93 @@ def entrenar_tabnet(
     y_pred_te  = clf.predict(X_te_sc.astype(np.float32))
     y_prob_te  = clf.predict_proba(X_te_sc.astype(np.float32))
 
-    clf.save_model(str(PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}"))
-    print(f"  ✓ Guardado: {nombre}_{sp}.zip")
     print("  ⚠ Limitación: TabNet usa pesos por clase, no sample_weight individual.")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
+
+
+def entrenar_ridge(
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "likert_continuo",
+    cfg: dict = None,
+) -> Tuple:
+    """
+    Ridge Regression como modelo de regresión ordinal.
+    Equivalente de OLO para el experimento E2 variante Likert continuo.
+
+    El target se trata como variable numérica continua {0.0, 1.0, 2.0, 3.0}.
+    Las predicciones se redondean y se recortan al rango [0, N_CLASES-1]
+    para obtener clases comparables con la variante ordinal.
+
+    Parámetros
+    ----------
+    Mismos que entrenar_olo, más variante_target='likert_continuo'.
+    """
+    from sklearn.linear_model import Ridge as _Ridge
+    from sklearn.model_selection import cross_val_score as _cvs
+    import optuna as _optuna
+    from optuna.samplers import TPESampler as _TPE
+
+    nombre   = "Ridge"
+    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
+    seed     = PARAMETERS["SEED"]
+
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia} [{variante_target}]\n{'='*52}")
+
+    # Usar X ya normalizado (StandarScaler, igual que OLO)
+    y_tr_f  = y_tr.astype(float)
+    y_val_f = y_val.astype(float)
+    y_te_f  = y_te.astype(float)
+
+    if not cfg["ejecutar_hp"] and ruta_hp.exists():
+        best_hp = json.loads(ruta_hp.read_text())
+        print(f"  HPs cargados: {best_hp}")
+    else:
+        def obj(trial):
+            alpha = trial.suggest_float("alpha", 1e-4, 100.0, log=True)
+            m = _Ridge(alpha=alpha, random_state=seed)
+            m.fit(X_tr, y_tr_f, sample_weight=w_tr)
+            y_pred_v = np.clip(np.round(m.predict(X_val)), 0, N_CLASES - 1).astype(int)
+            return cohen_kappa_score(y_val, y_pred_v, weights="quadratic")
+
+        study = _optuna.create_study(direction="maximize", sampler=_TPE(seed=seed))
+        study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
+        best_hp = study.best_params
+        print(f"  Mejor Kappa Val (post-redondeo): {study.best_value:.4f} | {best_hp}")
+        ruta_hp.write_text(json.dumps(best_hp))
+
+    clf = _Ridge(**best_hp, random_state=seed)
+    clf.fit(X_tr, y_tr_f, sample_weight=w_tr)
+
+    # Predicciones: valor continuo → redondear → clip → clase entera
+    def _pred_cls(X):
+        y_cont = clf.predict(X)
+        return np.clip(np.round(y_cont), 0, N_CLASES - 1).astype(int)
+
+    def _pred_proba(X, n_cls=N_CLASES):
+        """Probabilidades blandas desde distancia al entero más cercano."""
+        y_cont = clf.predict(X)
+        proba  = np.zeros((len(y_cont), n_cls))
+        for k in range(n_cls):
+            dist = np.abs(y_cont - k)
+            proba[:, k] = np.exp(-dist)
+        proba /= proba.sum(axis=1, keepdims=True)
+        return proba
+
+    y_pred_val = _pred_cls(X_val)
+    y_prob_val = _pred_proba(X_val)
+    y_pred_te  = _pred_cls(X_te)
+    y_prob_te  = _pred_proba(X_te)
+
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre,
+                    estrategia_balanceo=estrategia,
+                    variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre,
+                    estrategia_balanceo=estrategia,
+                    variante_target=variante_target, split="test")
+    return clf, m_val, m_te
 
 def predecir(
     datos_crudos: dict,

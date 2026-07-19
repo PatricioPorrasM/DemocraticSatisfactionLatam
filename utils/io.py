@@ -24,20 +24,24 @@ from .config import PATHS
 # PIPELINES
 # ─────────────────────────────────────────────────────────────────────────────
 
-def cargar_pipeline(nombre_modelo: str, estrategia: str = "sin_balanceo") -> Dict:
+def cargar_pipeline(nombre_modelo: str, estrategia: str = "pesos_clase",
+                    variante: str = None) -> Dict:
     """
     Carga el artefacto completo de pipeline para un modelo y estrategia.
 
     Parámetros
     ----------
-    nombre_modelo : 'OLO', 'XGBoost', 'CatBoost', 'LightGBM' o 'TabNet'
+    nombre_modelo : 'OLO', 'XGBoost', 'CatBoost', 'LightGBM', 'TabNet' o 'Ridge'
     estrategia    : 'sin_balanceo', 'pesos_clase' o 'smotenc'
+    variante      : None (E1 ordinal), 'binario' o 'likert' (E2)
+                    Genera el nombre: pipeline_{modelo}_{estrategia}_{variante}.pkl
 
     Retorna
     -------
     dict con todos los componentes del artefacto.
     """
-    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{estrategia}.pkl"
+    sufijo = f"_{variante}" if variante else ""
+    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{estrategia}{sufijo}.pkl"
     if not ruta.exists():
         raise FileNotFoundError(
             f"Pipeline no encontrado: {ruta}\n"
@@ -169,6 +173,7 @@ def cargar_pesos_train() -> np.ndarray:
 def guardar_shap_values(shap_array: np.ndarray,
                         feature_names: list,
                         nombre_modelo: str,
+                        estrategia: str = "pesos_clase",
                         clase: Optional[int] = None) -> None:
     """
     Persiste los valores SHAP en formato Parquet.
@@ -179,7 +184,10 @@ def guardar_shap_values(shap_array: np.ndarray,
                     (n_muestras × n_features × n_clases).
     feature_names : lista de nombres de features.
     nombre_modelo : nombre del modelo.
+    estrategia    : estrategia de balanceo usada (se incluye en el nombre).
     clase         : índice de clase (0–3) o None para media absoluta.
+
+    Naming: shap_{modelo}_{estrategia}[_claseN].parquet
     """
     PATHS["FOLDER_RESULTS_SHAP"].mkdir(parents=True, exist_ok=True)
     if shap_array.ndim == 3:
@@ -187,17 +195,25 @@ def guardar_shap_values(shap_array: np.ndarray,
     else:
         arr_2d = shap_array
     sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}{sufijo}.parquet"
+    nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
     ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
     pd.DataFrame(arr_2d, columns=feature_names).to_parquet(ruta, index=False)
     print(f"  ✓ SHAP guardado: {nombre} ({ruta.stat().st_size / 1024:.0f} KB)")
 
 
 def cargar_shap_values(nombre_modelo: str,
+                       estrategia: str = "pesos_clase",
                        clase: Optional[int] = None) -> pd.DataFrame:
-    """Carga los valores SHAP previamente calculados."""
+    """Carga los valores SHAP previamente calculados.
+
+    Parámetros
+    ----------
+    nombre_modelo : nombre del modelo.
+    estrategia    : estrategia de balanceo (debe coincidir con la usada al guardar).
+    clase         : índice de clase (0–3) o None para media absoluta.
+    """
     sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}{sufijo}.parquet"
+    nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
     ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
     if not ruta.exists():
         raise FileNotFoundError(
@@ -207,8 +223,10 @@ def cargar_shap_values(nombre_modelo: str,
     return pd.read_parquet(ruta)
 
 
-def shap_disponible(nombre_modelo: str, clase: Optional[int] = None) -> bool:
+def shap_disponible(nombre_modelo: str,
+                    estrategia: str = "pesos_clase",
+                    clase: Optional[int] = None) -> bool:
     """Verifica si los valores SHAP ya están calculados."""
     sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}{sufijo}.parquet"
+    nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
     return (PATHS["FOLDER_RESULTS_SHAP"] / nombre).exists()
