@@ -1,0 +1,301 @@
+grupo,idx,clase_real,clase_pred,distancia,feature,peso_lime
+representativo,52,0,1,1,Situación económica país,-0.052838346492636835
+representativo,52,0,1,1,Aprobación gobierno,0.040094153199459234
+representativo,52,0,1,1,Apoyo a la democracia,-0.03742008600091764
+representativo,52,0,1,1,Confianza Congreso,-0.03049915989880687
+representativo,52,0,1,1,Confianza Gobierno,-0.02816864088881561
+representativo,52,0,1,1,Economía país vs. año anterior,0.020937084994751096
+representativo,52,0,1,1,Progreso contra corrupción,-0.015172356032246015
+representativo,52,0,1,1,País para todos / poderosos,-0.014816443435339176
+representativo,52,0,1,1,Confianza Poder Judicial,-0.012021400918195773
+representativo,52,0,1,1,Confianza Partidos Políticos,-0.010485618925797297
+representativo,401,0,1,1,Situación económica país,-0.04541763162748446
+representativo,401,0,1,1,Aprobación gobierno,0.036183944809177776
+representativo,401,0,1,1,Apoyo a la democracia,-0.031752461744809925
+representativo,401,0,1,1,Igualdad ante la ley,0.027374903279617297
+representativo,401,0,1,1,Componente igualitario,0.026309391744101945
+representativo,401,0,1,1,Confianza Gobierno,-0.024530060900308293
+representativo,401,0,1,1,Progreso contra corrupción,-0.018295217908254162
+representativo,401,0,1,1,País para todos / poderosos,-0.017265640132863396
+representativo,401,0,1,1,Democracia electoral,-0.016059098869617663
+representativo,401,0,1,1,Economía país vs. año anterior,0.013962207081644081
+representativo,135,0,2,2,Aprobación gobierno,-0.032491478501642836
+representativo,135,0,2,2,País para todos / poderosos,0.01759846414055125
+representativo,135,0,2,2,Economía país vs. año anterior,-0.011467681845356745
+representativo,135,0,2,2,Nivel educativo,0.010286400361949555
+representativo,135,0,2,2,Confianza Gobierno,0.00843984819965251
+representativo,135,0,2,2,Confianza Congreso,0.00819582574625188
+representativo,135,0,2,2,Edad,0.007830767220606511
+representativo,135,0,2,2,Expectativa económica país,-0.006997637683360807
+representativo,135,0,2,2,Victimización delictiva,-0.0067206675559381285
+representativo,135,0,2,2,Expectativa económica personal,-0.0063551147877312746
+representativo,12,0,2,2,Aprobación gobierno,-0.028559830703927026
+representativo,12,0,2,2,Confianza Gobierno,0.017454175467771078
+representativo,12,0,2,2,Progreso contra corrupción,0.01642665589813038
+representativo,12,0,2,2,Democracia electoral,0.016346277331799677
+representativo,12,0,2,2,Nivel educativo,0.014563844164363503
+representativo,12,0,2,2,Igualdad ante la ley,-0.014224138612644216
+representativo,12,0,2,2,Confianza Policía,-0.0082468744807243
+representativo,12,0,2,2,Interés en política,-0.007672197355610966
+representativo,12,0,2,2,Distribución ingreso justa,0.004988070616789513
+representativo,12,0,2,2,Confianza FF.AA.,0.004182280976387966
+representativo,446,0,1,1,Situación económica país,-0.05037571685115506
+representativo,446,0,1,1,Apoyo a la democracia,-0.03652885181940445
+representativo,446,0,1,1,Aprobación gobierno,0.0324835267032433
+representativo,446,0,1,1,Confianza Gobierno,-0.030848372366897327
+representativo,446,0,1,1,Componente igualitario,0.025685349836432416
+representativo,446,0,1,1,Igualdad ante la ley,0.02501099808818514
+representativo,446,0,1,1,País para todos / poderosos,-0.017884411069843113
+representativo,446,0,1,1,Democracia electoral,-0.014461275204651642
+representativo,446,0,1,1,Sexo,-0.007189234873825787
+representativo,446,0,1,1,Confianza Policía,-0.00679014926784857
+representativo,327,1,2,1,Aprobación gobierno,-0.034414158069095285
+representativo,327,1,2,1,Apoyo a la democracia,0.01870851184150335
+representativo,327,1,2,1,Interés en política,-0.013094325295751377
+representativo,327,1,2,1,País para todos / poderosos,0.012749995939485954
+representativo,327,1,2,1,Confianza Gobierno,0.01263578200668075
+representativo,327,1,2,1,Confianza Poder Judicial,0.008549211862955895
+representativo,327,1,2,1,Economía país vs. año anterior,-0.008439685886667362
+representativo,327,1,2,1,Expectativa económica país,-0.00824353504291014
+representativo,327,1,2,1,Componente igualitario,-0.0067420879732539235
+representativo,327,1,2,1,Conoce caso de corrupción,-0.0026728648591666563
+representativo,68,1,1,0,Situación económica país,-0.050442976301913564
+representativo,68,1,1,0,Apoyo a la democracia,-0.03824882368437505
+representativo,68,1,1,0,Aprobación gobierno,0.037194746964942606
+representativo,68,1,1,0,Confianza Gobierno,-0.027362257863733003
+representativo,68,1,1,0,Igualdad ante la ley,0.026697245427443412
+representativo,68,1,1,0,Componente igualitario,0.02184761676095269
+representativo,68,1,1,0,Economía país vs. año anterior,0.018110605189252987
+representativo,68,1,1,0,País para todos / poderosos,-0.014879186854371819
+representativo,68,1,1,0,Democracia electoral,-0.013461455610104266
+representativo,68,1,1,0,Integridad institucional (corrupción),0.007214102166311269
+representativo,382,1,2,1,Aprobación gobierno,-0.037972383844718974
+representativo,382,1,2,1,Democracia electoral,0.02122334468167187
+representativo,382,1,2,1,Confianza Gobierno,0.014170499099267419
+representativo,382,1,2,1,Economía país vs. año anterior,-0.011447838243760961
+representativo,382,1,2,1,Progreso contra corrupción,0.011388191522734336
+representativo,382,1,2,1,Apoyo a la democracia,0.011149004069737742
+representativo,382,1,2,1,Situación económica país,0.01088400020174099
+representativo,382,1,2,1,País para todos / poderosos,0.00984047494389066
+representativo,382,1,2,1,Expectativa económica personal,-0.00822607500927725
+representativo,382,1,2,1,Confianza FF.AA.,0.003849713838194955
+representativo,456,1,1,0,Situación económica país,-0.04866621297865453
+representativo,456,1,1,0,Aprobación gobierno,0.038434610883104306
+representativo,456,1,1,0,Apoyo a la democracia,-0.0383692800105358
+representativo,456,1,1,0,Confianza Congreso,-0.03603159176345983
+representativo,456,1,1,0,Confianza Gobierno,-0.027953653314825484
+representativo,456,1,1,0,Progreso contra corrupción,-0.022169107955179023
+representativo,456,1,1,0,País para todos / poderosos,-0.019376914323052375
+representativo,456,1,1,0,Economía país vs. año anterior,0.01697361451511852
+representativo,456,1,1,0,Confianza Poder Judicial,-0.014030778412523565
+representativo,456,1,1,0,Confianza Partidos Políticos,-0.009127669860703585
+representativo,79,1,1,0,Situación económica país,-0.05218462514151558
+representativo,79,1,1,0,Aprobación gobierno,0.03783379805015291
+representativo,79,1,1,0,Apoyo a la democracia,-0.034424012320534395
+representativo,79,1,1,0,Confianza Gobierno,-0.028161245135839518
+representativo,79,1,1,0,Confianza Congreso,-0.02815785925924186
+representativo,79,1,1,0,Igualdad ante la ley,0.02409171186914379
+representativo,79,1,1,0,Componente igualitario,0.02239443031948326
+representativo,79,1,1,0,País para todos / poderosos,-0.018803714778191847
+representativo,79,1,1,0,Economía país vs. año anterior,0.016587056920288525
+representativo,79,1,1,0,Confianza Partidos Políticos,-0.0120363661094563
+error_maximo,442,0,3,3,Aprobación gobierno,-0.02859256580747172
+error_maximo,442,0,3,3,País para todos / poderosos,0.018570558283474363
+error_maximo,442,0,3,3,Confianza Gobierno,0.0128763696362242
+error_maximo,442,0,3,3,Igualdad ante la ley,-0.012016384076098462
+error_maximo,442,0,3,3,Nivel educativo,0.010110242462827114
+error_maximo,442,0,3,3,Componente igualitario,-0.00973923355685885
+error_maximo,442,0,3,3,Democracia electoral,0.008838888206499477
+error_maximo,442,0,3,3,Confianza Policía,-0.008161661779295018
+error_maximo,442,0,3,3,Confianza Televisión,0.006470401438637427
+error_maximo,442,0,3,3,Nivel socioeconómico,-0.005630257138873339
+error_maximo,170,0,3,3,Situación económica país,0.05405333301886326
+error_maximo,170,0,3,3,Componente igualitario,-0.03138091668635902
+error_maximo,170,0,3,3,Confianza Gobierno,0.027362089016566945
+error_maximo,170,0,3,3,Apoyo a la democracia,0.023689453041752146
+error_maximo,170,0,3,3,Aprobación gobierno,-0.01813152380638177
+error_maximo,170,0,3,3,Expectativa económica país,-0.01594579501649016
+error_maximo,170,0,3,3,Igualdad ante la ley,-0.015017898952929598
+error_maximo,170,0,3,3,Economía país vs. año anterior,-0.013258864821846511
+error_maximo,170,0,3,3,Progreso contra corrupción,0.012904154005887855
+error_maximo,170,0,3,3,Distribución ingreso justa,0.011019784342470753
+error_maximo,530,3,0,3,Expectativa económica país,0.02070896359454597
+error_maximo,530,3,0,3,Aprobación gobierno,0.014766367865697306
+error_maximo,530,3,0,3,Confianza Gobierno,-0.013759375491859774
+error_maximo,530,3,0,3,Confianza Televisión,-0.009503387420510082
+error_maximo,530,3,0,3,Progreso contra corrupción,-0.008862272855214457
+error_maximo,530,3,0,3,Expectativa económica personal,0.008134697059425261
+error_maximo,530,3,0,3,Confianza Poder Judicial,-0.0075704000842011605
+error_maximo,530,3,0,3,Nivel educativo,-0.007047067236132938
+error_maximo,530,3,0,3,Confianza Congreso,-0.006331125793565506
+error_maximo,530,3,0,3,Confianza Partidos Políticos,-0.006273100089555216
+error_maximo,448,0,2,2,Aprobación gobierno,-0.024030364106346635
+error_maximo,448,0,2,2,Democracia electoral,0.015939880536348403
+error_maximo,448,0,2,2,Confianza Congreso,0.015449354955593377
+error_maximo,448,0,2,2,Apoyo a la democracia,0.01357942351096624
+error_maximo,448,0,2,2,Integridad institucional (corrupción),-0.01142955014800697
+error_maximo,448,0,2,2,Interés en política,-0.010240972735504335
+error_maximo,448,0,2,2,Igualdad ante la ley,-0.008221182904938649
+error_maximo,448,0,2,2,Economía país vs. año anterior,-0.006096808494316206
+error_maximo,448,0,2,2,Componente igualitario,-0.0037138774410309474
+error_maximo,448,0,2,2,Confianza Televisión,0.003185851837239055
+error_maximo,19,3,1,2,Situación económica país,-0.04855226389038125
+error_maximo,19,3,1,2,Aprobación gobierno,0.039529938472758645
+error_maximo,19,3,1,2,Apoyo a la democracia,-0.03886710772982164
+error_maximo,19,3,1,2,Confianza Gobierno,-0.027044544631293452
+error_maximo,19,3,1,2,Confianza Congreso,-0.02594239124795133
+error_maximo,19,3,1,2,Componente igualitario,0.021383566793713463
+error_maximo,19,3,1,2,Democracia electoral,-0.019578978677105882
+error_maximo,19,3,1,2,Progreso contra corrupción,-0.019555488066965474
+error_maximo,19,3,1,2,País para todos / poderosos,-0.01713669250709947
+error_maximo,19,3,1,2,Situación ocupacional,-0.003856838897783059
+error_maximo,228,0,2,2,Aprobación gobierno,-0.02472709959240164
+error_maximo,228,0,2,2,Apoyo a la democracia,0.02132005334384987
+error_maximo,228,0,2,2,Edad,0.012455923779389921
+error_maximo,228,0,2,2,País para todos / poderosos,0.011847310497252024
+error_maximo,228,0,2,2,Confianza Congreso,0.010419167273636702
+error_maximo,228,0,2,2,Confianza Gobierno,0.010243608602134639
+error_maximo,228,0,2,2,Distribución ingreso justa,0.010130450396553824
+error_maximo,228,0,2,2,Victimización delictiva,-0.009780667334754427
+error_maximo,228,0,2,2,Interés en política,-0.008784162279494597
+error_maximo,228,0,2,2,Confianza Poder Judicial,0.0055259979409966725
+error_maximo,621,0,2,2,Aprobación gobierno,-0.027570497490538925
+error_maximo,621,0,2,2,Igualdad ante la ley,-0.01616316156208696
+error_maximo,621,0,2,2,Apoyo a la democracia,0.014977312465260332
+error_maximo,621,0,2,2,Nivel educativo,0.014799132397737188
+error_maximo,621,0,2,2,Economía país vs. año anterior,-0.01458473957403451
+error_maximo,621,0,2,2,Democracia electoral,0.01258482891153138
+error_maximo,621,0,2,2,Edad,0.011441871840843606
+error_maximo,621,0,2,2,Interés en política,-0.010878380063467495
+error_maximo,621,0,2,2,Progreso contra corrupción,0.009126390875974997
+error_maximo,621,0,2,2,Confianza FF.AA.,0.007990292233919649
+error_maximo,124,2,0,2,Situación económica país,-0.04958255405824903
+error_maximo,124,2,0,2,Aprobación gobierno,0.037063822230804955
+error_maximo,124,2,0,2,Apoyo a la democracia,-0.03387948898987237
+error_maximo,124,2,0,2,Confianza Gobierno,-0.029676534663143544
+error_maximo,124,2,0,2,Componente igualitario,0.02898210618723149
+error_maximo,124,2,0,2,País para todos / poderosos,-0.02210080441893828
+error_maximo,124,2,0,2,Progreso contra corrupción,-0.01940396629448363
+error_maximo,124,2,0,2,Economía país vs. año anterior,0.011828081824494508
+error_maximo,124,2,0,2,Distribución ingreso justa,-0.010665590156457197
+error_maximo,124,2,0,2,Interés en política,0.007688173094776637
+error_maximo,346,1,3,2,Situación económica país,0.05709262944537812
+error_maximo,346,1,3,2,Apoyo a la democracia,0.0279811695309008
+error_maximo,346,1,3,2,Confianza Gobierno,0.024670548732738187
+error_maximo,346,1,3,2,Componente igualitario,-0.024614671238668912
+error_maximo,346,1,3,2,Aprobación gobierno,-0.017519809753240554
+error_maximo,346,1,3,2,Expectativa económica país,-0.014149400039841152
+error_maximo,346,1,3,2,Confianza Partidos Políticos,0.012184684852056295
+error_maximo,346,1,3,2,Progreso contra corrupción,0.01175792669151276
+error_maximo,346,1,3,2,Economía país vs. año anterior,-0.011453074488726305
+error_maximo,346,1,3,2,Distribución ingreso justa,0.010408737386097355
+error_maximo,512,0,2,2,Aprobación gobierno,-0.033099998383065446
+error_maximo,512,0,2,2,País para todos / poderosos,0.016648746851133225
+error_maximo,512,0,2,2,Economía país vs. año anterior,-0.014037796884259301
+error_maximo,512,0,2,2,Apoyo a la democracia,0.00967553381431694
+error_maximo,512,0,2,2,Confianza FF.AA.,0.008976143679517958
+error_maximo,512,0,2,2,Confianza Poder Judicial,0.00773053782781337
+error_maximo,512,0,2,2,Nivel socioeconómico,-0.007047425235232561
+error_maximo,512,0,2,2,Igualdad ante la ley,-0.006793286413788349
+error_maximo,512,0,2,2,Confianza Gobierno,0.006344604091357957
+error_maximo,512,0,2,2,Situación ocupacional,0.005707383554909053
+discordante,94,1,0,1,Expectativa económica país,0.017798841838914906
+discordante,94,1,0,1,Distribución ingreso justa,-0.014781830918155039
+discordante,94,1,0,1,Aprobación gobierno,0.011305334309179151
+discordante,94,1,0,1,Confianza Gobierno,-0.01098184729271641
+discordante,94,1,0,1,País para todos / poderosos,-0.010681193018129182
+discordante,94,1,0,1,Confianza Poder Judicial,-0.010120662761625123
+discordante,94,1,0,1,Economía país vs. año anterior,0.008780463504279076
+discordante,94,1,0,1,Confianza Congreso,-0.007060029877594761
+discordante,94,1,0,1,Expectativa económica personal,0.006143933846940095
+discordante,94,1,0,1,Nivel educativo,-0.004461283287087936
+discordante,577,0,1,1,Situación económica país,-0.04786985899084528
+discordante,577,0,1,1,Aprobación gobierno,0.0416709730735956
+discordante,577,0,1,1,Apoyo a la democracia,-0.03184929282677853
+discordante,577,0,1,1,Igualdad ante la ley,0.029888499592915976
+discordante,577,0,1,1,Confianza Congreso,-0.02596269765125589
+discordante,577,0,1,1,Progreso contra corrupción,-0.024824063853100223
+discordante,577,0,1,1,País para todos / poderosos,-0.021115006374185414
+discordante,577,0,1,1,Economía país vs. año anterior,0.014679451936816182
+discordante,577,0,1,1,Confianza Poder Judicial,-0.01254165000926745
+discordante,577,0,1,1,Confianza Partidos Políticos,-0.01209239124819776
+discordante,404,1,1,0,Situación económica país,-0.04674219083141134
+discordante,404,1,1,0,Aprobación gobierno,0.04184898009668039
+discordante,404,1,1,0,Apoyo a la democracia,-0.039500073775306115
+discordante,404,1,1,0,Confianza Congreso,-0.031817713398451256
+discordante,404,1,1,0,Confianza Gobierno,-0.03067599933339589
+discordante,404,1,1,0,Igualdad ante la ley,0.029415784163382773
+discordante,404,1,1,0,Componente igualitario,0.02880696209780055
+discordante,404,1,1,0,Progreso contra corrupción,-0.019316606631919427
+discordante,404,1,1,0,País para todos / poderosos,-0.01805228828643481
+discordante,404,1,1,0,Economía país vs. año anterior,0.016405454547448337
+discordante,636,0,1,1,Situación económica país,-0.050964617551552176
+discordante,636,0,1,1,Aprobación gobierno,0.04230531666447164
+discordante,636,0,1,1,Apoyo a la democracia,-0.03177753672415761
+discordante,636,0,1,1,Confianza Gobierno,-0.029299810507957585
+discordante,636,0,1,1,Componente igualitario,0.0275688572653373
+discordante,636,0,1,1,Confianza Congreso,-0.025172756584237115
+discordante,636,0,1,1,Progreso contra corrupción,-0.024230253867942052
+discordante,636,0,1,1,Igualdad ante la ley,0.024022946887427427
+discordante,636,0,1,1,Economía país vs. año anterior,0.01845231384298002
+discordante,636,0,1,1,País para todos / poderosos,-0.014013671852232719
+discordante,124,2,0,2,Situación económica país,-0.05259559402926315
+discordante,124,2,0,2,Aprobación gobierno,0.03677322941226984
+discordante,124,2,0,2,Apoyo a la democracia,-0.03347135614035367
+discordante,124,2,0,2,Confianza Gobierno,-0.033204031674862126
+discordante,124,2,0,2,Componente igualitario,0.02454944674616451
+discordante,124,2,0,2,Economía país vs. año anterior,0.020048286233808072
+discordante,124,2,0,2,País para todos / poderosos,-0.019894634758336978
+discordante,124,2,0,2,Progreso contra corrupción,-0.016268935038410676
+discordante,124,2,0,2,Distribución ingreso justa,-0.01441015093294732
+discordante,124,2,0,2,Victimización delictiva,-0.006435852409330391
+discordante,642,0,1,1,Situación económica país,-0.054059448663703026
+discordante,642,0,1,1,Aprobación gobierno,0.04186876264832784
+discordante,642,0,1,1,Apoyo a la democracia,-0.0328903463452458
+discordante,642,0,1,1,Igualdad ante la ley,0.029693994751008392
+discordante,642,0,1,1,País para todos / poderosos,-0.028152615973229933
+discordante,642,0,1,1,Componente igualitario,0.02550093581973735
+discordante,642,0,1,1,Confianza Congreso,-0.025289523575919366
+discordante,642,0,1,1,Progreso contra corrupción,-0.02459541659164413
+discordante,642,0,1,1,Distribución ingreso justa,-0.015654560218403703
+discordante,642,0,1,1,Confianza Partidos Políticos,-0.013011349103217726
+discordante,46,1,1,0,Situación económica país,-0.046436708517877484
+discordante,46,1,1,0,Apoyo a la democracia,-0.04357832816977675
+discordante,46,1,1,0,Aprobación gobierno,0.0372153044563727
+discordante,46,1,1,0,Confianza Congreso,-0.03251808710289446
+discordante,46,1,1,0,Confianza Gobierno,-0.031068772916071637
+discordante,46,1,1,0,Componente igualitario,0.02448841774016661
+discordante,46,1,1,0,Economía país vs. año anterior,0.020194303071624044
+discordante,46,1,1,0,Progreso contra corrupción,-0.01973414435401059
+discordante,46,1,1,0,Democracia electoral,-0.012657863092315466
+discordante,46,1,1,0,País para todos / poderosos,-0.0102013746855062
+discordante,324,0,1,1,Situación económica país,-0.053380380950545855
+discordante,324,0,1,1,Apoyo a la democracia,-0.039423298622273145
+discordante,324,0,1,1,Aprobación gobierno,0.03856785032166754
+discordante,324,0,1,1,Confianza Gobierno,-0.027430332512776868
+discordante,324,0,1,1,Igualdad ante la ley,0.023779328891132
+discordante,324,0,1,1,Componente igualitario,0.02359836811722638
+discordante,324,0,1,1,Confianza Congreso,-0.020771841058152073
+discordante,324,0,1,1,Confianza Poder Judicial,-0.017093522187825057
+discordante,324,0,1,1,País para todos / poderosos,-0.015072322092769482
+discordante,324,0,1,1,Interés en política,0.009326576143230762
+discordante,79,1,1,0,Situación económica país,-0.04785746966047297
+discordante,79,1,1,0,Aprobación gobierno,0.03571399023705215
+discordante,79,1,1,0,Confianza Gobierno,-0.034543041859715094
+discordante,79,1,1,0,Apoyo a la democracia,-0.03449846339351593
+discordante,79,1,1,0,Componente igualitario,0.026419201625424788
+discordante,79,1,1,0,Igualdad ante la ley,0.025979719613002605
+discordante,79,1,1,0,Confianza Congreso,-0.025933559675403187
+discordante,79,1,1,0,País para todos / poderosos,-0.02177620635021558
+discordante,79,1,1,0,Democracia electoral,-0.011953257296286036
+discordante,79,1,1,0,Confianza Partidos Políticos,-0.009721836588835879
+discordante,62,2,1,1,Situación económica país,-0.04857757119876083
+discordante,62,2,1,1,Apoyo a la democracia,-0.037172910989997664
+discordante,62,2,1,1,Aprobación gobierno,0.034027117005773586
+discordante,62,2,1,1,Componente igualitario,0.029985467364257522
+discordante,62,2,1,1,Confianza Congreso,-0.02687523854793908
+discordante,62,2,1,1,Igualdad ante la ley,0.02594682856673756
+discordante,62,2,1,1,País para todos / poderosos,-0.0156027746016155
+discordante,62,2,1,1,Democracia electoral,-0.012292064587337986
+discordante,62,2,1,1,Sexo,-0.00792640050138423
+discordante,62,2,1,1,Confianza Poder Judicial,-0.005333616844510439
