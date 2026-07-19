@@ -44,7 +44,9 @@ except ImportError:
 
 
 def entrenar_olo(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, estrategia: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "ordinal_4clases",
+    cfg: dict = None,
 ) -> Tuple:
     nombre   = "OLO"
     ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
@@ -96,7 +98,9 @@ def entrenar_olo(
 
 
 def entrenar_xgboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, estrategia: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "ordinal_4clases",
+    cfg: dict = None,
 ) -> Tuple:
     nombre  = "XGBoost"
     ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
@@ -155,7 +159,9 @@ def entrenar_xgboost(
 
 
 def entrenar_catboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, estrategia: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "ordinal_4clases",
+    cfg: dict = None,
 ) -> Tuple:
     nombre  = "CatBoost"
     ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
@@ -222,8 +228,8 @@ def entrenar_catboost(
 
 def entrenar_lightgbm(
     X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
-    pesos_clase: dict, estrategia: str, cfg: dict,
-    
+    pesos_clase: dict, estrategia: str,
+    variante_target: str = "ordinal_4clases", cfg: dict = None,
 ) -> Tuple:
     nombre  = "LightGBM"
     ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
@@ -304,7 +310,8 @@ def entrenar_lightgbm(
 
 def entrenar_tabnet(
     X_tr_sc, y_tr, X_val_sc, y_val, X_te_sc, y_te,
-    estrategia: str, cat_idxs: list, cat_dims: list, cfg: dict,
+    estrategia: str, cat_idxs: list, cat_dims: list,
+    variante_target: str = "ordinal_4clases", cfg: dict = None,
 ) -> Tuple:
     nombre  = "TabNet"
     ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
