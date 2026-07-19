@@ -1,0 +1,21 @@
+ranking,variable,etiqueta,bloque,shap_medio,convergencia,Easton,Norris,Lewis-Beck & Stegmaier,Devine
+1,D_001_001,Situación económica país,Evaluación económica,0.263,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+2,A_001_001,Apoyo a la democracia,Percepción política,0.2101,Convergencia,~ Parcial,✓ Converge,✓ Converge,✓ Converge
+3,B_006_061,Aprobación gobierno,Percepción política,0.1792,Convergencia,~ Parcial,✓ Converge,✓ Converge,✓ Converge
+4,H_002_031,Confianza Gobierno,Confianza institucional,0.172,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+5,H_002_011,Confianza Congreso,Confianza institucional,0.1208,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+6,v2x_egal,Componente igualitario,Contexto democrático,0.103,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
+7,B_001_101,País para todos / poderosos,Percepción política,0.0987,Convergencia,~ Parcial,✓ Converge,✓ Converge,✓ Converge
+8,D_001_041,Expectativa económica país,Evaluación económica,0.0908,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+9,H_002_041,Confianza Poder Judicial,Confianza institucional,0.0896,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+10,I_001_001,Victimización delictiva,Corrupción y seguridad,0.067,Divergencia,✗ Diverge,~ Parcial,✗ Diverge,~ Parcial
+11,C_006_003_011,Distribución ingreso justa,Evaluación económica,0.065,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+12,H_002_111,Confianza Policía,Confianza institucional,0.0493,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+13,v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.0484,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
+14,G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.0482,Divergencia,✗ Diverge,~ Parcial,✗ Diverge,~ Parcial
+15,D_001_021,Economía país vs. año anterior,Evaluación económica,0.0402,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+16,v2xcl_rol,Igualdad ante la ley,Contexto democrático,0.0401,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
+17,H_002_241,Confianza Partidos Políticos,Confianza institucional,0.0386,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+18,H_002_161,Confianza FF.AA.,Confianza institucional,0.0336,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+19,D_001_091,Expectativa económica personal,Evaluación económica,0.0295,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+20,v2x_polyarchy,Democracia electoral,Contexto democrático,0.0252,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
