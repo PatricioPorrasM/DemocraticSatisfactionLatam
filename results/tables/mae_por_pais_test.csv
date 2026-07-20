@@ -1,241 +1,241 @@
 modelo,estrategia_balanceo,pais,subregion,mae_ordinal,n
-OLO,pesos_clase,Argentina,Cono Sur,0.9047619047619048,42
-OLO,pesos_clase,Bolivia,Región Andina,0.7692307692307693,39
-OLO,pesos_clase,Brasil,Brasil,0.6122448979591837,49
-OLO,pesos_clase,Chile,Cono Sur,0.48717948717948717,39
-OLO,pesos_clase,Colombia,Región Andina,0.7,40
-OLO,pesos_clase,Costa Rica,Centroamérica,0.8717948717948718,39
-OLO,pesos_clase,República Dominicana,México y Caribe,0.8409090909090909,44
-OLO,pesos_clase,Ecuador,Región Andina,0.325,40
-OLO,pesos_clase,Guatemala,Centroamérica,0.5813953488372093,43
-OLO,pesos_clase,Honduras,Centroamérica,1.0810810810810811,37
-OLO,pesos_clase,México,México y Caribe,0.8095238095238095,42
-OLO,pesos_clase,Panamá,Centroamérica,0.9574468085106383,47
-OLO,pesos_clase,Perú,Cono Sur,0.7714285714285715,35
-OLO,pesos_clase,Paraguay,Cono Sur,0.6744186046511628,43
-OLO,pesos_clase,El Salvador,Centroamérica,0.7428571428571429,35
-OLO,pesos_clase,Uruguay,Cono Sur,0.5853658536585366,41
-XGBoost,pesos_clase,Argentina,Cono Sur,0.6190476190476191,42
-XGBoost,pesos_clase,Bolivia,Región Andina,0.46153846153846156,39
-XGBoost,pesos_clase,Brasil,Brasil,0.40816326530612246,49
-XGBoost,pesos_clase,Chile,Cono Sur,0.46153846153846156,39
-XGBoost,pesos_clase,Colombia,Región Andina,0.475,40
-XGBoost,pesos_clase,Costa Rica,Centroamérica,0.8974358974358975,39
-XGBoost,pesos_clase,República Dominicana,México y Caribe,0.5681818181818182,44
-XGBoost,pesos_clase,Ecuador,Región Andina,0.325,40
-XGBoost,pesos_clase,Guatemala,Centroamérica,0.7441860465116279,43
-XGBoost,pesos_clase,Honduras,Centroamérica,0.8108108108108109,37
-XGBoost,pesos_clase,México,México y Caribe,0.5,42
-XGBoost,pesos_clase,Panamá,Centroamérica,0.723404255319149,47
-XGBoost,pesos_clase,Perú,Cono Sur,0.34285714285714286,35
-XGBoost,pesos_clase,Paraguay,Cono Sur,0.5813953488372093,43
-XGBoost,pesos_clase,El Salvador,Centroamérica,0.6571428571428571,35
-XGBoost,pesos_clase,Uruguay,Cono Sur,0.5853658536585366,41
-CatBoost,pesos_clase,Argentina,Cono Sur,0.6666666666666666,42
-CatBoost,pesos_clase,Bolivia,Región Andina,0.48717948717948717,39
-CatBoost,pesos_clase,Brasil,Brasil,0.4897959183673469,49
-CatBoost,pesos_clase,Chile,Cono Sur,0.4358974358974359,39
-CatBoost,pesos_clase,Colombia,Región Andina,0.475,40
-CatBoost,pesos_clase,Costa Rica,Centroamérica,0.9487179487179487,39
-CatBoost,pesos_clase,República Dominicana,México y Caribe,0.6818181818181818,44
-CatBoost,pesos_clase,Ecuador,Región Andina,0.35,40
-CatBoost,pesos_clase,Guatemala,Centroamérica,0.7441860465116279,43
-CatBoost,pesos_clase,Honduras,Centroamérica,0.972972972972973,37
-CatBoost,pesos_clase,México,México y Caribe,0.6428571428571429,42
-CatBoost,pesos_clase,Panamá,Centroamérica,0.7659574468085106,47
-CatBoost,pesos_clase,Perú,Cono Sur,0.6571428571428571,35
-CatBoost,pesos_clase,Paraguay,Cono Sur,0.627906976744186,43
-CatBoost,pesos_clase,El Salvador,Centroamérica,0.5714285714285714,35
-CatBoost,pesos_clase,Uruguay,Cono Sur,0.6341463414634146,41
-LightGBM,pesos_clase,Argentina,Cono Sur,0.6666666666666666,42
-LightGBM,pesos_clase,Bolivia,Región Andina,0.5897435897435898,39
-LightGBM,pesos_clase,Brasil,Brasil,0.5306122448979592,49
-LightGBM,pesos_clase,Chile,Cono Sur,0.5128205128205128,39
-LightGBM,pesos_clase,Colombia,Región Andina,0.525,40
-LightGBM,pesos_clase,Costa Rica,Centroamérica,0.9743589743589743,39
-LightGBM,pesos_clase,República Dominicana,México y Caribe,0.7727272727272727,44
-LightGBM,pesos_clase,Ecuador,Región Andina,0.375,40
-LightGBM,pesos_clase,Guatemala,Centroamérica,0.7209302325581395,43
-LightGBM,pesos_clase,Honduras,Centroamérica,0.972972972972973,37
-LightGBM,pesos_clase,México,México y Caribe,0.5714285714285714,42
-LightGBM,pesos_clase,Panamá,Centroamérica,0.8723404255319149,47
-LightGBM,pesos_clase,Perú,Cono Sur,0.6,35
-LightGBM,pesos_clase,Paraguay,Cono Sur,0.6744186046511628,43
-LightGBM,pesos_clase,El Salvador,Centroamérica,0.5428571428571428,35
-LightGBM,pesos_clase,Uruguay,Cono Sur,0.5853658536585366,41
-TabNet,pesos_clase,Argentina,Cono Sur,0.7619047619047619,42
-TabNet,pesos_clase,Bolivia,Región Andina,0.6923076923076923,39
-TabNet,pesos_clase,Brasil,Brasil,0.5714285714285714,49
-TabNet,pesos_clase,Chile,Cono Sur,0.6410256410256411,39
-TabNet,pesos_clase,Colombia,Región Andina,0.475,40
-TabNet,pesos_clase,Costa Rica,Centroamérica,0.9230769230769231,39
-TabNet,pesos_clase,República Dominicana,México y Caribe,0.7954545454545454,44
-TabNet,pesos_clase,Ecuador,Región Andina,0.525,40
-TabNet,pesos_clase,Guatemala,Centroamérica,0.813953488372093,43
-TabNet,pesos_clase,Honduras,Centroamérica,0.8378378378378378,37
-TabNet,pesos_clase,México,México y Caribe,0.6190476190476191,42
-TabNet,pesos_clase,Panamá,Centroamérica,0.8297872340425532,47
-TabNet,pesos_clase,Perú,Cono Sur,0.4857142857142857,35
-TabNet,pesos_clase,Paraguay,Cono Sur,0.5348837209302325,43
-TabNet,pesos_clase,El Salvador,Centroamérica,0.6571428571428571,35
-TabNet,pesos_clase,Uruguay,Cono Sur,0.6829268292682927,41
-OLO,sin_balanceo,Argentina,Cono Sur,0.5714285714285714,42
-OLO,sin_balanceo,Bolivia,Región Andina,0.4358974358974359,39
-OLO,sin_balanceo,Brasil,Brasil,0.40816326530612246,49
-OLO,sin_balanceo,Chile,Cono Sur,0.46153846153846156,39
-OLO,sin_balanceo,Colombia,Región Andina,0.45,40
-OLO,sin_balanceo,Costa Rica,Centroamérica,0.7435897435897436,39
-OLO,sin_balanceo,República Dominicana,México y Caribe,0.7045454545454546,44
-OLO,sin_balanceo,Ecuador,Región Andina,0.3,40
-OLO,sin_balanceo,Guatemala,Centroamérica,0.6976744186046512,43
-OLO,sin_balanceo,Honduras,Centroamérica,0.7567567567567568,37
-OLO,sin_balanceo,México,México y Caribe,0.4523809523809524,42
-OLO,sin_balanceo,Panamá,Centroamérica,0.6808510638297872,47
-OLO,sin_balanceo,Perú,Cono Sur,0.42857142857142855,35
-OLO,sin_balanceo,Paraguay,Cono Sur,0.5581395348837209,43
-OLO,sin_balanceo,El Salvador,Centroamérica,0.8,35
-OLO,sin_balanceo,Uruguay,Cono Sur,0.4634146341463415,41
-XGBoost,sin_balanceo,Argentina,Cono Sur,0.5714285714285714,42
-XGBoost,sin_balanceo,Bolivia,Región Andina,0.3076923076923077,39
-XGBoost,sin_balanceo,Brasil,Brasil,0.42857142857142855,49
-XGBoost,sin_balanceo,Chile,Cono Sur,0.5384615384615384,39
-XGBoost,sin_balanceo,Colombia,Región Andina,0.4,40
-XGBoost,sin_balanceo,Costa Rica,Centroamérica,0.6666666666666666,39
-XGBoost,sin_balanceo,República Dominicana,México y Caribe,0.5681818181818182,44
-XGBoost,sin_balanceo,Ecuador,Región Andina,0.425,40
-XGBoost,sin_balanceo,Guatemala,Centroamérica,0.7209302325581395,43
-XGBoost,sin_balanceo,Honduras,Centroamérica,0.6486486486486487,37
-XGBoost,sin_balanceo,México,México y Caribe,0.42857142857142855,42
-XGBoost,sin_balanceo,Panamá,Centroamérica,0.6595744680851063,47
-XGBoost,sin_balanceo,Perú,Cono Sur,0.2571428571428571,35
-XGBoost,sin_balanceo,Paraguay,Cono Sur,0.6046511627906976,43
-XGBoost,sin_balanceo,El Salvador,Centroamérica,0.6857142857142857,35
-XGBoost,sin_balanceo,Uruguay,Cono Sur,0.5121951219512195,41
-CatBoost,sin_balanceo,Argentina,Cono Sur,0.5714285714285714,42
-CatBoost,sin_balanceo,Bolivia,Región Andina,0.3076923076923077,39
-CatBoost,sin_balanceo,Brasil,Brasil,0.40816326530612246,49
-CatBoost,sin_balanceo,Chile,Cono Sur,0.48717948717948717,39
-CatBoost,sin_balanceo,Colombia,Región Andina,0.45,40
-CatBoost,sin_balanceo,Costa Rica,Centroamérica,0.6666666666666666,39
-CatBoost,sin_balanceo,República Dominicana,México y Caribe,0.6363636363636364,44
-CatBoost,sin_balanceo,Ecuador,Región Andina,0.35,40
-CatBoost,sin_balanceo,Guatemala,Centroamérica,0.5813953488372093,43
-CatBoost,sin_balanceo,Honduras,Centroamérica,0.6486486486486487,37
-CatBoost,sin_balanceo,México,México y Caribe,0.4523809523809524,42
-CatBoost,sin_balanceo,Panamá,Centroamérica,0.6170212765957447,47
-CatBoost,sin_balanceo,Perú,Cono Sur,0.2857142857142857,35
-CatBoost,sin_balanceo,Paraguay,Cono Sur,0.46511627906976744,43
-CatBoost,sin_balanceo,El Salvador,Centroamérica,0.6857142857142857,35
-CatBoost,sin_balanceo,Uruguay,Cono Sur,0.43902439024390244,41
-LightGBM,sin_balanceo,Argentina,Cono Sur,0.6190476190476191,42
-LightGBM,sin_balanceo,Bolivia,Región Andina,0.358974358974359,39
-LightGBM,sin_balanceo,Brasil,Brasil,0.4489795918367347,49
-LightGBM,sin_balanceo,Chile,Cono Sur,0.48717948717948717,39
-LightGBM,sin_balanceo,Colombia,Región Andina,0.475,40
-LightGBM,sin_balanceo,Costa Rica,Centroamérica,0.717948717948718,39
-LightGBM,sin_balanceo,República Dominicana,México y Caribe,0.5681818181818182,44
-LightGBM,sin_balanceo,Ecuador,Región Andina,0.35,40
-LightGBM,sin_balanceo,Guatemala,Centroamérica,0.627906976744186,43
-LightGBM,sin_balanceo,Honduras,Centroamérica,0.5945945945945946,37
-LightGBM,sin_balanceo,México,México y Caribe,0.38095238095238093,42
-LightGBM,sin_balanceo,Panamá,Centroamérica,0.5957446808510638,47
-LightGBM,sin_balanceo,Perú,Cono Sur,0.2857142857142857,35
-LightGBM,sin_balanceo,Paraguay,Cono Sur,0.5581395348837209,43
-LightGBM,sin_balanceo,El Salvador,Centroamérica,0.6571428571428571,35
-LightGBM,sin_balanceo,Uruguay,Cono Sur,0.4878048780487805,41
-TabNet,sin_balanceo,Argentina,Cono Sur,0.7619047619047619,42
-TabNet,sin_balanceo,Bolivia,Región Andina,0.6923076923076923,39
-TabNet,sin_balanceo,Brasil,Brasil,0.5714285714285714,49
-TabNet,sin_balanceo,Chile,Cono Sur,0.6410256410256411,39
-TabNet,sin_balanceo,Colombia,Región Andina,0.475,40
-TabNet,sin_balanceo,Costa Rica,Centroamérica,0.9230769230769231,39
-TabNet,sin_balanceo,República Dominicana,México y Caribe,0.7954545454545454,44
-TabNet,sin_balanceo,Ecuador,Región Andina,0.525,40
-TabNet,sin_balanceo,Guatemala,Centroamérica,0.813953488372093,43
-TabNet,sin_balanceo,Honduras,Centroamérica,0.8378378378378378,37
-TabNet,sin_balanceo,México,México y Caribe,0.6190476190476191,42
-TabNet,sin_balanceo,Panamá,Centroamérica,0.8297872340425532,47
-TabNet,sin_balanceo,Perú,Cono Sur,0.4857142857142857,35
-TabNet,sin_balanceo,Paraguay,Cono Sur,0.5348837209302325,43
-TabNet,sin_balanceo,El Salvador,Centroamérica,0.6571428571428571,35
-TabNet,sin_balanceo,Uruguay,Cono Sur,0.6829268292682927,41
-OLO,smotenc,Argentina,Cono Sur,0.8809523809523809,42
-OLO,smotenc,Bolivia,Región Andina,0.8205128205128205,39
-OLO,smotenc,Brasil,Brasil,0.5918367346938775,49
-OLO,smotenc,Chile,Cono Sur,0.46153846153846156,39
-OLO,smotenc,Colombia,Región Andina,0.725,40
-OLO,smotenc,Costa Rica,Centroamérica,0.9230769230769231,39
-OLO,smotenc,República Dominicana,México y Caribe,0.9090909090909091,44
-OLO,smotenc,Ecuador,Región Andina,0.375,40
-OLO,smotenc,Guatemala,Centroamérica,0.627906976744186,43
-OLO,smotenc,Honduras,Centroamérica,1.0,37
-OLO,smotenc,México,México y Caribe,0.9523809523809523,42
-OLO,smotenc,Panamá,Centroamérica,1.0212765957446808,47
-OLO,smotenc,Perú,Cono Sur,0.8,35
-OLO,smotenc,Paraguay,Cono Sur,0.627906976744186,43
-OLO,smotenc,El Salvador,Centroamérica,0.6857142857142857,35
-OLO,smotenc,Uruguay,Cono Sur,0.7073170731707317,41
-XGBoost,smotenc,Argentina,Cono Sur,0.6190476190476191,42
-XGBoost,smotenc,Bolivia,Región Andina,0.38461538461538464,39
-XGBoost,smotenc,Brasil,Brasil,0.46938775510204084,49
-XGBoost,smotenc,Chile,Cono Sur,0.4358974358974359,39
-XGBoost,smotenc,Colombia,Región Andina,0.45,40
-XGBoost,smotenc,Costa Rica,Centroamérica,0.6666666666666666,39
-XGBoost,smotenc,República Dominicana,México y Caribe,0.5454545454545454,44
-XGBoost,smotenc,Ecuador,Región Andina,0.375,40
-XGBoost,smotenc,Guatemala,Centroamérica,0.6744186046511628,43
-XGBoost,smotenc,Honduras,Centroamérica,0.7567567567567568,37
-XGBoost,smotenc,México,México y Caribe,0.47619047619047616,42
-XGBoost,smotenc,Panamá,Centroamérica,0.5106382978723404,47
-XGBoost,smotenc,Perú,Cono Sur,0.34285714285714286,35
-XGBoost,smotenc,Paraguay,Cono Sur,0.46511627906976744,43
-XGBoost,smotenc,El Salvador,Centroamérica,0.6857142857142857,35
-XGBoost,smotenc,Uruguay,Cono Sur,0.5121951219512195,41
-CatBoost,smotenc,Argentina,Cono Sur,0.5476190476190477,42
-CatBoost,smotenc,Bolivia,Región Andina,0.3076923076923077,39
-CatBoost,smotenc,Brasil,Brasil,0.46938775510204084,49
-CatBoost,smotenc,Chile,Cono Sur,0.48717948717948717,39
-CatBoost,smotenc,Colombia,Región Andina,0.425,40
-CatBoost,smotenc,Costa Rica,Centroamérica,0.7692307692307693,39
-CatBoost,smotenc,República Dominicana,México y Caribe,0.6590909090909091,44
-CatBoost,smotenc,Ecuador,Región Andina,0.325,40
-CatBoost,smotenc,Guatemala,Centroamérica,0.5813953488372093,43
-CatBoost,smotenc,Honduras,Centroamérica,0.6486486486486487,37
-CatBoost,smotenc,México,México y Caribe,0.42857142857142855,42
-CatBoost,smotenc,Panamá,Centroamérica,0.6595744680851063,47
-CatBoost,smotenc,Perú,Cono Sur,0.4,35
-CatBoost,smotenc,Paraguay,Cono Sur,0.46511627906976744,43
-CatBoost,smotenc,El Salvador,Centroamérica,0.6571428571428571,35
-CatBoost,smotenc,Uruguay,Cono Sur,0.4634146341463415,41
-LightGBM,smotenc,Argentina,Cono Sur,0.5476190476190477,42
-LightGBM,smotenc,Bolivia,Región Andina,0.38461538461538464,39
-LightGBM,smotenc,Brasil,Brasil,0.4489795918367347,49
-LightGBM,smotenc,Chile,Cono Sur,0.5128205128205128,39
-LightGBM,smotenc,Colombia,Región Andina,0.45,40
-LightGBM,smotenc,Costa Rica,Centroamérica,0.7948717948717948,39
-LightGBM,smotenc,República Dominicana,México y Caribe,0.5,44
-LightGBM,smotenc,Ecuador,Región Andina,0.4,40
-LightGBM,smotenc,Guatemala,Centroamérica,0.6511627906976745,43
-LightGBM,smotenc,Honduras,Centroamérica,0.7297297297297297,37
-LightGBM,smotenc,México,México y Caribe,0.47619047619047616,42
-LightGBM,smotenc,Panamá,Centroamérica,0.574468085106383,47
-LightGBM,smotenc,Perú,Cono Sur,0.4,35
-LightGBM,smotenc,Paraguay,Cono Sur,0.5348837209302325,43
-LightGBM,smotenc,El Salvador,Centroamérica,0.7714285714285715,35
-LightGBM,smotenc,Uruguay,Cono Sur,0.4634146341463415,41
-TabNet,smotenc,Argentina,Cono Sur,0.8571428571428571,42
-TabNet,smotenc,Bolivia,Región Andina,0.717948717948718,39
-TabNet,smotenc,Brasil,Brasil,0.6938775510204082,49
-TabNet,smotenc,Chile,Cono Sur,0.5897435897435898,39
-TabNet,smotenc,Colombia,Región Andina,0.825,40
-TabNet,smotenc,Costa Rica,Centroamérica,1.0,39
-TabNet,smotenc,República Dominicana,México y Caribe,0.7045454545454546,44
-TabNet,smotenc,Ecuador,Región Andina,0.75,40
-TabNet,smotenc,Guatemala,Centroamérica,0.813953488372093,43
-TabNet,smotenc,Honduras,Centroamérica,1.027027027027027,37
-TabNet,smotenc,México,México y Caribe,0.7380952380952381,42
-TabNet,smotenc,Panamá,Centroamérica,1.0425531914893618,47
-TabNet,smotenc,Perú,Cono Sur,0.8,35
-TabNet,smotenc,Paraguay,Cono Sur,0.6511627906976745,43
-TabNet,smotenc,El Salvador,Centroamérica,0.9142857142857143,35
-TabNet,smotenc,Uruguay,Cono Sur,0.7560975609756098,41
+OLO,pesos_clase,Argentina,Cono Sur,0.8682203389830508,2360
+OLO,pesos_clase,Bolivia,Región Andina,0.765496315561335,2307
+OLO,pesos_clase,Brasil,Brasil,0.7211497211497212,2331
+OLO,pesos_clase,Colombia,Región Andina,0.6804607508532423,2344
+OLO,pesos_clase,Costa Rica,Centroamérica,0.8490276356192425,1954
+OLO,pesos_clase,Chile,Cono Sur,0.6009349766255844,2353
+OLO,pesos_clase,República Dominicana,México y Caribe,0.7782874617737003,1962
+OLO,pesos_clase,Ecuador,Región Andina,0.5709487825356843,2382
+OLO,pesos_clase,El Salvador,Centroamérica,0.7567427385892116,1928
+OLO,pesos_clase,Guatemala,Centroamérica,0.7538137822198843,1901
+OLO,pesos_clase,Honduras,Centroamérica,0.7083985393844549,1917
+OLO,pesos_clase,México,México y Caribe,0.8498293515358362,2344
+OLO,pesos_clase,Panamá,Centroamérica,0.7902813299232737,1955
+OLO,pesos_clase,Paraguay,Cono Sur,0.6328091797705058,2353
+OLO,pesos_clase,Perú,Cono Sur,0.5713073005093379,2356
+OLO,pesos_clase,Uruguay,Cono Sur,0.7270004278990159,2337
+XGBoost,pesos_clase,Argentina,Cono Sur,0.7415254237288136,2360
+XGBoost,pesos_clase,Bolivia,Región Andina,0.5626354573038578,2307
+XGBoost,pesos_clase,Brasil,Brasil,0.574002574002574,2331
+XGBoost,pesos_clase,Colombia,Región Andina,0.6045221843003413,2344
+XGBoost,pesos_clase,Costa Rica,Centroamérica,0.9042988741044012,1954
+XGBoost,pesos_clase,Chile,Cono Sur,0.5486612834679133,2353
+XGBoost,pesos_clase,República Dominicana,México y Caribe,0.7482161060142711,1962
+XGBoost,pesos_clase,Ecuador,Región Andina,0.5398824517212426,2382
+XGBoost,pesos_clase,El Salvador,Centroamérica,0.645746887966805,1928
+XGBoost,pesos_clase,Guatemala,Centroamérica,0.6822724881641241,1901
+XGBoost,pesos_clase,Honduras,Centroamérica,0.6802295252999478,1917
+XGBoost,pesos_clase,México,México y Caribe,0.5802047781569966,2344
+XGBoost,pesos_clase,Panamá,Centroamérica,0.7626598465473146,1955
+XGBoost,pesos_clase,Paraguay,Cono Sur,0.6485337866553336,2353
+XGBoost,pesos_clase,Perú,Cono Sur,0.5089134125636672,2356
+XGBoost,pesos_clase,Uruguay,Cono Sur,0.5768078733418913,2337
+CatBoost,pesos_clase,Argentina,Cono Sur,0.7156779661016949,2360
+CatBoost,pesos_clase,Bolivia,Región Andina,0.5652362375379281,2307
+CatBoost,pesos_clase,Brasil,Brasil,0.5868725868725869,2331
+CatBoost,pesos_clase,Colombia,Región Andina,0.5951365187713311,2344
+CatBoost,pesos_clase,Costa Rica,Centroamérica,0.8725690890481065,1954
+CatBoost,pesos_clase,Chile,Cono Sur,0.5240118997025074,2353
+CatBoost,pesos_clase,República Dominicana,México y Caribe,0.7380224260958206,1962
+CatBoost,pesos_clase,Ecuador,Región Andina,0.5356842989084802,2382
+CatBoost,pesos_clase,El Salvador,Centroamérica,0.6234439834024896,1928
+CatBoost,pesos_clase,Guatemala,Centroamérica,0.6854287217254077,1901
+CatBoost,pesos_clase,Honduras,Centroamérica,0.6797078768909754,1917
+CatBoost,pesos_clase,México,México y Caribe,0.5580204778156996,2344
+CatBoost,pesos_clase,Panamá,Centroamérica,0.7345268542199489,1955
+CatBoost,pesos_clase,Paraguay,Cono Sur,0.6379090522736932,2353
+CatBoost,pesos_clase,Perú,Cono Sur,0.5118845500848896,2356
+CatBoost,pesos_clase,Uruguay,Cono Sur,0.6050492083868207,2337
+LightGBM,pesos_clase,Argentina,Cono Sur,0.7402542372881356,2360
+LightGBM,pesos_clase,Bolivia,Región Andina,0.5587342869527525,2307
+LightGBM,pesos_clase,Brasil,Brasil,0.5598455598455598,2331
+LightGBM,pesos_clase,Colombia,Región Andina,0.6045221843003413,2344
+LightGBM,pesos_clase,Costa Rica,Centroamérica,0.9012282497441146,1954
+LightGBM,pesos_clase,Chile,Cono Sur,0.531236719082023,2353
+LightGBM,pesos_clase,República Dominicana,México y Caribe,0.7319062181447502,1962
+LightGBM,pesos_clase,Ecuador,Región Andina,0.5470193115029387,2382
+LightGBM,pesos_clase,El Salvador,Centroamérica,0.6504149377593361,1928
+LightGBM,pesos_clase,Guatemala,Centroamérica,0.6843766438716465,1901
+LightGBM,pesos_clase,Honduras,Centroamérica,0.6624934793948879,1917
+LightGBM,pesos_clase,México,México y Caribe,0.5691126279863481,2344
+LightGBM,pesos_clase,Panamá,Centroamérica,0.7335038363171356,1955
+LightGBM,pesos_clase,Paraguay,Cono Sur,0.6447088822779431,2353
+LightGBM,pesos_clase,Perú,Cono Sur,0.5,2356
+LightGBM,pesos_clase,Uruguay,Cono Sur,0.5964912280701754,2337
+TabNet,pesos_clase,Argentina,Cono Sur,0.7610169491525424,2360
+TabNet,pesos_clase,Bolivia,Región Andina,0.5548331166016471,2307
+TabNet,pesos_clase,Brasil,Brasil,0.6203346203346203,2331
+TabNet,pesos_clase,Colombia,Región Andina,0.6629692832764505,2344
+TabNet,pesos_clase,Costa Rica,Centroamérica,0.8679631525076765,1954
+TabNet,pesos_clase,Chile,Cono Sur,0.5393115172120697,2353
+TabNet,pesos_clase,República Dominicana,México y Caribe,0.8165137614678899,1962
+TabNet,pesos_clase,Ecuador,Región Andina,0.6544920235096557,2382
+TabNet,pesos_clase,El Salvador,Centroamérica,0.7105809128630706,1928
+TabNet,pesos_clase,Guatemala,Centroamérica,0.7622304050499737,1901
+TabNet,pesos_clase,Honduras,Centroamérica,0.7454355764214919,1917
+TabNet,pesos_clase,México,México y Caribe,0.640358361774744,2344
+TabNet,pesos_clase,Panamá,Centroamérica,0.8485933503836317,1955
+TabNet,pesos_clase,Paraguay,Cono Sur,0.7135571610709732,2353
+TabNet,pesos_clase,Perú,Cono Sur,0.5585738539898133,2356
+TabNet,pesos_clase,Uruguay,Cono Sur,0.6123234916559692,2337
+OLO,sin_balanceo,Argentina,Cono Sur,0.5826271186440678,2360
+OLO,sin_balanceo,Bolivia,Región Andina,0.5153879497182489,2307
+OLO,sin_balanceo,Brasil,Brasil,0.4954954954954955,2331
+OLO,sin_balanceo,Colombia,Región Andina,0.5046928327645052,2344
+OLO,sin_balanceo,Costa Rica,Centroamérica,0.6571136131013307,1954
+OLO,sin_balanceo,Chile,Cono Sur,0.4653633659158521,2353
+OLO,sin_balanceo,República Dominicana,México y Caribe,0.654434250764526,1962
+OLO,sin_balanceo,Ecuador,Región Andina,0.4882451721242653,2382
+OLO,sin_balanceo,El Salvador,Centroamérica,0.6804979253112033,1928
+OLO,sin_balanceo,Guatemala,Centroamérica,0.6443976854287218,1901
+OLO,sin_balanceo,Honduras,Centroamérica,0.6322378716744914,1917
+OLO,sin_balanceo,México,México y Caribe,0.4893344709897611,2344
+OLO,sin_balanceo,Panamá,Centroamérica,0.6209718670076726,1955
+OLO,sin_balanceo,Paraguay,Cono Sur,0.5537611559711008,2353
+OLO,sin_balanceo,Perú,Cono Sur,0.4596774193548387,2356
+OLO,sin_balanceo,Uruguay,Cono Sur,0.6067608044501498,2337
+XGBoost,sin_balanceo,Argentina,Cono Sur,0.6309322033898305,2360
+XGBoost,sin_balanceo,Bolivia,Región Andina,0.4716081491114001,2307
+XGBoost,sin_balanceo,Brasil,Brasil,0.4706134706134706,2331
+XGBoost,sin_balanceo,Colombia,Región Andina,0.5017064846416383,2344
+XGBoost,sin_balanceo,Costa Rica,Centroamérica,0.6479017400204709,1954
+XGBoost,sin_balanceo,Chile,Cono Sur,0.45813854653633657,2353
+XGBoost,sin_balanceo,República Dominicana,México y Caribe,0.6661569826707442,1962
+XGBoost,sin_balanceo,Ecuador,Región Andina,0.4672544080604534,2382
+XGBoost,sin_balanceo,El Salvador,Centroamérica,0.633298755186722,1928
+XGBoost,sin_balanceo,Guatemala,Centroamérica,0.6065228826933193,1901
+XGBoost,sin_balanceo,Honduras,Centroamérica,0.6009389671361502,1917
+XGBoost,sin_balanceo,México,México y Caribe,0.48208191126279865,2344
+XGBoost,sin_balanceo,Panamá,Centroamérica,0.5979539641943734,1955
+XGBoost,sin_balanceo,Paraguay,Cono Sur,0.5541861453463663,2353
+XGBoost,sin_balanceo,Perú,Cono Sur,0.4350594227504245,2356
+XGBoost,sin_balanceo,Uruguay,Cono Sur,0.5780915703893881,2337
+CatBoost,sin_balanceo,Argentina,Cono Sur,0.5995762711864406,2360
+CatBoost,sin_balanceo,Bolivia,Región Andina,0.4798439531859558,2307
+CatBoost,sin_balanceo,Brasil,Brasil,0.46589446589446587,2331
+CatBoost,sin_balanceo,Colombia,Región Andina,0.4927474402730375,2344
+CatBoost,sin_balanceo,Costa Rica,Centroamérica,0.6514841351074718,1954
+CatBoost,sin_balanceo,Chile,Cono Sur,0.46281342966425837,2353
+CatBoost,sin_balanceo,República Dominicana,México y Caribe,0.6569826707441386,1962
+CatBoost,sin_balanceo,Ecuador,Región Andina,0.4714525608732158,2382
+CatBoost,sin_balanceo,El Salvador,Centroamérica,0.6224066390041494,1928
+CatBoost,sin_balanceo,Guatemala,Centroamérica,0.6159915833771699,1901
+CatBoost,sin_balanceo,Honduras,Centroamérica,0.6087636932707355,1917
+CatBoost,sin_balanceo,México,México y Caribe,0.4825085324232082,2344
+CatBoost,sin_balanceo,Panamá,Centroamérica,0.6040920716112532,1955
+CatBoost,sin_balanceo,Paraguay,Cono Sur,0.5520611984700382,2353
+CatBoost,sin_balanceo,Perú,Cono Sur,0.4380305602716469,2356
+CatBoost,sin_balanceo,Uruguay,Cono Sur,0.5622593068035944,2337
+LightGBM,sin_balanceo,Argentina,Cono Sur,0.6207627118644068,2360
+LightGBM,sin_balanceo,Bolivia,Región Andina,0.4759427828348505,2307
+LightGBM,sin_balanceo,Brasil,Brasil,0.4706134706134706,2331
+LightGBM,sin_balanceo,Colombia,Región Andina,0.4974402730375427,2344
+LightGBM,sin_balanceo,Costa Rica,Centroamérica,0.6453428863868986,1954
+LightGBM,sin_balanceo,Chile,Cono Sur,0.45516362090947726,2353
+LightGBM,sin_balanceo,República Dominicana,México y Caribe,0.6518858307849134,1962
+LightGBM,sin_balanceo,Ecuador,Región Andina,0.4672544080604534,2382
+LightGBM,sin_balanceo,El Salvador,Centroamérica,0.6317427385892116,1928
+LightGBM,sin_balanceo,Guatemala,Centroamérica,0.6165176223040505,1901
+LightGBM,sin_balanceo,Honduras,Centroamérica,0.6056338028169014,1917
+LightGBM,sin_balanceo,México,México y Caribe,0.47226962457337884,2344
+LightGBM,sin_balanceo,Panamá,Centroamérica,0.5918158567774936,1955
+LightGBM,sin_balanceo,Paraguay,Cono Sur,0.5567360815979601,2353
+LightGBM,sin_balanceo,Perú,Cono Sur,0.4333616298811545,2356
+LightGBM,sin_balanceo,Uruguay,Cono Sur,0.5703893881044073,2337
+TabNet,sin_balanceo,Argentina,Cono Sur,0.7610169491525424,2360
+TabNet,sin_balanceo,Bolivia,Región Andina,0.5548331166016471,2307
+TabNet,sin_balanceo,Brasil,Brasil,0.6203346203346203,2331
+TabNet,sin_balanceo,Colombia,Región Andina,0.6629692832764505,2344
+TabNet,sin_balanceo,Costa Rica,Centroamérica,0.8679631525076765,1954
+TabNet,sin_balanceo,Chile,Cono Sur,0.5393115172120697,2353
+TabNet,sin_balanceo,República Dominicana,México y Caribe,0.8165137614678899,1962
+TabNet,sin_balanceo,Ecuador,Región Andina,0.6544920235096557,2382
+TabNet,sin_balanceo,El Salvador,Centroamérica,0.7105809128630706,1928
+TabNet,sin_balanceo,Guatemala,Centroamérica,0.7622304050499737,1901
+TabNet,sin_balanceo,Honduras,Centroamérica,0.7454355764214919,1917
+TabNet,sin_balanceo,México,México y Caribe,0.640358361774744,2344
+TabNet,sin_balanceo,Panamá,Centroamérica,0.8485933503836317,1955
+TabNet,sin_balanceo,Paraguay,Cono Sur,0.7135571610709732,2353
+TabNet,sin_balanceo,Perú,Cono Sur,0.5585738539898133,2356
+TabNet,sin_balanceo,Uruguay,Cono Sur,0.6123234916559692,2337
+OLO,smotenc,Argentina,Cono Sur,0.8906779661016949,2360
+OLO,smotenc,Bolivia,Región Andina,0.7659297789336801,2307
+OLO,smotenc,Brasil,Brasil,0.7481767481767482,2331
+OLO,smotenc,Colombia,Región Andina,0.6851535836177475,2344
+OLO,smotenc,Costa Rica,Centroamérica,0.8822927328556807,1954
+OLO,smotenc,Chile,Cono Sur,0.6077348066298343,2353
+OLO,smotenc,República Dominicana,México y Caribe,0.7813455657492355,1962
+OLO,smotenc,Ecuador,Región Andina,0.5650713685978169,2382
+OLO,smotenc,El Salvador,Centroamérica,0.7645228215767634,1928
+OLO,smotenc,Guatemala,Centroamérica,0.7674907943187795,1901
+OLO,smotenc,Honduras,Centroamérica,0.6990088680229525,1917
+OLO,smotenc,México,México y Caribe,0.8532423208191127,2344
+OLO,smotenc,Panamá,Centroamérica,0.7892583120204604,1955
+OLO,smotenc,Paraguay,Cono Sur,0.626859328516787,2353
+OLO,smotenc,Perú,Cono Sur,0.5666383701188455,2356
+OLO,smotenc,Uruguay,Cono Sur,0.7454000855798032,2337
+XGBoost,smotenc,Argentina,Cono Sur,0.684322033898305,2360
+XGBoost,smotenc,Bolivia,Región Andina,0.4932813177286519,2307
+XGBoost,smotenc,Brasil,Brasil,0.5315315315315315,2331
+XGBoost,smotenc,Colombia,Región Andina,0.5149317406143344,2344
+XGBoost,smotenc,Costa Rica,Centroamérica,0.6627430910951894,1954
+XGBoost,smotenc,Chile,Cono Sur,0.47598810029749256,2353
+XGBoost,smotenc,República Dominicana,México y Caribe,0.6855249745158002,1962
+XGBoost,smotenc,Ecuador,Región Andina,0.482367758186398,2382
+XGBoost,smotenc,El Salvador,Centroamérica,0.6120331950207469,1928
+XGBoost,smotenc,Guatemala,Centroamérica,0.6438716465018411,1901
+XGBoost,smotenc,Honduras,Centroamérica,0.6118935837245696,1917
+XGBoost,smotenc,México,México y Caribe,0.5302901023890785,2344
+XGBoost,smotenc,Panamá,Centroamérica,0.6419437340153452,1955
+XGBoost,smotenc,Paraguay,Cono Sur,0.5482362940926477,2353
+XGBoost,smotenc,Perú,Cono Sur,0.43930390492359933,2356
+XGBoost,smotenc,Uruguay,Cono Sur,0.6093281985451433,2337
+CatBoost,smotenc,Argentina,Cono Sur,0.6677966101694915,2360
+CatBoost,smotenc,Bolivia,Región Andina,0.5049848287819679,2307
+CatBoost,smotenc,Brasil,Brasil,0.5456885456885456,2331
+CatBoost,smotenc,Colombia,Región Andina,0.534556313993174,2344
+CatBoost,smotenc,Costa Rica,Centroamérica,0.6627430910951894,1954
+CatBoost,smotenc,Chile,Cono Sur,0.48066298342541436,2353
+CatBoost,smotenc,República Dominicana,México y Caribe,0.6676860346585117,1962
+CatBoost,smotenc,Ecuador,Región Andina,0.47732997481108314,2382
+CatBoost,smotenc,El Salvador,Centroamérica,0.5897302904564315,1928
+CatBoost,smotenc,Guatemala,Centroamérica,0.6349289847448711,1901
+CatBoost,smotenc,Honduras,Centroamérica,0.6145018257694314,1917
+CatBoost,smotenc,México,México y Caribe,0.5332764505119454,2344
+CatBoost,smotenc,Panamá,Centroamérica,0.6434782608695652,1955
+CatBoost,smotenc,Paraguay,Cono Sur,0.5465363365915852,2353
+CatBoost,smotenc,Perú,Cono Sur,0.4469439728353141,2356
+CatBoost,smotenc,Uruguay,Cono Sur,0.62002567394095,2337
+LightGBM,smotenc,Argentina,Cono Sur,0.6580508474576271,2360
+LightGBM,smotenc,Bolivia,Región Andina,0.48677936714347636,2307
+LightGBM,smotenc,Brasil,Brasil,0.49034749034749037,2331
+LightGBM,smotenc,Colombia,Región Andina,0.523037542662116,2344
+LightGBM,smotenc,Costa Rica,Centroamérica,0.687308085977482,1954
+LightGBM,smotenc,Chile,Cono Sur,0.47598810029749256,2353
+LightGBM,smotenc,República Dominicana,México y Caribe,0.6906218144750255,1962
+LightGBM,smotenc,Ecuador,Región Andina,0.49832073887489503,2382
+LightGBM,smotenc,El Salvador,Centroamérica,0.6296680497925311,1928
+LightGBM,smotenc,Guatemala,Centroamérica,0.6344029458179905,1901
+LightGBM,smotenc,Honduras,Centroamérica,0.6176317162232655,1917
+LightGBM,smotenc,México,México y Caribe,0.47482935153583616,2344
+LightGBM,smotenc,Panamá,Centroamérica,0.611764705882353,1955
+LightGBM,smotenc,Paraguay,Cono Sur,0.5448363790905227,2353
+LightGBM,smotenc,Perú,Cono Sur,0.44482173174872663,2356
+LightGBM,smotenc,Uruguay,Cono Sur,0.5853658536585366,2337
+TabNet,smotenc,Argentina,Cono Sur,0.775,2360
+TabNet,smotenc,Bolivia,Región Andina,0.5713047247507586,2307
+TabNet,smotenc,Brasil,Brasil,0.5855855855855856,2331
+TabNet,smotenc,Colombia,Región Andina,0.6382252559726962,2344
+TabNet,smotenc,Costa Rica,Centroamérica,0.812691914022518,1954
+TabNet,smotenc,Chile,Cono Sur,0.5265618359541011,2353
+TabNet,smotenc,República Dominicana,México y Caribe,0.7161060142711518,1962
+TabNet,smotenc,Ecuador,Región Andina,0.5218303946263644,2382
+TabNet,smotenc,El Salvador,Centroamérica,0.6192946058091287,1928
+TabNet,smotenc,Guatemala,Centroamérica,0.6880589163598106,1901
+TabNet,smotenc,Honduras,Centroamérica,0.6577986437141367,1917
+TabNet,smotenc,México,México y Caribe,0.5895904436860068,2344
+TabNet,smotenc,Panamá,Centroamérica,0.7237851662404092,1955
+TabNet,smotenc,Paraguay,Cono Sur,0.589035274118147,2353
+TabNet,smotenc,Perú,Cono Sur,0.5076400679117148,2356
+TabNet,smotenc,Uruguay,Cono Sur,0.7004706889174155,2337

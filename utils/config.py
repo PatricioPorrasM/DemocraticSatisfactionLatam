@@ -11,7 +11,7 @@ from pathlib import Path
 # ====================================================
 
 PARAMETERS = {
-    "LOAD_SAMPLE": True,  # True: carga muestra de prueba (LB_SAMPLE); False: carga dataset completo
+    "LOAD_SAMPLE": False,  # True: carga muestra de prueba (LB_SAMPLE); False: carga dataset completo
     "SEED": 42,
     "YEAR_START": 1995,
     "YEAR_END": 2024,

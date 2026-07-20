@@ -1,29 +1,29 @@
 variable,etiqueta,bloque,shap_medio
-D_001_001,Situación económica país,Evaluación económica,0.26301504340161147
-A_001_001,Apoyo a la democracia,Percepción política,0.21012085313147463
-B_006_061,Aprobación gobierno,Percepción política,0.1791887076368963
-H_002_031,Confianza Gobierno,Confianza institucional,0.1719695046990329
-H_002_011,Confianza Congreso,Confianza institucional,0.12081125365854027
-v2x_egal,Componente igualitario,Contexto democrático,0.10298685435203916
-B_001_101,País para todos / poderosos,Percepción política,0.09865052028334284
-D_001_041,Expectativa económica país,Evaluación económica,0.09081107688974982
-H_002_041,Confianza Poder Judicial,Confianza institucional,0.08957022901455193
-I_001_001,Victimización delictiva,Corrupción y seguridad,0.06696572922103111
-C_006_003_011,Distribución ingreso justa,Evaluación económica,0.06503581755360772
-H_002_111,Confianza Policía,Confianza institucional,0.04925922028775401
-v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.048437940544097835
-G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.0481500639375707
-D_001_021,Economía país vs. año anterior,Evaluación económica,0.04023999634268157
-v2xcl_rol,Igualdad ante la ley,Contexto democrático,0.04007153034579623
-H_002_241,Confianza Partidos Políticos,Confianza institucional,0.03862680979324673
-H_002_161,Confianza FF.AA.,Confianza institucional,0.03358313069342251
-D_001_091,Expectativa económica personal,Evaluación económica,0.02950484913532794
-v2x_polyarchy,Democracia electoral,Contexto democrático,0.025171135099643797
-S_101,Nivel educativo,Características sociodemográficas,0.024293944915772085
-A_007_001,Interés en política,Percepción política,0.021530017401601494
-H_002_131,Confianza Televisión,Confianza institucional,0.016418683815124954
-S_002,Edad,Características sociodemográficas,0.009327416905549
-S_001,Sexo,Características sociodemográficas,0.00928715690529362
-S_301,Nivel socioeconómico,Características sociodemográficas,0.005946920644117418
-G_002_011,Conoce caso de corrupción,Corrupción y seguridad,0.005318924566404894
+A_001_001,Apoyo a la democracia,Percepción política,0.2775213101494586
+D_001_001,Situación económica país,Evaluación económica,0.23344786219575503
+B_006_061,Aprobación gobierno,Percepción política,0.18235792300355746
+H_002_031,Confianza Gobierno,Confianza institucional,0.16793682041969962
+C_006_003_011,Distribución ingreso justa,Evaluación económica,0.1486817870704355
+B_001_101,País para todos / poderosos,Percepción política,0.1363608605720266
+v2x_egal,Componente igualitario,Contexto democrático,0.12846136407885983
+D_001_021,Economía país vs. año anterior,Evaluación económica,0.09427678658818528
+G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.09232626716091814
+H_002_011,Confianza Congreso,Confianza institucional,0.08669926820087212
+H_002_241,Confianza Partidos Políticos,Confianza institucional,0.07115586451235727
+v2xcl_rol,Igualdad ante la ley,Contexto democrático,0.06204756013909608
+D_001_041,Expectativa económica país,Evaluación económica,0.059942295817276656
+H_002_041,Confianza Poder Judicial,Confianza institucional,0.05713857690284669
+v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.05597430652793897
+A_007_001,Interés en política,Percepción política,0.032800324178616655
+H_002_161,Confianza FF.AA.,Confianza institucional,0.03007534796088248
+H_002_111,Confianza Policía,Confianza institucional,0.028971127502553068
+H_002_131,Confianza Televisión,Confianza institucional,0.027722939315498595
+D_001_091,Expectativa económica personal,Evaluación económica,0.024959332832804566
+v2x_polyarchy,Democracia electoral,Contexto democrático,0.019059471055660984
+I_001_001,Victimización delictiva,Corrupción y seguridad,0.01207952919837841
+G_002_011,Conoce caso de corrupción,Corrupción y seguridad,0.006555575287573519
+S_101,Nivel educativo,Características sociodemográficas,0.006074173727927587
+S_001,Sexo,Características sociodemográficas,0.0
+S_301,Nivel socioeconómico,Características sociodemográficas,0.0
+S_002,Edad,Características sociodemográficas,0.0
 S_200,Situación ocupacional,Características sociodemográficas,0.0
