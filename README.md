@@ -8,9 +8,9 @@ Universidad de Investigación de Tecnología Experimental Yachay · Julio 2026
 
 ## Descripción
 
-Este repositorio implementa un marco comparativo, explicable y reproducible para predecir la **satisfacción con la democracia** en América Latina a partir de datos tabulares de Latinobarómetro y V-Dem durante el periodo 1995–2024.
+Este repositorio implementa un marco comparativo, explicable y reproducible para predecir la **satisfacción con la democracia** en América Latina a partir de datos tabulares del Latinobarómetro y del V-Dem durante el periodo 1995–2024.
 
-Se comparan cinco familias de modelos — Regresión Logística Ordinal (OLO), XGBoost, LightGBM, CatBoost y TabNet — bajo dos experimentos secuenciales: el primero evalúa estrategias de manejo del desbalance de clases; el segundo compara formulaciones de la variable objetivo. La explicabilidad se trabaja con SHAP (TreeSHAP/KernelExplainer), LIME y gráficos de efectos locales acumulados (ALE).
+Se comparan cinco familias de modelos: Regresión Logística Ordinal (OLO), XGBoost, LightGBM, CatBoost y TabNet, bajo dos experimentos secuenciales: el primero evalúa estrategias de manejo del desbalance de clases; el segundo compara las formulaciones de la variable objetivo. La explicabilidad se trabaja con SHAP (TreeSHAP/KernelExplainer), LIME y gráficos de efectos locales acumulados (ALE).
 
 **Variable objetivo:** satisfacción con la democracia (A_003_031), 4 clases ordinales:
 
@@ -29,7 +29,7 @@ Se comparan cinco familias de modelos — Regresión Logística Ordinal (OLO), X
 
 | Fuente | Descripción | Cobertura |
 |---|---|---|
-| **Latinobarómetro** | Encuesta regional de opinión pública | 24 olas: 1995–2024 (sin 1999 ni 2012); 489,771 registros |
+| **Latinobarómetro** | Encuesta regional de opinión pública | 24 olas entre 1995 y 2024; 489,771 registros |
 | **V-Dem Core v16** | Indicadores institucionales y democráticos | 18 países · 1995–2024; 540 registros |
 
 Los archivos originales están **versionados en el repositorio** como `.zip` en `data/raw_zip/`. Los notebooks los descomprimen automáticamente en sus carpetas de trabajo.
@@ -45,7 +45,7 @@ DemocraticSatisfactionLatam/
 ├── data/
 │   ├── raw_zip/                  ← archivos originales versionados (.zip)
 │   ├── raw_latinobarometro/      ← olas .dta descomprimidas (generado por NB01)
-│   ├── raw_v-dem/                ← V-Dem-CY-Core-v16.csv descomprimido
+│   ├── raw_v-dem/                ← V-Dem-CY-Core-v16.csv descomprimido (generado por NB01)
 │   ├── base/                     ← datasets consolidados (generado por NB01)
 │   ├── processed/                ← datasets listos para ML (generado por NB02)
 │   └── variables/
@@ -109,7 +109,7 @@ Los notebooks deben ejecutarse **en orden secuencial**; cada uno genera los arch
 
 ### NB01 — `01_carga_datos.ipynb`
 
-Carga y armoniza las 24 olas de Latinobarómetro con los indicadores de V-Dem. Descomprime los archivos `.zip`, lee los 24 archivos Stata (`.dta`) detectando encoding, extrae y estandariza los nombres de columna heterogéneos entre olas, y consolida todo en un único DataFrame longitudinal de 489,771 registros × 43 columnas. Mapea los códigos de país (IDENPA) a nombres e ISO3. Carga y filtra V-Dem a los 18 países del estudio. Genera una tabla de frecuencias por ola y una muestra estratificada de 8,921 registros para inspección rápida.
+Carga y armoniza las 24 olas de Latinobarómetro con los indicadores de V-Dem. Descomprime los archivos `.zip`, lee los 24 archivos Stata (`.dta`) detectando encoding, extrae y estandariza los nombres de columna heterogéneos entre olas, y consolida todo en un único DataFrame longitudinal de 489,771 registros × 43 columnas. Mapea los códigos de país (IDENPA) a nombres e ISO3. Carga y filtra V-Dem a los 18 países del estudio. Genera una tabla de frecuencias por ola y una muestra estratificada de aproximadamente 8,500 registros para inspección rápida.
 
 **Genera:** `data/base/latinobarometro.csv`, `data/base/v-dem.csv`, `data/base/lb_frecuencia_valores_por_ola.csv`, `data/base/latinobarometro_muestra.csv`, `data/raw_latinobarometro/`, `data/raw_v-dem/`
 
@@ -117,11 +117,11 @@ Carga y armoniza las 24 olas de Latinobarómetro con los indicadores de V-Dem. D
 
 ### NB02 — `02_preprocesamiento_entrenamiento.ipynb`
 
-Preprocesa los datos consolidados y ejecuta los dos experimentos del proyecto. Une Latinobarómetro × V-Dem por (pais_iso3, año). Limpia códigos NS/NR (-1 a -8). Armoniza escalas económicas entre olas (p. ej., escala de 3 puntos pre-2001 → equivalente de 5 puntos post-2001). Colapsa la victimización en variable binaria. Aplica exclusión de Venezuela (a partir de 2018) y Nicaragua (en val/test). Imputa valores faltantes con MICE (IterativeImputer + BayesianRidge, 10 iteraciones; ajuste solo en train). Normaliza con min-max. Construye el split temporal único.
+Preprocesa los datos consolidados y ejecuta los dos experimentos del proyecto. Une Latinobarómetro y V-Dem por (pais_iso3, año). Limpia códigos NS/NR (-1 a -8). Armoniza escalas económicas entre olas (p. ej., escala de 3 puntos pre-2001 → equivalente de 5 puntos post-2001). Colapsa la victimización en variable binaria. Aplica exclusión de Venezuela y Nicaragua (en val y test). Imputa valores faltantes con MICE (IterativeImputer + BayesianRidge, 10 iteraciones; ajuste solo en train). Normaliza con min-max. Construye el split temporal único.
 
 **Experimento E1:** entrena 5 algoritmos × 3 estrategias de balanceo = 15 modelos. Cada modelo se optimiza con Optuna (TPE, 20–50 trials, objetivo: Kappa cuadrático en val).
 
-**Experimento E2:** fija la mejor estrategia de balanceo de E1 y entrena los 5 algoritmos bajo 3 formulaciones del target (ordinal de 4 clases, binario, Likert continuo).
+**Experimento E2:** fija la mejor estrategia de balanceo de E1 y entrena los 5 algoritmos bajo 3 formulaciones de la variable objetivo (ordinal de 4 clases, binario, Likert continuo).
 
 **Genera:** `data/processed/{train,val,test}.parquet`, `models/pipeline_*.pkl`, `models/hp_*.json`, `results/resultados_modelos.{csv,parquet}`
 
@@ -145,7 +145,7 @@ Responde PI2 y OE4: ¿qué variables explican la satisfacción con la democracia
 
 ### NB05 — `05_estabilidad_temporal_regional.ipynb`
 
-Responde PI3 y OE3: ¿son robustos los determinantes identificados a través de subregiones geográficas? Con el diseño de split único no es posible evaluar estabilidad temporal entre periodos; se evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de test entre las 5 subregiones. Calcula correlaciones de Spearman entre pares de subregiones → prueba H5 (r ≥ 0.7 = determinantes robustos). Analiza la varianza entre bloques temáticos por región → prueba H4 (confianza/corrupción varían más que sociodemográficos). Genera heatmaps de estabilidad, bump charts de rankings y análisis de MAE ordinal por país y estrategia.
+Responde PI3 y OE3: ¿son robustos los determinantes identificados a través de subregiones geográficas? Con el diseño de split único se evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de test entre las 5 subregiones. Calcula correlaciones de Spearman entre pares de subregiones → prueba H5 (r ≥ 0.7 = determinantes robustos). Analiza la varianza entre bloques temáticos por región → prueba H4 (confianza/corrupción varían más que sociodemográficos). Genera heatmaps de estabilidad, bump charts de rankings y análisis de MAE ordinal por país y estrategia.
 
 **Genera:** `results/tables/spearman_subregiones.csv`, `results/tables/mae_subregiones.csv`, `results/tables/mae_por_pais_todos.csv`, `results/figures/05_*.png`
 
@@ -216,6 +216,8 @@ Ejecuta los 6 notebooks en orden usando Papermill. Los notebooks ejecutados se g
 bash run_all.sh
 ```
 
+**Nota**: para correr el proyecto en un servidor linux se recomienda usar la herramienta "tmux", pues la ejecución completa puede llegar a durar horas dependiendo de las características del servidor.
+
 #### Opción B — Ejecución manual en orden
 
 Si se prefiere ejecutar notebook a notebook (por ejemplo, en Jupyter Lab o VS Code), respetar estrictamente el orden siguiente:
@@ -263,7 +265,7 @@ Compara los **5 algoritmos** bajo **3 estrategias de manejo del desbalance de cl
 
 ---
 
-### Experimento E2 — Formulaciones del target
+### Experimento E2 — Formulaciones de la variable objetivo
 
 Fija la mejor estrategia de balanceo encontrada en E1 y evalúa los 5 algoritmos bajo **3 formulaciones distintas de la variable objetivo**, verificando si la codificación ordinal de 4 clases es óptima o si alternativas más simples o continuas ofrecen mejor rendimiento.
 
