@@ -25,7 +25,7 @@ from typing import Optional, List, Dict, Tuple
 
 from .config import (
     THEME, PATHS, ETIQUETAS, ETIQUETAS_FEATURES, BLOQUES,
-    bloque_de, SUBPERIODOS,
+    bloque_de,
 )
 
 
@@ -104,7 +104,7 @@ def plot_metricas_comparativas(
     nombre_archivo: Optional[str] = "03_metricas_comparativas",
 ) -> None:
     """
-    Gráfico de líneas con rendimiento de cada modelo por subperiodo.
+    Gráfico de barras con rendimiento de cada modelo por estrategia de balanceo.
 
     Parámetros
     ----------
@@ -123,7 +123,7 @@ def plot_metricas_comparativas(
     fig, axes = plt.subplots(1, len(metricas), figsize=(16, 5))
     fig.suptitle(
         "Rendimiento comparativo de modelos\n"
-        "(Expanding Window Walk-Forward Validation — conjunto de prueba)",
+        "(conjunto de prueba)",
         fontsize=13, fontweight="bold",
     )
 
@@ -132,11 +132,11 @@ def plot_metricas_comparativas(
             sub = df_res[df_res["modelo"] == modelo]
             if sub.empty or metrica not in sub.columns:
                 continue
-            ax.plot(sub["subperiodo"], sub[metrica],
+            ax.plot(sub["estrategia_balanceo"], sub[metrica],
                     marker="o", linewidth=2, markersize=7,
                     label=modelo, color=model_color(modelo))
         ax.set_title(titulo, fontweight="bold")
-        ax.set_xlabel("Subperiodo")
+        ax.set_xlabel("Estrategia de Balanceo")
         ax.legend(fontsize=8)
         ax.grid(True, alpha=0.3)
         if metrica == "mae_ordinal":
@@ -158,7 +158,7 @@ def plot_matrices_confusion(
 
     Parámetros
     ----------
-    resultados_cm : dict con claves (modelo, subperiodo) y valores
+    resultados_cm : dict con claves (modelo, estrategia) y valores
                     (y_true, y_pred).
     solo_mejor    : si True, solo dibuja el mejor modelo (requiere
                     mejor_modelo).
@@ -168,7 +168,7 @@ def plot_matrices_confusion(
     from sklearn.metrics import confusion_matrix
 
     etiq_cortas = ["Nada\nsat.", "No muy\nsat.", "Más bien\nsat.", "Muy\nsat."]
-    sps = ["SP1", "SP2", "SP3"]
+    sps = ["sin_balanceo", "pesos_clase", "smotenc"]
 
     if solo_mejor and mejor_modelo:
         modelos_plot = [mejor_modelo]
@@ -182,7 +182,7 @@ def plot_matrices_confusion(
 
     fig.suptitle(
         "Matrices de confusión normalizadas (% por fila)\n"
-        "Conjunto de prueba por subperiodo",
+        "Conjunto de prueba 2023+2024 por estrategia de balanceo",
         fontweight="bold", fontsize=13,
     )
 
@@ -214,7 +214,7 @@ def plot_matrices_confusion(
 
 def plot_rendimiento_por_pais(
     df_mae: pd.DataFrame,
-    subperiodo: str = "SP3",
+
     nombre_archivo: Optional[str] = None,
 ) -> None:
     """
@@ -223,7 +223,7 @@ def plot_rendimiento_por_pais(
     Parámetros
     ----------
     df_mae        : DataFrame con columnas 'pais', 'modelo', 'mae_ordinal'.
-    subperiodo    : título del subperiodo para el encabezado.
+
     nombre_archivo: nombre para guardar. None = no guardar.
     """
     modelos = df_mae["modelo"].unique().tolist()
@@ -246,7 +246,7 @@ def plot_rendimiento_por_pais(
     ax.set_yticks(y_pos + ancho * (len(modelos) - 1) / 2)
     ax.set_yticklabels(paises, fontsize=9)
     ax.set_xlabel("MAE Ordinal (↓ mejor)")
-    ax.set_title(f"MAE Ordinal por país — {subperiodo}", fontweight="bold")
+    ax.set_title("MAE Ordinal por país — conjunto de prueba 2023+2024", fontweight="bold")
     ax.legend(fontsize=9, loc="lower right")
     ax.axvline(0.5, color="gray", linestyle="--", linewidth=0.8, alpha=0.6,
                label="Umbral 0.5")
@@ -426,16 +426,16 @@ def plot_ale(
 def plot_heatmap_estabilidad(
     df_rankings: pd.DataFrame,
     metrica: str = "mean_abs_shap",
-    titulo: str = "Cambio en importancia SHAP por subperiodo",
+    titulo: str = "Importancia SHAP por bloque temático",
     nombre_archivo: Optional[str] = None,
 ) -> None:
     """
-    Heatmap de importancia SHAP por variable y subperiodo,
+    Heatmap de importancia SHAP por variable y bloque temático,
     con barra lateral de bloques temáticos.
 
     Parámetros
     ----------
-    df_rankings   : DataFrame con índice=variable, columnas=subperiodos,
+    df_rankings   : DataFrame con índice=variable, columnas=bloques o modelos,
                     valores=importancia (|SHAP| medio normalizado).
     metrica       : nombre de la métrica para el colorbar.
     titulo        : título del gráfico.
@@ -473,7 +473,7 @@ def plot_heatmap_estabilidad(
         cbar_kws={"label": metrica, "shrink": 0.6},
     )
     ax_heat.set_title(titulo, fontweight="bold", pad=12)
-    ax_heat.set_xlabel("Subperiodo")
+    ax_heat.set_xlabel("Subregión")
     ax_heat.set_ylabel("")
     ax_heat.tick_params(axis="y", labelsize=9)
 
@@ -500,24 +500,24 @@ def plot_bump_chart(
     nombre_archivo: Optional[str] = None,
 ) -> None:
     """
-    Bump chart del ranking de importancia SHAP entre subperiodos.
+    Bump chart del ranking de importancia SHAP entre estrategias o modelos.
 
-    Muestra las top_n variables del subperiodo más reciente (SP3)
-    y traza su trayectoria de ranking a lo largo de los subperiodos.
+    Muestra las top_n variables más importantes
+    y traza su trayectoria de ranking.
 
     Parámetros
     ----------
-    df_rankings   : DataFrame con índice=variable, columnas=subperiodos,
+    df_rankings   : DataFrame con índice=variable, columnas=bloques o modelos,
                     valores=importancia. Se calcula el ranking internamente.
-    top_n         : número de variables a incluir (seleccionadas por SP3).
+    top_n         : número de variables a incluir.
     titulo        : título del gráfico.
     nombre_archivo: nombre para guardar. None = no guardar.
     """
     # Calcular rankings (1 = más importante)
     df_rank = df_rankings.rank(ascending=False, method="min")
-    sp_cols = [c for c in ["SP1", "SP2", "SP3"] if c in df_rank.columns]
+    sp_cols = list(df_rank.columns)
 
-    # Seleccionar top_n por el último subperiodo disponible
+    # Seleccionar top_n por la última columna disponible
     ultimo_sp = sp_cols[-1]
     top_vars  = df_rank[ultimo_sp].sort_values().head(top_n).index.tolist()
     df_top    = df_rank.loc[top_vars, sp_cols]
@@ -539,7 +539,7 @@ def plot_bump_chart(
     ax.set_ylabel("Ranking de importancia (1 = más importante)")
     ax.set_title(titulo, fontweight="bold")
     ax.set_xticks(sp_cols)
-    ax.set_xticklabels([SUBPERIODOS[sp]["descripcion"].split("(")[0].strip()
+    ax.set_xticklabels([sp
                         for sp in sp_cols], fontsize=9)
     ax.grid(True, axis="y", alpha=0.3)
     ax.spines["top"].set_visible(False)
@@ -557,11 +557,11 @@ def plot_spearman_estabilidad(
 ) -> None:
     """
     Heatmap de correlación de Spearman entre rankings de importancia SHAP
-    de distintos subperiodos (triangular superior).
+    de distintas configuraciones o modelos (triangular superior).
 
     Parámetros
     ----------
-    df_correlaciones : DataFrame cuadrado (subperiodos × subperiodos)
+    df_correlaciones : DataFrame cuadrado (modelos × modelos o configs × configs)
                        con los coeficientes Spearman.
     titulo           : título del gráfico.
     nombre_archivo   : nombre para guardar. None = no guardar.

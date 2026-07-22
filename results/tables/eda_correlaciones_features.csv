@@ -1,0 +1,29 @@
+variable,tipo,bloque,etiqueta,r_individual,p_individual,r_pais_año,señal
+H_002_031,LB,Confianza institucional,Confianza Gobierno,0.373,0.0,,ALTA
+B_006_061,LB,Percepción política,Aprobación gobierno,-0.3273,0.0,,ALTA
+D_001_001,LB,Evaluación económica,Situación económica país,0.3188,0.0,,ALTA
+C_006_003_011,LB,Evaluación económica,Distribución ingreso justa,0.3034,0.0,,ALTA
+D_001_021,LB,Evaluación económica,Economía país vs. año anterior,-0.3031,0.0,,ALTA
+B_001_101,LB,Percepción política,País para todos / poderosos,0.3014,0.0,,ALTA
+H_002_011,LB,Confianza institucional,Confianza Congreso,0.2809,0.0,,ALTA
+D_001_041,LB,Evaluación económica,Expectativa económica país,-0.2799,0.0,,ALTA
+G_005_001,LB,Corrupción y seguridad,Progreso contra corrupción,0.272,0.0,,ALTA
+H_002_041,LB,Confianza institucional,Confianza Poder Judicial,0.2607,0.0,,ALTA
+H_002_241,LB,Confianza institucional,Confianza Partidos Políticos,0.2487,0.0,,ALTA
+H_002_111,LB,Confianza institucional,Confianza Policía,0.2118,0.0,,ALTA
+A_001_001,LB,Percepción política,Apoyo a la democracia,0.2115,0.0,,ALTA
+D_001_091,LB,Evaluación económica,Expectativa económica personal,-0.188,0.0,,ALTA
+v2x_egal,V-Dem,Contexto democrático,Componente igualitario,-0.1703,0.0,-0.4652,ALTA
+H_002_161,LB,Confianza institucional,Confianza FF.AA.,0.1554,0.0,,ALTA
+v2xcl_rol,V-Dem,Contexto democrático,Igualdad ante la ley,-0.132,0.0,-0.3527,ALTA
+A_007_001,LB,Percepción política,Interés en política,0.1261,0.0,,ALTA
+H_002_131,LB,Confianza institucional,Confianza Televisión,0.1136,0.0,,ALTA
+v2x_polyarchy,V-Dem,Contexto democrático,Democracia electoral,-0.0854,0.0,-0.2034,MEDIA
+v2x_corr,V-Dem,Contexto democrático,Integridad institucional (corrupción),0.0821,0.0,0.1888,MEDIA
+G_002_011,LB,Corrupción y seguridad,Conoce caso de corrupción,0.0738,0.0,,MEDIA
+I_001_001,LB,Corrupción y seguridad,Victimización delictiva,0.059,0.0,,MEDIA
+S_301,LB,Características sociodemográficas,Nivel socioeconómico,0.0385,0.0,,BAJA
+S_002,LB,Características sociodemográficas,Edad,-0.0233,0.0,,BAJA
+S_001,LB,Características sociodemográficas,Sexo,0.0113,0.0,,BAJA
+S_200,LB,Características sociodemográficas,Situación ocupacional,-0.0104,0.0,,BAJA
+S_101,LB,Características sociodemográficas,Nivel educativo,0.0103,0.0,,BAJA

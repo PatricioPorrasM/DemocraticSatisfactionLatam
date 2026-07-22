@@ -1,0 +1,17 @@
+teoria,top_n,bloque_predicho,n_en_bloque,pct_convergencia
+Easton (1975),5,Confianza institucional,1,20.0
+Norris (2011),5,Percepción política,2,40.0
+Lewis-Beck & Stegmaier (2000),5,Evaluación económica,2,40.0
+Devine (2024),5,Confianza institucional,1,20.0
+Easton (1975),10,Confianza institucional,2,20.0
+Norris (2011),10,Percepción política,3,30.0
+Lewis-Beck & Stegmaier (2000),10,Evaluación económica,3,30.0
+Devine (2024),10,Confianza institucional,2,20.0
+Easton (1975),15,Confianza institucional,4,26.666666666666668
+Norris (2011),15,Percepción política,3,20.0
+Lewis-Beck & Stegmaier (2000),15,Evaluación económica,4,26.666666666666668
+Devine (2024),15,Confianza institucional,4,26.666666666666668
+Easton (1975),20,Confianza institucional,7,35.0
+Norris (2011),20,Percepción política,4,20.0
+Lewis-Beck & Stegmaier (2000),20,Evaluación económica,5,25.0
+Devine (2024),20,Confianza institucional,7,35.0

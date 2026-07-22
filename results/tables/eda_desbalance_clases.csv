@@ -1,0 +1,4 @@
+conjunto,n,n_paises,pct_cls0,pct_cls1,pct_cls2,pct_cls3,ratio_desbalance
+Train,378592,18,9.4,27.0,43.4,20.1,4.61
+Validación,17219,16,9.3,17.6,44.0,29.0,4.71
+Test,35084,16,11.3,21.1,42.0,25.5,3.72

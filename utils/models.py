@@ -44,13 +44,15 @@ except ImportError:
 
 
 def entrenar_olo(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "ordinal_4clases",
+    cfg: dict = None,
 ) -> Tuple:
     nombre   = "OLO"
-    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed     = PARAMETERS["SEED"]
 
-    print(f"{'='*52}  Entrenando {nombre} — {sp}  {'='*52}")
+    print(f"{'='*52}  Entrenando {nombre} — {estrategia}  {'='*52}")
 
     if not cfg["ejecutar_hp"] and ruta_hp.exists():
         best_hp = json.loads(ruta_hp.read_text())
@@ -90,26 +92,29 @@ def entrenar_olo(
     y_pred_te  = clf.predict(np.array(X_te))
     y_prob_te  = clf.predict_proba(np.array(X_te))
 
-    joblib.dump(clf, PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.pkl")
-    print(f"  ✓ Guardado: {nombre}_{sp}.pkl")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_xgboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "ordinal_4clases",
+    cfg: dict = None,
 ) -> Tuple:
     nombre  = "XGBoost"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
     if not cfg["ejecutar_hp"] and ruta_hp.exists():
         best_hp = json.loads(ruta_hp.read_text())
         print(f"  HPs cargados: {best_hp}")
     else:
+        _xgb_obj   = "binary:logistic" if variante_target == "binario" else "multi:softprob"
+        _xgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
+
         def obj(trial):
             p = {
                 "n_estimators"    : trial.suggest_int("n_estimators", 200, 1000, step=100),
@@ -120,7 +125,7 @@ def entrenar_xgboost(
                 "min_child_weight": trial.suggest_int("min_child_weight", 1, 10),
                 "reg_alpha"       : trial.suggest_float("reg_alpha", 1e-8, 10.0, log=True),
                 "reg_lambda"      : trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
-                "objective": "multi:softprob", "num_class": N_CLASES,
+                "objective": _xgb_obj, **_xgb_extra,
                 "tree_method": "hist",
                 "device"     : cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
                 "random_state": seed, "n_jobs": cfg["n_jobs"], "verbosity": 0,
@@ -128,7 +133,10 @@ def entrenar_xgboost(
             m = xgb.XGBClassifier(**p)
             m.fit(X_tr, y_tr, sample_weight=w_tr,
                   eval_set=[(X_val, y_val)], verbose=False)
-            return cohen_kappa_score(y_val, m.predict(X_val), weights="quadratic")
+            y_p = m.predict(X_val)
+            if hasattr(y_p, "ndim") and y_p.ndim > 1:
+                y_p = y_p.argmax(axis=1)
+            return cohen_kappa_score(y_val, y_p, weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
         study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
@@ -138,7 +146,8 @@ def entrenar_xgboost(
 
     clf = xgb.XGBClassifier(
         **best_hp,
-        objective="multi:softprob", num_class=N_CLASES,
+        objective="binary:logistic" if variante_target == "binario" else "multi:softprob",
+        **({"num_class": N_CLASES} if variante_target != "binario" else {}),
         tree_method="hist",
         device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
         random_state=seed, n_jobs=cfg["n_jobs"], verbosity=0,
@@ -151,21 +160,21 @@ def entrenar_xgboost(
     y_pred_te  = clf.predict(X_te)
     y_prob_te  = clf.predict_proba(X_te)
 
-    joblib.dump(clf, PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.pkl")
-    print(f"  ✓ Guardado: {nombre}_{sp}.pkl")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_catboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "ordinal_4clases",
+    cfg: dict = None,
 ) -> Tuple:
     nombre  = "CatBoost"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
     def prep_cat(X):
         X = X.copy()
@@ -195,7 +204,8 @@ def entrenar_catboost(
             }
             pool_tr  = Pool(X_tr_c, label=y_tr.values, weight=w_tr, cat_features=cat_idx)
             pool_val = Pool(X_val_c, label=y_val.values, cat_features=cat_idx)
-            m = CatBoostClassifier(**p, loss_function="MultiClass",
+            _cb_loss = "Logloss" if variante_target == "binario" else "MultiClass"
+            m = CatBoostClassifier(**p, loss_function=_cb_loss,
                                    random_seed=seed, verbose=False,
                                    task_type="GPU" if cfg["usar_gpu"] else "CPU")
             m.fit(pool_tr, eval_set=pool_val)
@@ -207,9 +217,10 @@ def entrenar_catboost(
         print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
         ruta_hp.write_text(json.dumps(best_hp))
 
+    _cb_loss_final = "Logloss" if variante_target == "binario" else "MultiClass"
     pool_tr  = Pool(X_tr_c, label=y_tr.values, weight=w_tr, cat_features=cat_idx)
     pool_val = Pool(X_val_c, label=y_val.values, cat_features=cat_idx)
-    clf = CatBoostClassifier(**best_hp, loss_function="MultiClass",
+    clf = CatBoostClassifier(**best_hp, loss_function=_cb_loss_final,
                               random_seed=seed, verbose=False,
                               task_type="GPU" if cfg["usar_gpu"] else "CPU")
     clf.fit(pool_tr, eval_set=pool_val)
@@ -219,22 +230,21 @@ def entrenar_catboost(
     y_pred_te  = clf.predict(X_te_c).flatten()
     y_prob_te  = clf.predict_proba(X_te_c)
 
-    clf.save_model(str(PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.cbm"))
-    print(f"  ✓ Guardado: {nombre}_{sp}.cbm")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_lightgbm(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, sp: str,
-    pesos_clase: dict, cfg: dict,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    pesos_clase: dict, estrategia: str,
+    variante_target: str = "ordinal_4clases", cfg: dict = None,
 ) -> Tuple:
     nombre  = "LightGBM"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
     def prep_lgb(Xa, Xb, Xc):
         Xa, Xb, Xc = Xa.copy(), Xb.copy(), Xc.copy()
@@ -266,29 +276,42 @@ def entrenar_lightgbm(
                 "colsample_bytree" : trial.suggest_float("colsample_bytree", 0.6, 1.0),
                 "reg_alpha"        : trial.suggest_float("reg_alpha", 1e-8, 10.0, log=True),
                 "reg_lambda"       : trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
-                "min_child_samples": trial.suggest_int("min_child_samples", 5, 100),
+                "min_child_samples": trial.suggest_int("min_child_samples", 20, 100),
             }
+            _lgb_obj   = "binary" if variante_target == "binario" else "multiclass"
+            _lgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
             m = lgb.LGBMClassifier(
-                **p, objective="multiclass", num_class=N_CLASES,
-                class_weight=pesos_clase, random_state=seed,
+                **p, objective=_lgb_obj, **_lgb_extra,
+                random_state=seed,
                 n_jobs=cfg["n_jobs"], verbose=-1,
                 device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
             )
-            m.fit(X_tr_l, y_tr, sample_weight=w_tr,
-                  eval_set=[(X_val_l, y_val)],
-                  callbacks=[lgb.early_stopping(50, verbose=False),
-                             lgb.log_evaluation(-1)])
+            try:
+                m.fit(X_tr_l, y_tr, sample_weight=w_tr,
+                      eval_set=[(X_val_l, y_val)],
+                      callbacks=[lgb.early_stopping(50, verbose=False),
+                                 lgb.log_evaluation(-1)])
+            except lgb.basic.LightGBMError:
+                raise optuna.exceptions.TrialPruned()
             return cohen_kappa_score(y_val, m.predict(X_val_l), weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
         study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
+        completed = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
+        if not completed:
+            raise ValueError(
+                f"LightGBM ({estrategia}): todos los trials de Optuna fallaron. "
+                "Revisar datos o aumentar min_child_samples."
+            )
         best_hp = study.best_params
         print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
         ruta_hp.write_text(json.dumps(best_hp))
 
+    _lgb_obj_final   = "binary" if variante_target == "binario" else "multiclass"
+    _lgb_extra_final = {} if variante_target == "binario" else {"num_class": N_CLASES}
     clf = lgb.LGBMClassifier(
-        **best_hp, objective="multiclass", num_class=N_CLASES,
-        class_weight=pesos_clase, random_state=seed,
+        **best_hp, objective=_lgb_obj_final, **_lgb_extra_final,
+        random_state=seed,
         n_jobs=cfg["n_jobs"], verbose=-1,
         device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
     )
@@ -302,22 +325,21 @@ def entrenar_lightgbm(
     y_pred_te  = clf.predict(X_te_l)
     y_prob_te  = clf.predict_proba(X_te_l)
 
-    joblib.dump(clf, PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}.pkl")
-    print(f"  ✓ Guardado: {nombre}_{sp}.pkl")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
 
 def entrenar_tabnet(
     X_tr_sc, y_tr, X_val_sc, y_val, X_te_sc, y_te,
-    sp: str, cat_idxs: list, cat_dims: list, cfg: dict,
+    estrategia: str, cat_idxs: list, cat_dims: list,
+    variante_target: str = "ordinal_4clases", cfg: dict = None,
 ) -> Tuple:
     nombre  = "TabNet"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{sp}.json"
+    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
     seed    = PARAMETERS["SEED"]
 
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {sp}\n{'='*52}")
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
     print(f"  Dispositivo: {cfg['dispositivo_tn']}")
 
     if not cfg["ejecutar_hp"] and ruta_hp.exists():
@@ -385,21 +407,101 @@ def entrenar_tabnet(
     y_pred_te  = clf.predict(X_te_sc.astype(np.float32))
     y_prob_te  = clf.predict_proba(X_te_sc.astype(np.float32))
 
-    clf.save_model(str(PATHS["FOLDER_MODELS"] / f"{nombre}_{sp}"))
-    print(f"  ✓ Guardado: {nombre}_{sp}.zip")
     print("  ⚠ Limitación: TabNet usa pesos por clase, no sample_weight individual.")
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, sp, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre, sp, split="test")
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
 
+
+
+def entrenar_ridge(
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    estrategia: str, variante_target: str = "likert_continuo",
+    cfg: dict = None,
+) -> Tuple:
+    """
+    Ridge Regression como modelo de regresión ordinal.
+    Equivalente de OLO para el experimento E2 variante Likert continuo.
+
+    El target se trata como variable numérica continua {0.0, 1.0, 2.0, 3.0}.
+    Las predicciones se redondean y se recortan al rango [0, N_CLASES-1]
+    para obtener clases comparables con la variante ordinal.
+
+    Parámetros
+    ----------
+    Mismos que entrenar_olo, más variante_target='likert_continuo'.
+    """
+    from sklearn.linear_model import Ridge as _Ridge
+    from sklearn.model_selection import cross_val_score as _cvs
+    import optuna as _optuna
+    from optuna.samplers import TPESampler as _TPE
+
+    nombre   = "Ridge"
+    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
+    seed     = PARAMETERS["SEED"]
+
+    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia} [{variante_target}]\n{'='*52}")
+
+    # Usar X ya normalizado (StandarScaler, igual que OLO)
+    y_tr_f  = y_tr.astype(float)
+    y_val_f = y_val.astype(float)
+    y_te_f  = y_te.astype(float)
+
+    if not cfg["ejecutar_hp"] and ruta_hp.exists():
+        best_hp = json.loads(ruta_hp.read_text())
+        print(f"  HPs cargados: {best_hp}")
+    else:
+        def obj(trial):
+            alpha = trial.suggest_float("alpha", 1e-4, 100.0, log=True)
+            m = _Ridge(alpha=alpha, random_state=seed)
+            m.fit(X_tr, y_tr_f, sample_weight=w_tr)
+            y_pred_v = np.clip(np.round(m.predict(X_val)), 0, N_CLASES - 1).astype(int)
+            return cohen_kappa_score(y_val, y_pred_v, weights="quadratic")
+
+        study = _optuna.create_study(direction="maximize", sampler=_TPE(seed=seed))
+        study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
+        best_hp = study.best_params
+        print(f"  Mejor Kappa Val (post-redondeo): {study.best_value:.4f} | {best_hp}")
+        ruta_hp.write_text(json.dumps(best_hp))
+
+    clf = _Ridge(**best_hp, random_state=seed)
+    clf.fit(X_tr, y_tr_f, sample_weight=w_tr)
+
+    # Predicciones: valor continuo → redondear → clip → clase entera
+    def _pred_cls(X):
+        y_cont = clf.predict(X)
+        return np.clip(np.round(y_cont), 0, N_CLASES - 1).astype(int)
+
+    def _pred_proba(X, n_cls=N_CLASES):
+        """Probabilidades blandas desde distancia al entero más cercano."""
+        y_cont = clf.predict(X)
+        proba  = np.zeros((len(y_cont), n_cls))
+        for k in range(n_cls):
+            dist = np.abs(y_cont - k)
+            proba[:, k] = np.exp(-dist)
+        proba /= proba.sum(axis=1, keepdims=True)
+        return proba
+
+    y_pred_val = _pred_cls(X_val)
+    y_prob_val = _pred_proba(X_val)
+    y_pred_te  = _pred_cls(X_te)
+    y_prob_te  = _pred_proba(X_te)
+
+    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre,
+                    estrategia_balanceo=estrategia,
+                    variante_target=variante_target, split="val")
+    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre,
+                    estrategia_balanceo=estrategia,
+                    variante_target=variante_target, split="test")
+    return clf, m_val, m_te
 
 def predecir(
     datos_crudos: dict,
     nombre_modelo: str = "XGBoost",
-    subperiodo: str    = "SP3",
+    estrategia: str    = "pesos_clase",
     año_encuesta: int  = 2024,
 ) -> dict:
-    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{subperiodo}.pkl"
+    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{estrategia}.pkl"
     assert ruta.exists(), f"Pipeline no encontrado: {ruta}"
     art  = joblib.load(ruta)
     tipo = art["tipo_modelo"]
@@ -428,6 +530,12 @@ def predecir(
             for col in art.get("vars_categoricas", []):
                 if col in X_in.columns:
                     X_in[col] = X_in[col].fillna(-999).astype(int).astype(str)
+        elif nombre_modelo == "LightGBM":
+            for col in art.get("vars_categoricas", []):
+                if col in X_in.columns:
+                    cats = sorted(X_in[col].dropna().unique().tolist())
+                    ct = pd.CategoricalDtype(categories=cats, ordered=False)
+                    X_in[col] = X_in[col].astype(ct)
         y_raw  = art["modelo"].predict(X_in)
         y_pred = y_raw.flatten() if hasattr(y_raw, "flatten") else y_raw
         y_prob = art["modelo"].predict_proba(X_in)
@@ -441,5 +549,5 @@ def predecir(
         "etiqueta"       : ets[clase],
         "probabilidades" : {ets[i]: float(p) for i, p in enumerate(y_prob)},
         "modelo"         : nombre_modelo,
-        "subperiodo"     : subperiodo,
+        # Campo de split ya no aplica en diseño de validación único
     }

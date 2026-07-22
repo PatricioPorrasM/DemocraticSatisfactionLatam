@@ -438,9 +438,9 @@ FodyWeavers.xsd
 # Data Files
 *.dta
 /data/base/**
-/data/processed/**
+# /data/processed/**
 /data/raw-latinobarometro/*
 !/data/raw-latinobarometro/.gitkeep
 /data/raw_v-dem/*
 !/data/raw_v-dem/.gitkeep
-/results/**
+# /results/**

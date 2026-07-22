@@ -7,11 +7,14 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from typing import Tuple
 
 from .config import (
-    SUBPERIODOS, COL_AÑO, COL_PESO, COL_TARGET, PARAMETERS, VARS_CATEGORICAS,
+    SPLIT, COL_AÑO, COL_PESO, COL_TARGET, PARAMETERS,
+    VARS_CATEGORICAS, AÑO_CORTE_VEN, PAISES_EXCLUIR_EVAL,
+    COL_PAIS,
 )
 
 
 def limpiar_nsnr(df: pd.DataFrame, cols: list, codigos: list) -> pd.DataFrame:
+    """Convierte a NaN los valores de no respuesta (NS/NR) y negativos."""
     df = df.copy()
     for col in cols:
         if col not in df.columns:
@@ -23,16 +26,45 @@ def limpiar_nsnr(df: pd.DataFrame, cols: list, codigos: list) -> pd.DataFrame:
 
 def construir_split(
     df: pd.DataFrame,
-    subperiodo: str,
     features: list,
     pesos_clase: dict,
 ) -> Tuple:
-    cfg   = SUBPERIODOS[subperiodo]
+    """
+    Construye los conjuntos de entrenamiento, validación y prueba
+    a partir del split único definido en SPLIT (config.py).
+
+    Reglas de exclusión aplicadas:
+    - Venezuela: excluida de val y test (sesgo de respuesta post-2017);
+      en train solo hasta AÑO_CORTE_VEN=2017.
+    - Nicaragua: excluida de val y test (sin datos en 2023-2024;
+      consistencia de dominio).
+    - Ambas siguen presentes en train.
+
+    Parámetros
+    ----------
+    df           : DataFrame integrado con todas las olas
+    features     : lista de features a usar (28 variables)
+    pesos_clase  : dict {clase: peso} para balanceo
+
+    Retorna
+    -------
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, w_te
+    """
     feats = [f for f in features if f in df.columns and f != COL_PESO]
 
-    df_tr  = df[df[COL_AÑO].isin(cfg["train_olas"])].copy()
-    df_val = df[df[COL_AÑO].isin(cfg["validate_ola"])].copy()
-    df_te  = df[df[COL_AÑO].isin(cfg["test_ola"])].copy()
+    # Conjuntos base por año
+    df_tr  = df[df[COL_AÑO].isin(SPLIT["train"])].copy()
+    df_val = df[df[COL_AÑO].isin(SPLIT["val"])].copy()
+    df_te  = df[df[COL_AÑO].isin(SPLIT["test"])].copy()
+
+    # Exclusión de Venezuela y Nicaragua de val y test
+    # (Venezuela ya fue recortada en NB02 celda de exclusiones;
+    #  Nicaragua no tiene datos en 2023-2024 de todas formas,
+    #  pero la exclusión explícita garantiza consistencia)
+    for df_sub in [df_val, df_te]:
+        if COL_PAIS in df_sub.columns:
+            mask_excl = df_sub[COL_PAIS].isin(PAISES_EXCLUIR_EVAL)
+            df_sub.drop(index=df_sub[mask_excl].index, inplace=True)
 
     X_tr,  y_tr  = df_tr[feats],  df_tr[COL_TARGET].astype(int)
     X_val, y_val = df_val[feats], df_val[COL_TARGET].astype(int)
@@ -49,12 +81,13 @@ def construir_split(
     w_tr  = _pesos(df_tr,  y_tr)
     w_val = _pesos(df_val, y_val)
     w_te  = _pesos(df_te,  y_te)
+
     return X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, w_te
 
 
-def resumen_split(nombre, X_tr, y_tr, X_val, y_val, X_te, y_te):
+def resumen_split(X_tr, y_tr, X_val, y_val, X_te, y_te):
     print(f"{'─'*52}")
-    print(f"  {nombre}")
+    print(f"  Split único")
     print(f"{'─'*52}")
     print(f"  Train : {len(X_tr):>8,} registros | {X_tr.shape[1]} features")
     print(f"  Val   : {len(X_val):>8,} registros")
@@ -75,6 +108,14 @@ def imputar(
     X_te: pd.DataFrame,
     semilla: int = None,
 ) -> Tuple:
+    """
+    Imputación diferenciada por tipo de variable:
+    - Numéricas: MICE (IterativeImputer con BayesianRidge)
+    - Categóricas nominales (S_200): moda (SimpleImputer)
+
+    El imputer se ajusta ÚNICAMENTE sobre X_tr y se aplica
+    sin re-ajuste sobre X_val y X_te para evitar data leakage.
+    """
     if semilla is None:
         semilla = PARAMETERS["SEED"]
     cols_cat = [c for c in VARS_CATEGORICAS if c in X_tr.columns]
@@ -109,25 +150,20 @@ def imputar(
     assert X_val_imp.isnull().sum().sum() == 0, "NaN residuales tras imputación (val)"
     assert X_te_imp.isnull().sum().sum()  == 0, "NaN residuales tras imputación (test)"
 
-    # Documentar variables que fueron imputadas totalmente en val o test
-    # (100% NaN antes de imputar → todos los valores son sintéticos)
+    # Documentar variables con 100% NaN en val o test (valores completamente sintéticos)
     vars_100nan_val  = [c for c in cols_num if X_val[c].isna().all()]
     vars_100nan_test = [c for c in cols_num if X_te[c].isna().all()]
     if vars_100nan_val:
         import warnings as _w
         _w.warn(
-            f"imputar(): las siguientes variables tienen 100% NaN en el conjunto "
-            f"de validación y fueron imputadas totalmente: {vars_100nan_val}. "
-            f"Los valores resultantes son completamente sintéticos.",
-            UserWarning, stacklevel=2,
+            f"imputar(): variables con 100% NaN en validación (valores sintéticos): "
+            f"{vars_100nan_val}", UserWarning, stacklevel=2,
         )
     if vars_100nan_test:
         import warnings as _w
         _w.warn(
-            f"imputar(): las siguientes variables tienen 100% NaN en el conjunto "
-            f"de prueba y fueron imputadas totalmente: {vars_100nan_test}. "
-            f"Los valores resultantes son completamente sintéticos.",
-            UserWarning, stacklevel=2,
+            f"imputar(): variables con 100% NaN en prueba (valores sintéticos): "
+            f"{vars_100nan_test}", UserWarning, stacklevel=2,
         )
 
     return X_tr_imp, X_val_imp, X_te_imp, imp_num, imp_cat
@@ -139,6 +175,7 @@ def normalizar(
     X_te: pd.DataFrame,
     metodo: str = "minmax",
 ) -> Tuple:
+    """Normaliza las columnas numéricas. El scaler se ajusta solo sobre X_tr."""
     cols_num = [c for c in X_tr.columns if c not in VARS_CATEGORICAS]
     scaler   = MinMaxScaler() if metodo == "minmax" else StandardScaler()
     X_tr_sc  = X_tr.copy()
@@ -155,6 +192,22 @@ def aplicar_transformaciones_deterministas(
     transformaciones: dict,
     año_encuesta: int,
 ) -> pd.DataFrame:
+    """
+    Aplica transformaciones de escala deterministas por ola.
+
+    Transformaciones aplicadas:
+    1. NS/NR → NaN (limpiar_nsnr)
+    2. Armonización de escala para evaluaciones económicas comparativas
+       (D_001_021, D_001_041, D_001_091): olas ≤ 2000 usan escala de 3
+       puntos (fórmula 4-x); olas ≥ 2001 usan escala de 5 puntos (6-x).
+    3. Recodificaciones binarias con np.select (evita NaN silenciosos de .map())
+    4. Victimización delictiva I_001_001: armonización de 3 escalas distintas
+       (≤2008: binaria; 2009: 3 categorías; ≥2010: 4 categorías) → binaria {0,1}
+    5. Corrupción experiencial G_002_011: caso especial para ola 2013
+
+    NO se invierten variables Likert ni índices V-Dem.
+    Ver documento metodológico sección 5 para justificación.
+    """
     df = df_in.copy()
     tr = transformaciones
 
@@ -162,23 +215,7 @@ def aplicar_transformaciones_deterministas(
             if c not in ("año", "pais_iso3", "pais_nombre", "ola")]
     df = limpiar_nsnr(df, cols, tr["nsnr"])
 
-    if tr.get("a007071_nsnr_97") and "A_007_071" in df.columns:
-        df.loc[df["A_007_071"] == 97, "A_007_071"] = np.nan
-    if tr.get("c003003_nan5") and "C_003_003_011" in df.columns:
-        df.loc[df["C_003_003_011"] == 5, "C_003_003_011"] = np.nan
-
-    for col in tr.get("likert4", []):
-        if col not in df.columns:
-            continue
-        mask = df[col].notna() & df[col].between(1, 4)
-        df.loc[mask, col] = 5 - df.loc[mask, col]
-
-    for col in tr.get("likert4_interes", []):
-        if col not in df.columns:
-            continue
-        mask = df[col].notna() & df[col].between(1, 4)
-        df.loc[mask, col] = 5 - df.loc[mask, col]
-
+    # Paso 2: armonización evaluaciones económicas comparativas
     for col in ["D_001_021", "D_001_041", "D_001_091"]:
         if col not in df.columns:
             continue
@@ -189,8 +226,7 @@ def aplicar_transformaciones_deterministas(
             mask = df[col].between(1, 5)
             df.loc[mask, col] = 6 - df.loc[mask, col]
 
-    # Recodificaciones binarias: np.select en lugar de .map() para evitar
-    # que valores no contemplados se conviertan silenciosamente a NaN.
+    # Paso 3: recodificaciones binarias con np.select
     for col, mapeo in tr.get("binarias", {}).items():
         if col not in df.columns:
             continue
@@ -199,6 +235,13 @@ def aplicar_transformaciones_deterministas(
         valores     = list(mapeo_float.values())
         df[col]     = np.select(condiciones, valores, default=np.nan)
 
+    # Paso 4: victimización delictiva — armonización longitudinal
+    # Tres esquemas de pregunta distintos según el año de la ola:
+    #   ≤ 2008: binaria (1=Sí, 2=No) → recodifica a {1, 0}
+    #     2009: 3 categorías (1=Sí últimos 12 meses, 2=Sí antes, 3=No)
+    #           → colapsa {1,2}→1, {3}→0
+    #   ≥ 2010: 4 categorías (1=Sí últimos 12m, 2=Sí últimos 3a,
+    #           3=Sí hace más de 3a, 4=No) → colapsa {1,2,3}→1, {4}→0
     if "I_001_001" in df.columns:
         col   = "I_001_001"
         nueva = np.full(len(df), np.nan)
@@ -213,20 +256,16 @@ def aplicar_transformaciones_deterministas(
             nueva[df[col].values == 4]                 = 0
         df[col] = nueva
 
+    # Paso 5: corrupción experiencial — caso especial ola 2013
     if "G_002_011" in df.columns:
         col   = "G_002_011"
         nueva = np.full(len(df), np.nan)
         if año_encuesta == 2013:
             nueva[df[col].values == 1] = 1
-            nueva[(df[col].values >  1) & (~np.isnan(df[col].values.astype(float)))] = 0
+            nueva[(df[col].values > 1) & (~np.isnan(df[col].values.astype(float)))] = 0
         else:
             nueva[df[col].values == 1] = 1
             nueva[df[col].values == 2] = 0
-            # Valores fuera de {1, 2} quedan como NaN (explícito)
         df[col] = nueva
-
-    for col in tr.get("vdem_invertir", []):
-        if col in df.columns:
-            df[col] = 1.0 - df[col]
 
     return df
