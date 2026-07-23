@@ -216,7 +216,19 @@ Ejecuta los 6 notebooks en orden usando Papermill. Los notebooks ejecutados se g
 bash run_all.sh
 ```
 
-**Nota**: para correr el proyecto en un servidor linux se recomienda usar la herramienta "tmux", pues la ejecución completa puede llegar a durar horas dependiendo de las características del servidor.
+**Nota**: Para ejecutar el proyecto en un servidor linux se recomienda usar la herramienta "tmux". Este proyecto fue ejecutado en un servidor con las siguientes características, y duró al rededor de 6 horas en promedio para completar la ejecución.
+
+| Componente | Especificación |
+|---|---|
+| Sistema operativo | Ubuntu 24.04.3 LTS |
+| Kernel | 7.0.0-28-generic |
+| CPU | AMD Ryzen 9 9900X3D 12-Core Processor |
+| Hilos lógicos | 24 |
+| Memoria RAM | 123Gi |
+| GPU | NVIDIA GeForce RTX 4090 |
+| Memoria GPU | 24564 MiB |
+| Driver NVIDIA | 595.71.05 |
+| Python | Python 3.12.3 |
 
 #### Opción B — Ejecución manual en orden
 
