@@ -1,6 +1,0 @@
-{
-  "modelo_xai": "CatBoost",
-  "estrategia_balanceo": "pesos_clase",
-  "metrica": "kappa_cuadratico",
-  "split_referencia": "test"
-}
