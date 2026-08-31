@@ -398,6 +398,92 @@ def normalizar(
     return X_tr_sc, X_val_sc, X_te_sc, scaler
 
 
+def preparar_features_modelo(
+    X,
+    art: dict,
+    columnas: Optional[list] = None,
+) -> pd.DataFrame:
+    """
+    Ajusta una matriz numérica al formato exacto que espera un modelo ya
+    entrenado: orden de columnas y dtype de las variables categóricas.
+
+    Necesario cuando se llama a `predict`/`predict_proba` con datos que vienen
+    de una fuente que solo maneja números —LIME, ALE, o un array de NumPy—,
+    porque cada librería exige una codificación distinta de las categóricas:
+
+    - **CatBoost**: la categórica debe ser texto, con los NaN como la categoría
+      explícita "-999", igual que en el entrenamiento.
+    - **LightGBM**: la categórica debe ser `pandas.Categorical` con exactamente
+      las mismas categorías del entrenamiento. Si no, LightGBM aborta con
+      "train and valid dataset categorical_feature do not match". Las
+      categorías se recuperan del propio booster (`pandas_categorical`), que
+      es la fuente de verdad; si no están disponibles se derivan de los datos.
+    - **XGBoost, OLO y TabNet**: reciben la matriz numérica sin cambios.
+
+    Parámetros
+    ----------
+    X        : DataFrame o array con las features en el orden de `columnas`.
+    art      : artefacto del pipeline (`cargar_pipeline`).
+    columnas : nombres de las columnas de X. Si X ya es un DataFrame se usan
+               sus columnas; si es un array es obligatorio.
+
+    Retorna
+    -------
+    DataFrame listo para `predict`/`predict_proba`.
+    """
+    feats = art["features"]
+
+    if isinstance(X, pd.DataFrame):
+        X_out = X.copy()
+    else:
+        if columnas is None:
+            columnas = feats
+        X_out = pd.DataFrame(np.asarray(X), columns=list(columnas))
+
+    faltantes = [c for c in feats if c not in X_out.columns]
+    if faltantes:
+        raise ValueError(
+            f"preparar_features_modelo(): faltan {len(faltantes)} features "
+            f"que el modelo espera: {faltantes[:8]}"
+        )
+    X_out = X_out[feats]
+
+    modelo   = art["modelo"]
+    tipo     = art.get("tipo_modelo", "trees")
+    nombre   = art.get("nombre_modelo", "")
+    cat_cols = [c for c in art.get("vars_categoricas", []) if c in feats]
+
+    if tipo != "trees" or not cat_cols:
+        return X_out
+
+    es_catboost = nombre == "CatBoost" or hasattr(modelo, "get_cat_feature_indices")
+    es_lightgbm = nombre == "LightGBM" or hasattr(modelo, "booster_")
+
+    if es_catboost:
+        for col in cat_cols:
+            valores = pd.to_numeric(X_out[col], errors="coerce")
+            X_out[col] = valores.fillna(-999).round().astype(int).astype(str)
+
+    elif es_lightgbm:
+        cats_entrenamiento = getattr(
+            getattr(modelo, "booster_", None), "pandas_categorical", None)
+        for j, col in enumerate(cat_cols):
+            if cats_entrenamiento and j < len(cats_entrenamiento):
+                cats = list(cats_entrenamiento[j])
+            else:
+                cats = sorted(pd.to_numeric(X_out[col], errors="coerce")
+                              .dropna().unique().tolist())
+            valores = pd.to_numeric(X_out[col], errors="coerce")
+            # Las categorías de entrenamiento son numéricas: redondear para
+            # que los valores reconstruidos (p. ej. 3.0000001) coincidan.
+            if all(isinstance(c, (int, float, np.integer, np.floating))
+                   for c in cats):
+                valores = valores.round()
+            X_out[col] = pd.Categorical(valores, categories=cats, ordered=False)
+
+    return X_out
+
+
 def aplicar_transformaciones_deterministas(
     df_in: pd.DataFrame,
     transformaciones: dict,
