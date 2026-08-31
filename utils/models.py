@@ -1,3 +1,31 @@
+"""
+utils/models.py
+===============
+Entrenamiento de los cinco modelos del proyecto con optimización Optuna (TPE)
+maximizando el Kappa cuadrático en el conjunto de validación.
+
+Modelos: OLO (baseline ordinal), XGBoost, CatBoost, LightGBM y TabNet.
+
+Registro de hiperparámetros
+---------------------------
+Cada función de entrenamiento guarda en `models/hp_{modelo}_{estrategia}_{variante}.json`
+el registro COMPLETO de la configuración del modelo, no solo los parámetros
+que optimiza Optuna:
+
+- `hp_optimizados`         : parámetros buscados por Optuna (`study.best_params`).
+- `hp_fijos`               : parámetros fijados por diseño (objective, semilla,
+                             device, n_jobs, verbosidad, número de clases, …).
+- `hp_completos`           : unión de ambos = todo lo que recibe el constructor.
+- `espacio_busqueda`       : rango y tipo de cada parámetro optimizado.
+- `config_entrenamiento`   : configuración del `.fit()` (early stopping, épocas,
+                             batch size, eval_set, uso de sample_weight, …).
+- `params_efectivos_modelo`: `get_params()` del estimador ya entrenado, que
+                             incluye también los valores por defecto de la
+                             librería.
+
+Se accede con `cargar_hiperparametros()` y se resume con `tabla_hiperparametros()`.
+"""
+
 import json
 import joblib
 import numpy as np
@@ -8,7 +36,7 @@ from optuna.samplers import TPESampler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import cohen_kappa_score
 from datetime import datetime
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 from .config import PATHS, PARAMETERS, N_CLASES, VARS_CATEGORICAS
 from .metrics import evaluar
@@ -43,21 +71,260 @@ except ImportError:
     TabNetClassifier = None
 
 
+# ═════════════════════════════════════════════════════════════════════════════
+# REGISTRO DE HIPERPARÁMETROS
+# ═════════════════════════════════════════════════════════════════════════════
+
+def _json_seguro(obj):
+    """Convierte cualquier valor a una representación serializable en JSON."""
+    if isinstance(obj, dict):
+        return {str(k): _json_seguro(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple, set)):
+        return [_json_seguro(v) for v in obj]
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, np.floating):
+        return float(obj)
+    if isinstance(obj, np.bool_):
+        return bool(obj)
+    if obj is None or isinstance(obj, (str, int, float, bool)):
+        return obj
+    if callable(obj):
+        return getattr(obj, "__name__", str(obj))
+    texto = str(obj)
+    # Evita volcar reprs enormes (p. ej. la red de TabNet) en el JSON
+    return texto if len(texto) <= 500 else texto[:500] + " …[truncado]"
+
+
+def ruta_hiperparametros(nombre_modelo: str, estrategia: str,
+                         variante_target: str = "ordinal_4clases"):
+    """
+    Ruta del archivo JSON de hiperparámetros.
+
+    La variante del target forma parte del nombre para que los modelos de E1
+    (ordinal) y de E2 (binario) no se sobrescriban entre sí.
+    """
+    return PATHS["FOLDER_MODELS"] / f"hp_{nombre_modelo}_{estrategia}_{variante_target}.json"
+
+
+def _params_efectivos(clf) -> Dict:
+    """Parámetros efectivos del estimador entrenado, incluidos los por defecto."""
+    for extractor in (lambda m: m.get_params(),
+                      lambda m: m.get_all_params(),
+                      lambda m: vars(m)):
+        try:
+            params = extractor(clf)
+            if isinstance(params, dict):
+                return _json_seguro({k: v for k, v in params.items()
+                                     if not k.startswith("_")})
+        except Exception:
+            continue
+    return {}
+
+
+def guardar_hiperparametros(
+    nombre_modelo: str,
+    estrategia: str,
+    variante_target: str,
+    hp_optimizados: Dict,
+    hp_fijos: Optional[Dict] = None,
+    espacio_busqueda: Optional[Dict] = None,
+    config_entrenamiento: Optional[Dict] = None,
+    clf=None,
+    n_trials: Optional[int] = None,
+    mejor_kappa_val: Optional[float] = None,
+) -> Dict:
+    """
+    Persiste el registro completo de hiperparámetros de un modelo.
+
+    Retorna el diccionario guardado.
+    """
+    hp_fijos = hp_fijos or {}
+    registro = {
+        "modelo"                  : nombre_modelo,
+        "estrategia_balanceo"     : estrategia,
+        "variante_target"         : variante_target,
+        "semilla"                 : PARAMETERS["SEED"],
+        "n_trials_optuna"         : n_trials,
+        "mejor_kappa_val_optuna"  : (round(float(mejor_kappa_val), 6)
+                                     if mejor_kappa_val is not None else None),
+        "hp_optimizados"          : _json_seguro(hp_optimizados),
+        "hp_fijos"                : _json_seguro(hp_fijos),
+        "hp_completos"            : _json_seguro({**hp_fijos, **hp_optimizados}),
+        "espacio_busqueda"        : _json_seguro(espacio_busqueda or {}),
+        "config_entrenamiento"    : _json_seguro(config_entrenamiento or {}),
+        "params_efectivos_modelo" : _params_efectivos(clf) if clf is not None else {},
+        "fecha_registro"          : datetime.now().isoformat(),
+    }
+    ruta = ruta_hiperparametros(nombre_modelo, estrategia, variante_target)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    ruta.write_text(json.dumps(registro, indent=2, ensure_ascii=False),
+                    encoding="utf-8")
+    return registro
+
+
+def cargar_hiperparametros(nombre_modelo: str, estrategia: str,
+                           variante_target: str = "ordinal_4clases") -> Dict:
+    """
+    Carga el registro de hiperparámetros de un modelo.
+
+    Acepta también los archivos del formato antiguo (diccionario plano con
+    solo los parámetros de Optuna) y los normaliza a la estructura actual.
+    """
+    ruta = ruta_hiperparametros(nombre_modelo, estrategia, variante_target)
+    if not ruta.exists():
+        raise FileNotFoundError(
+            f"Registro de hiperparámetros no encontrado: {ruta}\n"
+            f"Ejecuta el notebook 02."
+        )
+    datos = json.loads(ruta.read_text(encoding="utf-8"))
+    if "hp_optimizados" not in datos:      # formato antiguo: dict plano
+        datos = {
+            "modelo": nombre_modelo, "estrategia_balanceo": estrategia,
+            "variante_target": variante_target,
+            "hp_optimizados": datos, "hp_fijos": {}, "hp_completos": datos,
+            "espacio_busqueda": {}, "config_entrenamiento": {},
+            "params_efectivos_modelo": {},
+        }
+    return datos
+
+
+def tabla_hiperparametros(carpeta=None) -> pd.DataFrame:
+    """
+    Resume todos los registros de hiperparámetros disponibles en models/.
+
+    Retorna un DataFrame con una fila por modelo × estrategia × variante y los
+    hiperparámetros completos serializados, apto para exportar a CSV.
+    """
+    carpeta = carpeta or PATHS["FOLDER_MODELS"]
+    filas = []
+    for ruta in sorted(carpeta.glob("hp_*.json")):
+        try:
+            d = json.loads(ruta.read_text(encoding="utf-8"))
+        except Exception as e:                                  # noqa: BLE001
+            print(f"  ⚠ No se pudo leer {ruta.name}: {e}")
+            continue
+        if "hp_optimizados" not in d:
+            d = {"modelo": ruta.stem, "hp_optimizados": d,
+                 "hp_fijos": {}, "hp_completos": d}
+        hp_completos = d.get("hp_completos", {})
+        filas.append({
+            "modelo"              : d.get("modelo"),
+            "estrategia_balanceo" : d.get("estrategia_balanceo"),
+            "variante_target"     : d.get("variante_target"),
+            "n_hp_optimizados"    : len(d.get("hp_optimizados", {})),
+            "n_hp_completos"      : len(hp_completos),
+            "n_trials_optuna"     : d.get("n_trials_optuna"),
+            "kappa_val_optuna"    : d.get("mejor_kappa_val_optuna"),
+            "hp_optimizados"      : json.dumps(d.get("hp_optimizados", {}),
+                                               ensure_ascii=False),
+            "hp_completos"        : json.dumps(hp_completos, ensure_ascii=False),
+            "config_entrenamiento": json.dumps(d.get("config_entrenamiento", {}),
+                                               ensure_ascii=False),
+            "archivo"             : ruta.name,
+        })
+    if not filas:
+        return pd.DataFrame(columns=[
+            "modelo", "estrategia_balanceo", "variante_target",
+            "n_hp_optimizados", "n_hp_completos", "n_trials_optuna",
+            "kappa_val_optuna", "hp_optimizados", "hp_completos",
+            "config_entrenamiento", "archivo"])
+    return pd.DataFrame(filas).sort_values(
+        ["variante_target", "modelo", "estrategia_balanceo"]).reset_index(drop=True)
+
+
+def _hp_previos(nombre: str, estrategia: str, variante: str, cfg: dict):
+    """
+    Devuelve (hp_optimizados, kappa_val, n_trials) si se deben reutilizar los
+    HPs ya guardados; (None, None, None) si hay que ejecutar la búsqueda.
+
+    El kappa y el número de trials provienen del registro original, no de la
+    configuración actual, para no falsear la procedencia de los valores.
+    """
+    if cfg["ejecutar_hp"]:
+        return None, None, None
+    ruta = ruta_hiperparametros(nombre, estrategia, variante)
+    if not ruta.exists():
+        return None, None, None
+    registro = cargar_hiperparametros(nombre, estrategia, variante)
+    hp = registro.get("hp_optimizados", {})
+    print(f"  HPs cargados desde {ruta.name}: {hp}")
+    return (hp, registro.get("mejor_kappa_val_optuna"),
+            registro.get("n_trials_optuna"))
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ESPACIOS DE BÚSQUEDA (documentación del registro de hiperparámetros)
+# Deben mantenerse sincronizados con las llamadas trial.suggest_* de cada modelo.
+# ═════════════════════════════════════════════════════════════════════════════
+
+ESPACIO_OLO = {
+    "alpha": {"tipo": "float", "min": 1e-4, "max": 10.0, "log": True},
+}
+
+ESPACIO_XGBOOST = {
+    "n_estimators"    : {"tipo": "int",   "min": 200,  "max": 1000, "paso": 100},
+    "max_depth"       : {"tipo": "int",   "min": 3,    "max": 8},
+    "learning_rate"   : {"tipo": "float", "min": 0.01, "max": 0.3, "log": True},
+    "subsample"       : {"tipo": "float", "min": 0.6,  "max": 1.0},
+    "colsample_bytree": {"tipo": "float", "min": 0.6,  "max": 1.0},
+    "min_child_weight": {"tipo": "int",   "min": 1,    "max": 10},
+    "reg_alpha"       : {"tipo": "float", "min": 1e-8, "max": 10.0, "log": True},
+    "reg_lambda"      : {"tipo": "float", "min": 1e-8, "max": 10.0, "log": True},
+}
+
+ESPACIO_CATBOOST = {
+    "iterations"         : {"tipo": "int",   "min": 300,  "max": 1000, "paso": 100},
+    "depth"              : {"tipo": "int",   "min": 4,    "max": 8},
+    "learning_rate"      : {"tipo": "float", "min": 0.01, "max": 0.3, "log": True},
+    "l2_leaf_reg"        : {"tipo": "float", "min": 1.0,  "max": 10.0},
+    "bagging_temperature": {"tipo": "float", "min": 0.0,  "max": 1.0},
+    "border_count"       : {"tipo": "int",   "min": 32,   "max": 128},
+    "random_strength"    : {"tipo": "float", "min": 0.0,  "max": 10.0},
+}
+
+ESPACIO_LIGHTGBM = {
+    "n_estimators"     : {"tipo": "int",   "min": 200,  "max": 1000, "paso": 100},
+    "num_leaves"       : {"tipo": "int",   "min": 20,   "max": 150},
+    "max_depth"        : {"tipo": "int",   "min": 3,    "max": 8},
+    "learning_rate"    : {"tipo": "float", "min": 0.01, "max": 0.3, "log": True},
+    "subsample"        : {"tipo": "float", "min": 0.6,  "max": 1.0},
+    "colsample_bytree" : {"tipo": "float", "min": 0.6,  "max": 1.0},
+    "reg_alpha"        : {"tipo": "float", "min": 1e-8, "max": 10.0, "log": True},
+    "reg_lambda"       : {"tipo": "float", "min": 1e-8, "max": 10.0, "log": True},
+    "min_child_samples": {"tipo": "int",   "min": 20,   "max": 100},
+}
+
+ESPACIO_TABNET = {
+    "n_d"          : {"tipo": "int",         "min": 8,    "max": 64, "paso": 8},
+    "n_a"          : {"tipo": "int",         "min": 8,    "max": 64, "paso": 8},
+    "n_steps"      : {"tipo": "int",         "min": 3,    "max": 7},
+    "gamma"        : {"tipo": "float",       "min": 1.0,  "max": 2.0},
+    "lambda_sparse": {"tipo": "float",       "min": 1e-6, "max": 1e-3, "log": True},
+    "momentum"     : {"tipo": "float",       "min": 0.01, "max": 0.4},
+    "mask_type"    : {"tipo": "categorical", "opciones": ["sparsemax", "entmax"]},
+    "lr"           : {"tipo": "float",       "min": 1e-4, "max": 1e-2, "log": True},
+}
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# MODELOS
+# ═════════════════════════════════════════════════════════════════════════════
+
 def entrenar_olo(
     X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
     estrategia: str, variante_target: str = "ordinal_4clases",
     cfg: dict = None,
 ) -> Tuple:
-    nombre   = "OLO"
-    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
-    seed     = PARAMETERS["SEED"]
+    nombre = "OLO"
+    seed   = PARAMETERS["SEED"]
+    n_trials_efectivos = cfg["n_trials"]
 
     print(f"{'='*52}  Entrenando {nombre} — {estrategia}  {'='*52}")
 
-    if not cfg["ejecutar_hp"] and ruta_hp.exists():
-        best_hp = json.loads(ruta_hp.read_text())
-        print(f"  HPs cargados: {best_hp}")
-    else:
+    best_hp, kappa_val, n_trials_reg = _hp_previos(
+        nombre, estrategia, variante_target, cfg)
+    if best_hp is None:
         X_tr_np, y_tr_np   = np.array(X_tr), np.array(y_tr)
         X_val_np, y_val_np = np.array(X_val), np.array(y_val)
 
@@ -73,19 +340,37 @@ def entrenar_olo(
             return cohen_kappa_score(y_val_np, m.predict(X_val_np), weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
-        study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
-        best_hp = study.best_params
-        print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
-        ruta_hp.write_text(json.dumps(best_hp))
+        study.optimize(obj, n_trials=n_trials_efectivos, show_progress_bar=False)
+        best_hp, kappa_val = study.best_params, study.best_value
+        n_trials_reg = n_trials_efectivos
+        print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
+        guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
+                                espacio_busqueda=ESPACIO_OLO,
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
 
     alpha = best_hp.get("alpha", 1.0)
     if MORD_OK:
+        hp_fijos = {"max_iter": 500, "implementacion": "mord.LogisticIT"}
         clf = _mord.LogisticIT(alpha=alpha, max_iter=500)
         clf.fit(np.array(X_tr), np.array(y_tr), sample_weight=w_tr)
     else:
+        hp_fijos = {"C": 1/alpha, "solver": "lbfgs", "max_iter": 500,
+                    "random_state": seed,
+                    "implementacion": "sklearn.LogisticRegression"}
         clf = LogisticRegression(C=1/alpha, solver="lbfgs",
                                  max_iter=500, random_state=seed)
         clf.fit(np.array(X_tr), np.array(y_tr), sample_weight=w_tr)
+
+    guardar_hiperparametros(
+        nombre, estrategia, variante_target, best_hp,
+        hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_OLO,
+        config_entrenamiento={
+            "usa_sample_weight": True,
+            "entrada": "X normalizada con StandardScaler",
+            "n_clases": int(len(np.unique(np.array(y_tr)))),
+        },
+        clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+    )
 
     y_pred_val = clf.predict(np.array(X_val))
     y_prob_val = clf.predict_proba(np.array(X_val))
@@ -102,19 +387,24 @@ def entrenar_xgboost(
     estrategia: str, variante_target: str = "ordinal_4clases",
     cfg: dict = None,
 ) -> Tuple:
-    nombre  = "XGBoost"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
-    seed    = PARAMETERS["SEED"]
+    nombre = "XGBoost"
+    seed   = PARAMETERS["SEED"]
+    n_trials_efectivos = cfg["n_trials"]
 
     print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
-    if not cfg["ejecutar_hp"] and ruta_hp.exists():
-        best_hp = json.loads(ruta_hp.read_text())
-        print(f"  HPs cargados: {best_hp}")
-    else:
-        _xgb_obj   = "binary:logistic" if variante_target == "binario" else "multi:softprob"
-        _xgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
+    _xgb_obj   = "binary:logistic" if variante_target == "binario" else "multi:softprob"
+    _xgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
+    hp_fijos = {
+        "objective"   : _xgb_obj, **_xgb_extra,
+        "tree_method" : "hist",
+        "device"      : cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
+        "random_state": seed, "n_jobs": cfg["n_jobs"], "verbosity": 0,
+    }
 
+    best_hp, kappa_val, n_trials_reg = _hp_previos(
+        nombre, estrategia, variante_target, cfg)
+    if best_hp is None:
         def obj(trial):
             p = {
                 "n_estimators"    : trial.suggest_int("n_estimators", 200, 1000, step=100),
@@ -125,10 +415,7 @@ def entrenar_xgboost(
                 "min_child_weight": trial.suggest_int("min_child_weight", 1, 10),
                 "reg_alpha"       : trial.suggest_float("reg_alpha", 1e-8, 10.0, log=True),
                 "reg_lambda"      : trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
-                "objective": _xgb_obj, **_xgb_extra,
-                "tree_method": "hist",
-                "device"     : cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
-                "random_state": seed, "n_jobs": cfg["n_jobs"], "verbosity": 0,
+                **hp_fijos,
             }
             m = xgb.XGBClassifier(**p)
             m.fit(X_tr, y_tr, sample_weight=w_tr,
@@ -139,21 +426,30 @@ def entrenar_xgboost(
             return cohen_kappa_score(y_val, y_p, weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
-        study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
-        best_hp = study.best_params
-        print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
-        ruta_hp.write_text(json.dumps(best_hp))
+        study.optimize(obj, n_trials=n_trials_efectivos, show_progress_bar=False)
+        best_hp, kappa_val = study.best_params, study.best_value
+        n_trials_reg = n_trials_efectivos
+        print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
+        guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
+                                hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_XGBOOST,
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
 
-    clf = xgb.XGBClassifier(
-        **best_hp,
-        objective="binary:logistic" if variante_target == "binario" else "multi:softprob",
-        **({"num_class": N_CLASES} if variante_target != "binario" else {}),
-        tree_method="hist",
-        device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
-        random_state=seed, n_jobs=cfg["n_jobs"], verbosity=0,
-    )
+    clf = xgb.XGBClassifier(**best_hp, **hp_fijos)
     clf.fit(X_tr, y_tr, sample_weight=w_tr,
             eval_set=[(X_val, y_val)], verbose=False)
+
+    guardar_hiperparametros(
+        nombre, estrategia, variante_target, best_hp,
+        hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_XGBOOST,
+        config_entrenamiento={
+            "usa_sample_weight" : True,
+            "eval_set"          : "conjunto de validación",
+            "early_stopping"    : "no (n_estimators lo fija Optuna)",
+            "n_features"        : int(X_tr.shape[1]),
+            "n_registros_train" : int(len(y_tr)),
+        },
+        clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+    )
 
     y_pred_val = clf.predict(X_val)
     y_prob_val = clf.predict_proba(X_val)
@@ -170,9 +466,9 @@ def entrenar_catboost(
     estrategia: str, variante_target: str = "ordinal_4clases",
     cfg: dict = None,
 ) -> Tuple:
-    nombre  = "CatBoost"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
-    seed    = PARAMETERS["SEED"]
+    nombre = "CatBoost"
+    seed   = PARAMETERS["SEED"]
+    n_trials_efectivos = cfg["n_trials"]
 
     print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
@@ -188,10 +484,17 @@ def entrenar_catboost(
     X_te_c  = prep_cat(X_te)
     cat_idx = [i for i, c in enumerate(X_tr.columns) if c in VARS_CATEGORICAS]
 
-    if not cfg["ejecutar_hp"] and ruta_hp.exists():
-        best_hp = json.loads(ruta_hp.read_text())
-        print(f"  HPs cargados: {best_hp}")
-    else:
+    _cb_loss = "Logloss" if variante_target == "binario" else "MultiClass"
+    hp_fijos = {
+        "loss_function": _cb_loss,
+        "random_seed"  : seed,
+        "verbose"      : False,
+        "task_type"    : "GPU" if cfg["usar_gpu"] else "CPU",
+    }
+
+    best_hp, kappa_val, n_trials_reg = _hp_previos(
+        nombre, estrategia, variante_target, cfg)
+    if best_hp is None:
         def obj(trial):
             p = {
                 "iterations"         : trial.suggest_int("iterations", 300, 1000, step=100),
@@ -204,26 +507,39 @@ def entrenar_catboost(
             }
             pool_tr  = Pool(X_tr_c, label=y_tr.values, weight=w_tr, cat_features=cat_idx)
             pool_val = Pool(X_val_c, label=y_val.values, cat_features=cat_idx)
-            _cb_loss = "Logloss" if variante_target == "binario" else "MultiClass"
-            m = CatBoostClassifier(**p, loss_function=_cb_loss,
-                                   random_seed=seed, verbose=False,
-                                   task_type="GPU" if cfg["usar_gpu"] else "CPU")
+            m = CatBoostClassifier(**p, **hp_fijos)
             m.fit(pool_tr, eval_set=pool_val)
             return cohen_kappa_score(y_val, m.predict(X_val_c).flatten(), weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
-        study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
-        best_hp = study.best_params
-        print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
-        ruta_hp.write_text(json.dumps(best_hp))
+        study.optimize(obj, n_trials=n_trials_efectivos, show_progress_bar=False)
+        best_hp, kappa_val = study.best_params, study.best_value
+        n_trials_reg = n_trials_efectivos
+        print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
+        guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
+                                hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_CATBOOST,
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
 
-    _cb_loss_final = "Logloss" if variante_target == "binario" else "MultiClass"
     pool_tr  = Pool(X_tr_c, label=y_tr.values, weight=w_tr, cat_features=cat_idx)
     pool_val = Pool(X_val_c, label=y_val.values, cat_features=cat_idx)
-    clf = CatBoostClassifier(**best_hp, loss_function=_cb_loss_final,
-                              random_seed=seed, verbose=False,
-                              task_type="GPU" if cfg["usar_gpu"] else "CPU")
+    clf = CatBoostClassifier(**best_hp, **hp_fijos)
     clf.fit(pool_tr, eval_set=pool_val)
+
+    guardar_hiperparametros(
+        nombre, estrategia, variante_target, best_hp,
+        hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_CATBOOST,
+        config_entrenamiento={
+            "usa_sample_weight"  : True,
+            "eval_set"           : "conjunto de validación",
+            "cat_features_idx"   : cat_idx,
+            "cat_features_nombre": [c for c in VARS_CATEGORICAS if c in X_tr.columns],
+            "nan_categoricas"    : "-999 como categoría explícita",
+            "n_features"         : int(X_tr.shape[1]),
+            "n_registros_train"  : int(len(y_tr)),
+            "arboles_usados"     : int(getattr(clf, "tree_count_", 0) or 0),
+        },
+        clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+    )
 
     y_pred_val = clf.predict(X_val_c).flatten()
     y_prob_val = clf.predict_proba(X_val_c)
@@ -240,9 +556,9 @@ def entrenar_lightgbm(
     pesos_clase: dict, estrategia: str,
     variante_target: str = "ordinal_4clases", cfg: dict = None,
 ) -> Tuple:
-    nombre  = "LightGBM"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
-    seed    = PARAMETERS["SEED"]
+    nombre = "LightGBM"
+    seed   = PARAMETERS["SEED"]
+    n_trials_efectivos = cfg["n_trials"]
 
     print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
 
@@ -262,10 +578,24 @@ def entrenar_lightgbm(
 
     X_tr_l, X_val_l, X_te_l = prep_lgb(X_tr, X_val, X_te)
 
-    if not cfg["ejecutar_hp"] and ruta_hp.exists():
-        best_hp = json.loads(ruta_hp.read_text())
-        print(f"  HPs cargados: {best_hp}")
-    else:
+    _lgb_obj   = "binary" if variante_target == "binario" else "multiclass"
+    _lgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
+    hp_fijos = {
+        "objective"   : _lgb_obj, **_lgb_extra,
+        "random_state": seed,
+        "n_jobs"      : cfg["n_jobs"], "verbose": -1,
+        "device"      : cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
+    }
+    CONFIG_FIT = {
+        "usa_sample_weight"    : True,
+        "eval_set"             : "conjunto de validación",
+        "early_stopping_rounds": 50,
+        "log_evaluation"       : -1,
+    }
+
+    best_hp, kappa_val, n_trials_reg = _hp_previos(
+        nombre, estrategia, variante_target, cfg)
+    if best_hp is None:
         def obj(trial):
             p = {
                 "n_estimators"     : trial.suggest_int("n_estimators", 200, 1000, step=100),
@@ -278,14 +608,7 @@ def entrenar_lightgbm(
                 "reg_lambda"       : trial.suggest_float("reg_lambda", 1e-8, 10.0, log=True),
                 "min_child_samples": trial.suggest_int("min_child_samples", 20, 100),
             }
-            _lgb_obj   = "binary" if variante_target == "binario" else "multiclass"
-            _lgb_extra = {} if variante_target == "binario" else {"num_class": N_CLASES}
-            m = lgb.LGBMClassifier(
-                **p, objective=_lgb_obj, **_lgb_extra,
-                random_state=seed,
-                n_jobs=cfg["n_jobs"], verbose=-1,
-                device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
-            )
+            m = lgb.LGBMClassifier(**p, **hp_fijos)
             try:
                 m.fit(X_tr_l, y_tr, sample_weight=w_tr,
                       eval_set=[(X_val_l, y_val)],
@@ -296,29 +619,41 @@ def entrenar_lightgbm(
             return cohen_kappa_score(y_val, m.predict(X_val_l), weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
-        study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
+        study.optimize(obj, n_trials=n_trials_efectivos, show_progress_bar=False)
         completed = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
         if not completed:
             raise ValueError(
                 f"LightGBM ({estrategia}): todos los trials de Optuna fallaron. "
                 "Revisar datos o aumentar min_child_samples."
             )
-        best_hp = study.best_params
-        print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
-        ruta_hp.write_text(json.dumps(best_hp))
+        best_hp, kappa_val = study.best_params, study.best_value
+        n_trials_reg = n_trials_efectivos
+        print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
+        guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
+                                hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_LIGHTGBM,
+                                config_entrenamiento=CONFIG_FIT,
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
 
-    _lgb_obj_final   = "binary" if variante_target == "binario" else "multiclass"
-    _lgb_extra_final = {} if variante_target == "binario" else {"num_class": N_CLASES}
-    clf = lgb.LGBMClassifier(
-        **best_hp, objective=_lgb_obj_final, **_lgb_extra_final,
-        random_state=seed,
-        n_jobs=cfg["n_jobs"], verbose=-1,
-        device=cfg["device_cuda"] if cfg["usar_gpu"] else "cpu",
-    )
+    clf = lgb.LGBMClassifier(**best_hp, **hp_fijos)
     clf.fit(X_tr_l, y_tr, sample_weight=w_tr,
             eval_set=[(X_val_l, y_val)],
             callbacks=[lgb.early_stopping(50, verbose=False),
                        lgb.log_evaluation(-1)])
+
+    guardar_hiperparametros(
+        nombre, estrategia, variante_target, best_hp,
+        hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_LIGHTGBM,
+        config_entrenamiento={
+            **CONFIG_FIT,
+            "cat_features_nombre": [c for c in VARS_CATEGORICAS if c in X_tr.columns],
+            "cat_features_dtype" : "pandas.CategoricalDtype compartido entre splits",
+            "n_features"         : int(X_tr.shape[1]),
+            "n_registros_train"  : int(len(y_tr)),
+            "best_iteration"     : int(getattr(clf, "best_iteration_", 0) or 0),
+            "n_arboles_ajustados": int(getattr(clf, "n_estimators_", 0) or 0),
+        },
+        clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+    )
 
     y_pred_val = clf.predict(X_val_l)
     y_prob_val = clf.predict_proba(X_val_l)
@@ -335,17 +670,42 @@ def entrenar_tabnet(
     estrategia: str, cat_idxs: list, cat_dims: list,
     variante_target: str = "ordinal_4clases", cfg: dict = None,
 ) -> Tuple:
-    nombre  = "TabNet"
-    ruta_hp = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
-    seed    = PARAMETERS["SEED"]
+    nombre = "TabNet"
+    seed   = PARAMETERS["SEED"]
 
     print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
     print(f"  Dispositivo: {cfg['dispositivo_tn']}")
 
-    if not cfg["ejecutar_hp"] and ruta_hp.exists():
-        best_hp = json.loads(ruta_hp.read_text())
-        print(f"  HPs cargados: {best_hp}")
-    else:
+    n_trials_efectivos = min(cfg["n_trials"], 20)   # búsqueda acotada
+    hp_fijos = {
+        "optimizer_fn"    : "torch.optim.Adam",
+        "scheduler_fn"    : "torch.optim.lr_scheduler.StepLR",
+        "scheduler_params": {"step_size": 10, "gamma": 0.9},
+        "cat_idxs"        : cat_idxs,
+        "cat_dims"        : cat_dims,
+        "cat_emb_dim"     : 3,
+        "verbose"         : 0,
+        "device_name"     : cfg["dispositivo_tn"],
+        "seed"            : seed,
+    }
+    CONFIG_FIT = {
+        "max_epochs"        : 200,
+        "patience"          : 20,
+        "batch_size"        : 1024,
+        "virtual_batch_size": 128,
+        "eval_metric"       : ["balanced_accuracy"],
+        "weights"           : 1,
+        "eval_set"          : "conjunto de validación",
+        "usa_sample_weight" : False,
+        "nota"              : ("TabNet usa pesos por clase (weights=1), "
+                               "no sample_weight individual"),
+        "max_epochs_optuna" : 100,
+        "patience_optuna"   : 15,
+    }
+
+    best_hp, kappa_val, n_trials_reg = _hp_previos(
+        nombre, estrategia, variante_target, cfg)
+    if best_hp is None:
         def obj(trial):
             p = {
                 "n_d"          : trial.suggest_int("n_d", 8, 64, step=8),
@@ -378,12 +738,17 @@ def entrenar_tabnet(
                                      weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
-        study.optimize(obj, n_trials=min(cfg["n_trials"], 20), show_progress_bar=False)
-        best_hp = study.best_params
-        print(f"  Mejor Kappa Val: {study.best_value:.4f} | {best_hp}")
-        ruta_hp.write_text(json.dumps(best_hp))
+        study.optimize(obj, n_trials=n_trials_efectivos, show_progress_bar=False)
+        best_hp, kappa_val = study.best_params, study.best_value
+        n_trials_reg = n_trials_efectivos
+        print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
+        guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
+                                hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_TABNET,
+                                config_entrenamiento=CONFIG_FIT,
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
 
-    lr_opt = best_hp.pop("lr", 1e-3)
+    best_hp = dict(best_hp)
+    lr_opt  = best_hp.pop("lr", 1e-3)
     clf = TabNetClassifier(
         **best_hp,
         optimizer_fn=torch.optim.Adam,
@@ -402,6 +767,24 @@ def entrenar_tabnet(
     )
     best_hp["lr"] = lr_opt
 
+    try:
+        epocas = len(clf.history["loss"])
+    except Exception:                                            # noqa: BLE001
+        epocas = None
+    guardar_hiperparametros(
+        nombre, estrategia, variante_target, best_hp,
+        hp_fijos={**hp_fijos, "optimizer_params": {"lr": lr_opt}},
+        espacio_busqueda=ESPACIO_TABNET,
+        config_entrenamiento={
+            **CONFIG_FIT,
+            "n_features"       : int(X_tr_sc.shape[1]),
+            "n_registros_train": int(len(y_tr)),
+            "epocas_entrenadas": epocas,
+            "entrada"          : "X normalizada con MinMaxScaler",
+        },
+        clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+    )
+
     y_pred_val = clf.predict(X_val_sc.astype(np.float32))
     y_prob_val = clf.predict_proba(X_val_sc.astype(np.float32))
     y_pred_te  = clf.predict(X_te_sc.astype(np.float32))
@@ -413,87 +796,9 @@ def entrenar_tabnet(
     return clf, m_val, m_te
 
 
-
-def entrenar_ridge(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
-    estrategia: str, variante_target: str = "likert_continuo",
-    cfg: dict = None,
-) -> Tuple:
-    """
-    Ridge Regression como modelo de regresión ordinal.
-    Equivalente de OLO para el experimento E2 variante Likert continuo.
-
-    El target se trata como variable numérica continua {0.0, 1.0, 2.0, 3.0}.
-    Las predicciones se redondean y se recortan al rango [0, N_CLASES-1]
-    para obtener clases comparables con la variante ordinal.
-
-    Parámetros
-    ----------
-    Mismos que entrenar_olo, más variante_target='likert_continuo'.
-    """
-    from sklearn.linear_model import Ridge as _Ridge
-    from sklearn.model_selection import cross_val_score as _cvs
-    import optuna as _optuna
-    from optuna.samplers import TPESampler as _TPE
-
-    nombre   = "Ridge"
-    ruta_hp  = PATHS["FOLDER_MODELS"] / f"hp_{nombre}_{estrategia}.json"
-    seed     = PARAMETERS["SEED"]
-
-    print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia} [{variante_target}]\n{'='*52}")
-
-    # Usar X ya normalizado (StandarScaler, igual que OLO)
-    y_tr_f  = y_tr.astype(float)
-    y_val_f = y_val.astype(float)
-    y_te_f  = y_te.astype(float)
-
-    if not cfg["ejecutar_hp"] and ruta_hp.exists():
-        best_hp = json.loads(ruta_hp.read_text())
-        print(f"  HPs cargados: {best_hp}")
-    else:
-        def obj(trial):
-            alpha = trial.suggest_float("alpha", 1e-4, 100.0, log=True)
-            m = _Ridge(alpha=alpha, random_state=seed)
-            m.fit(X_tr, y_tr_f, sample_weight=w_tr)
-            y_pred_v = np.clip(np.round(m.predict(X_val)), 0, N_CLASES - 1).astype(int)
-            return cohen_kappa_score(y_val, y_pred_v, weights="quadratic")
-
-        study = _optuna.create_study(direction="maximize", sampler=_TPE(seed=seed))
-        study.optimize(obj, n_trials=cfg["n_trials"], show_progress_bar=False)
-        best_hp = study.best_params
-        print(f"  Mejor Kappa Val (post-redondeo): {study.best_value:.4f} | {best_hp}")
-        ruta_hp.write_text(json.dumps(best_hp))
-
-    clf = _Ridge(**best_hp, random_state=seed)
-    clf.fit(X_tr, y_tr_f, sample_weight=w_tr)
-
-    # Predicciones: valor continuo → redondear → clip → clase entera
-    def _pred_cls(X):
-        y_cont = clf.predict(X)
-        return np.clip(np.round(y_cont), 0, N_CLASES - 1).astype(int)
-
-    def _pred_proba(X, n_cls=N_CLASES):
-        """Probabilidades blandas desde distancia al entero más cercano."""
-        y_cont = clf.predict(X)
-        proba  = np.zeros((len(y_cont), n_cls))
-        for k in range(n_cls):
-            dist = np.abs(y_cont - k)
-            proba[:, k] = np.exp(-dist)
-        proba /= proba.sum(axis=1, keepdims=True)
-        return proba
-
-    y_pred_val = _pred_cls(X_val)
-    y_prob_val = _pred_proba(X_val)
-    y_pred_te  = _pred_cls(X_te)
-    y_prob_te  = _pred_proba(X_te)
-
-    m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre,
-                    estrategia_balanceo=estrategia,
-                    variante_target=variante_target, split="val")
-    m_te  = evaluar(y_te,  y_pred_te,  y_prob_te,  nombre,
-                    estrategia_balanceo=estrategia,
-                    variante_target=variante_target, split="test")
-    return clf, m_val, m_te
+# ═════════════════════════════════════════════════════════════════════════════
+# PREDICCIÓN EN PRODUCCIÓN
+# ═════════════════════════════════════════════════════════════════════════════
 
 def predecir(
     datos_crudos: dict,

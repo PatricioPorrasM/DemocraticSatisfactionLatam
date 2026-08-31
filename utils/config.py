@@ -11,7 +11,7 @@ from pathlib import Path
 # ====================================================
 
 PARAMETERS = {
-    "LOAD_SAMPLE": False,  # True: carga muestra de prueba (LB_SAMPLE); False: carga dataset completo
+    "LOAD_SAMPLE": True,  # True: carga muestra de prueba (LB_SAMPLE); False: carga dataset completo
     "MIN_NUMBER_RECORDS": 8,  # tamaño mínimo de muestra para entrenar modelos (si LOAD_SAMPLE=True)
     "MAX_NUMBER_RECORDS": 12,  # tamaño máximo de muestra para entrenar modelos (si LOAD_SAMPLE=True)
     "SEED": 42,
@@ -193,8 +193,8 @@ PAISES_EXCLUIR_EVAL = ["Venezuela", "Nicaragua"]   # excluidos de val y test
 # ====================================================
 
 SUBREGIONES = {
-    "Cono Sur":        ["Argentina", "Chile", "Uruguay", "Paraguay", "Perú"],
-    "Región Andina":   ["Bolivia", "Colombia", "Ecuador"],
+    "Cono Sur":        ["Argentina", "Chile", "Uruguay", "Paraguay"],
+    "Región Andina":   ["Bolivia", "Colombia", "Ecuador", "Perú"],
     "Brasil":          ["Brasil"],
     "Centroamérica":   ["Costa Rica", "El Salvador", "Guatemala", "Honduras", "Panamá"],
     "México y Caribe": ["México", "República Dominicana"],

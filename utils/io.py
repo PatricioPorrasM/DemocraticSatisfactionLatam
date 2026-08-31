@@ -5,10 +5,15 @@ Funciones de entrada/salida para el proyecto de tesis.
 
 Diseño de split único (train 1995-2018, val 2020, test 2023-2024).
 Convención de nombres de archivo:
-  - pipeline_{modelo}_{estrategia}.pkl   (estrategia: sin_balanceo | pesos_clase | smotenc)
+  - pipeline_{modelo}_{estrategia}.pkl              (E1: variante ordinal)
+  - pipeline_{modelo}_{estrategia}_binario.pkl      (E2: variante binaria)
+  - hp_{modelo}_{estrategia}_{variante}.json        (registro de hiperparámetros)
   - train.parquet, val.parquet, test.parquet
   - shap_{modelo}.parquet
   - resultados_modelos.parquet / .csv
+
+Estrategias de balanceo: sin_balanceo | pesos_clase | smotenc.
+Para leer los hiperparámetros usar `utils.models.cargar_hiperparametros()`.
 """
 
 import joblib
@@ -31,9 +36,9 @@ def cargar_pipeline(nombre_modelo: str, estrategia: str = "pesos_clase",
 
     Parámetros
     ----------
-    nombre_modelo : 'OLO', 'XGBoost', 'CatBoost', 'LightGBM', 'TabNet' o 'Ridge'
+    nombre_modelo : 'OLO', 'XGBoost', 'CatBoost', 'LightGBM' o 'TabNet'
     estrategia    : 'sin_balanceo', 'pesos_clase' o 'smotenc'
-    variante      : None (E1 ordinal), 'binario' o 'likert' (E2)
+    variante      : None (E1, variante ordinal) o 'binario' (E2)
                     Genera el nombre: pipeline_{modelo}_{estrategia}_{variante}.pkl
 
     Retorna

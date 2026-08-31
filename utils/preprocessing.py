@@ -4,13 +4,20 @@ from sklearn.experimental import enable_iterative_imputer  # noqa
 from sklearn.impute import IterativeImputer, SimpleImputer
 from sklearn.linear_model import BayesianRidge
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from typing import Tuple
+from typing import Dict, Optional, Tuple
 
 from .config import (
-    SPLIT, COL_AÑO, COL_PESO, COL_TARGET, PARAMETERS,
+    SPLIT, COL_AÑO, COL_PESO, COL_TARGET, PARAMETERS, PATHS,
     VARS_CATEGORICAS, AÑO_CORTE_VEN, PAISES_EXCLUIR_EVAL,
     COL_PAIS,
 )
+
+# Nombre legible de cada conjunto del split único
+NOMBRES_CONJUNTOS = {
+    "train": "Entrenamiento",
+    "val":   "Validación",
+    "test":  "Prueba",
+}
 
 
 def limpiar_nsnr(df: pd.DataFrame, cols: list, codigos: list) -> pd.DataFrame:
@@ -100,6 +107,210 @@ def resumen_split(X_tr, y_tr, X_val, y_val, X_te, y_te):
     miss_val = X_val.isnull().mean().mean() * 100
     miss_te  = X_te.isnull().mean().mean() * 100
     print(f"  NaN train: {miss_tr:.1f}%  |  NaN val: {miss_val:.1f}%  |  NaN test: {miss_te:.1f}%")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TABLAS DESCRIPTIVAS DE LOS CONJUNTOS DE DATOS
+#
+# Se usan dos veces en el NB02: antes de las exclusiones (justo después de la
+# fusión LB × V-Dem) y después de todas las exclusiones (justo antes del
+# entrenamiento), de modo que el efecto de cada exclusión quede documentado.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def subconjuntos_split(
+    df: pd.DataFrame,
+    aplicar_exclusiones_eval: bool = False,
+    incluir_fuera_split: bool = True,
+) -> Dict[str, pd.DataFrame]:
+    """
+    Parte el DataFrame en los conjuntos del split único definido en SPLIT.
+
+    Parámetros
+    ----------
+    df                       : DataFrame con las columnas de año y país.
+    aplicar_exclusiones_eval : si True replica las reglas de `construir_split`:
+                               Venezuela solo hasta AÑO_CORTE_VEN en train y
+                               PAISES_EXCLUIR_EVAL fuera de val y test.
+                               Si False no se excluye ningún país (situación
+                               previa a las exclusiones).
+    incluir_fuera_split      : añade la clave 'Fuera del split' con los
+                               registros cuyos años no pertenecen a ningún
+                               conjunto (solo si existen).
+
+    Retorna
+    -------
+    dict {nombre_conjunto: sub_DataFrame} en orden train → val → test.
+    """
+    tiene_pais = COL_PAIS in df.columns
+    subconjuntos: Dict[str, pd.DataFrame] = {}
+
+    for clave in ["train", "val", "test"]:
+        sub = df[df[COL_AÑO].isin(SPLIT[clave])].copy()
+        if aplicar_exclusiones_eval and tiene_pais:
+            if clave == "train":
+                sub = sub[~((sub[COL_PAIS] == "Venezuela") &
+                            (sub[COL_AÑO] > AÑO_CORTE_VEN))]
+            else:
+                sub = sub[~sub[COL_PAIS].isin(PAISES_EXCLUIR_EVAL)]
+        subconjuntos[NOMBRES_CONJUNTOS[clave]] = sub
+
+    if incluir_fuera_split:
+        años_split = set(SPLIT["train"]) | set(SPLIT["val"]) | set(SPLIT["test"])
+        fuera = df[~df[COL_AÑO].isin(años_split)].copy()
+        if len(fuera) > 0:
+            subconjuntos["Fuera del split"] = fuera
+
+    return subconjuntos
+
+
+def _rangos_olas(años: list) -> str:
+    """Representación compacta de una lista de años: '1995–1998, 2000, 2002–2004'."""
+    if not años:
+        return ""
+    tramos, inicio, previo = [], años[0], años[0]
+    for a in años[1:]:
+        if a == previo + 1:
+            previo = a
+            continue
+        tramos.append((inicio, previo))
+        inicio = previo = a
+    tramos.append((inicio, previo))
+    return ", ".join(str(i) if i == f else f"{i}–{f}" for i, f in tramos)
+
+
+def resumen_conjuntos(
+    df: pd.DataFrame,
+    aplicar_exclusiones_eval: bool = False,
+) -> pd.DataFrame:
+    """
+    Tabla resumen de los conjuntos de datos.
+
+    Columnas: conjunto, olas (lista completa), olas_rango (forma compacta),
+    n_olas, n_registros, n_paises. Incluye una fila TOTAL con la unión de
+    los tres conjuntos del split.
+
+    Parámetros
+    ----------
+    df                       : DataFrame a describir.
+    aplicar_exclusiones_eval : ver `subconjuntos_split`.
+    """
+    subconjuntos = subconjuntos_split(df, aplicar_exclusiones_eval)
+    tiene_pais   = COL_PAIS in df.columns
+
+    def _fila(nombre, sub):
+        olas = sorted(int(a) for a in sub[COL_AÑO].dropna().unique())
+        return {
+            "conjunto"   : nombre,
+            "olas"       : ", ".join(str(a) for a in olas),
+            "olas_rango" : _rangos_olas(olas),
+            "n_olas"     : len(olas),
+            "n_registros": len(sub),
+            "n_paises"   : int(sub[COL_PAIS].nunique()) if tiene_pais else np.nan,
+        }
+
+    filas = [_fila(nombre, sub) for nombre, sub in subconjuntos.items()]
+
+    # Fila TOTAL: unión de train + val + test (excluye 'Fuera del split')
+    claves_split = [NOMBRES_CONJUNTOS[k] for k in ["train", "val", "test"]]
+    df_total     = pd.concat([subconjuntos[k] for k in claves_split
+                              if k in subconjuntos])
+    filas.append(_fila("TOTAL", df_total))
+
+    return pd.DataFrame(filas)
+
+
+def conjuntos_por_pais(
+    df: pd.DataFrame,
+    aplicar_exclusiones_eval: bool = False,
+) -> pd.DataFrame:
+    """
+    Tabla de registros por país y conjunto.
+
+    Filas: país. Columnas: Entrenamiento, Validación, Prueba, Total.
+
+    Parámetros
+    ----------
+    df                       : DataFrame a describir.
+    aplicar_exclusiones_eval : ver `subconjuntos_split`.
+    """
+    if COL_PAIS not in df.columns:
+        return pd.DataFrame(columns=["pais"] + list(NOMBRES_CONJUNTOS.values()) + ["Total"])
+
+    subconjuntos = subconjuntos_split(df, aplicar_exclusiones_eval,
+                                      incluir_fuera_split=False)
+    conteos = {nombre: sub[COL_PAIS].value_counts()
+               for nombre, sub in subconjuntos.items()}
+
+    tabla = (pd.DataFrame(conteos)
+             .reindex(columns=list(NOMBRES_CONJUNTOS.values()))
+             .fillna(0).astype(int))
+    tabla["Total"] = tabla.sum(axis=1)
+    tabla = tabla.sort_values("Total", ascending=False)
+    tabla.index.name = "pais"
+
+    # Fila TOTAL al final
+    tabla.loc["TOTAL"] = tabla.sum(axis=0)
+    return tabla.reset_index()
+
+
+def tablas_conjuntos(
+    df: pd.DataFrame,
+    etapa: str = "antes_exclusiones",
+    titulo: Optional[str] = None,
+    aplicar_exclusiones_eval: bool = False,
+    guardar: bool = True,
+    verboso: bool = True,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Genera, imprime y guarda las dos tablas descriptivas de los conjuntos.
+
+    Parámetros
+    ----------
+    etapa                    : sufijo de los archivos CSV
+                               ('antes_exclusiones' | 'despues_exclusiones').
+    titulo                   : encabezado para la salida por consola.
+    aplicar_exclusiones_eval : ver `subconjuntos_split`.
+    guardar                  : escribe los CSV en results/tables/.
+
+    Retorna
+    -------
+    (df_resumen, df_paises)
+    """
+    df_resumen = resumen_conjuntos(df, aplicar_exclusiones_eval)
+    df_paises  = conjuntos_por_pais(df, aplicar_exclusiones_eval)
+
+    if verboso:
+        encabezado = titulo or f"Conjuntos de datos — {etapa}"
+        print("=" * 72)
+        print(encabezado)
+        print("=" * 72)
+        print()
+        print("Tabla resumen de los conjuntos de datos:")
+        print(df_resumen[["conjunto", "olas_rango", "n_olas",
+                          "n_registros", "n_paises"]].to_string(index=False))
+        print()
+        print("Olas de cada conjunto (detalle):")
+        for _, fila in df_resumen.iterrows():
+            if fila["conjunto"] == "TOTAL":
+                continue
+            print(f"  {fila['conjunto']:<16}: {fila['olas']}")
+        print()
+        print("Registros por país y conjunto:")
+        print(df_paises.to_string(index=False))
+
+    if guardar:
+        carpeta = PATHS["FOLDER_RESULTS_TABLES"]
+        carpeta.mkdir(parents=True, exist_ok=True)
+        ruta_resumen = carpeta / f"conjuntos_resumen_{etapa}.csv"
+        ruta_paises  = carpeta / f"conjuntos_por_pais_{etapa}.csv"
+        df_resumen.to_csv(ruta_resumen, index=False)
+        df_paises.to_csv(ruta_paises, index=False)
+        if verboso:
+            print()
+            print(f"✓ Tabla guardada: results/tables/{ruta_resumen.name}")
+            print(f"✓ Tabla guardada: results/tables/{ruta_paises.name}")
+
+    return df_resumen, df_paises
 
 
 def imputar(

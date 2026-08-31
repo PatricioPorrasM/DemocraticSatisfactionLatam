@@ -92,7 +92,7 @@ DemocraticSatisfactionLatam/
 | `data/processed/` | Splits listos para ML en formato Parquet (`train.parquet`, `val.parquet`, `test.parquet` y pesos de entrenamiento), generados por NB02. |
 | `data/variables/` | Diccionario de variables: mapeo de códigos por ola (`latinobarometro_variable_mapping.csv`) y selección de 40 variables con etiquetas (`variables_selection.csv`). |
 | `logs/` | Logs de ejecución generados por `run_all.sh` al ejecutar los notebooks con Papermill. |
-| `models/` | Pipelines serializados (`.pkl`) e hiperparámetros (`.json`) de los 15 modelos entrenados (5 algoritmos × 3 estrategias de balanceo), generados por NB02. |
+| `models/` | Pipelines serializados (`.pkl`) y registros completos de hiperparámetros (`.json`) de los 15 modelos de E1 (5 algoritmos × 3 estrategias de balanceo) más los 5 de E2 (variante binaria), generados por NB02. |
 | `notebooks/` | Pipeline de análisis compuesto por 6 notebooks numerados que deben ejecutarse en orden. |
 | `notebooks/output/` | Copias ejecutadas de los notebooks generadas por `run_all.sh` vía Papermill. |
 | `results/figures/` | Visualizaciones PNG generadas por NB03–NB06 (métricas comparativas, matrices de confusión, SHAP, ALE, estabilidad regional, contraste teórico). |
@@ -119,19 +119,23 @@ Carga y armoniza las 24 olas de Latinobarómetro con los indicadores de V-Dem. D
 
 Preprocesa los datos consolidados y ejecuta los dos experimentos del proyecto. Une Latinobarómetro y V-Dem por (pais_iso3, año). Limpia códigos NS/NR (-1 a -8). Armoniza escalas económicas entre olas (p. ej., escala de 3 puntos pre-2001 → equivalente de 5 puntos post-2001). Colapsa la victimización en variable binaria. Aplica exclusión de Venezuela y Nicaragua (en val y test). Imputa valores faltantes con MICE (IterativeImputer + BayesianRidge, 10 iteraciones; ajuste solo en train). Normaliza con min-max. Construye el split temporal único.
 
+**Tablas descriptivas de los conjuntos** (secciones 6 y 13): resumen por conjunto —olas, número de olas, registros y países— y registros por país en cada conjunto, calculadas dos veces (antes de las exclusiones y después de todas ellas), más una tabla del efecto acumulado de las exclusiones.
+
+**EDA** (secciones 10 y 12): distribución del target, missingness por variable y conjunto, correlaciones de Spearman de cada feature con el target y tres matrices de correlación entre features —Latinobarómetro (nivel individual), V-Dem (nivel país-año) y dataset fusionado— para documentar la redundancia informativa.
+
 **Experimento E1:** entrena 5 algoritmos × 3 estrategias de balanceo = 15 modelos. Cada modelo se optimiza con Optuna (TPE, 20–50 trials, objetivo: Kappa cuadrático en val).
 
-**Experimento E2:** fija la mejor estrategia de balanceo de E1 y entrena los 5 algoritmos bajo 3 formulaciones de la variable objetivo (ordinal de 4 clases, binario, Likert continuo).
+**Experimento E2:** fija la mejor estrategia de balanceo de E1 y entrena los 5 algoritmos bajo 2 formulaciones de la variable objetivo (ordinal de 4 clases y binaria).
 
-**Genera:** `data/processed/{train,val,test}.parquet`, `models/pipeline_*.pkl`, `models/hp_*.json`, `results/resultados_modelos.{csv,parquet}`
+**Genera:** `data/processed/{train,val,test}.parquet`, `models/pipeline_*.pkl`, `models/hp_*.json`, `results/tables/conjuntos_*.csv`, `results/tables/correlaciones_matriz_*.csv`, `results/tables/hiperparametros_modelos.csv`, `results/resultados_modelos.{csv,parquet}`
 
 ---
 
 ### NB03 — `03_evaluacion_comparativa.ipynb`
 
-Responde la pregunta de investigación PI1: ¿qué familia de modelos ofrece el mejor equilibrio entre rendimiento predictivo, estabilidad temporal e interpretabilidad? Calcula 8 métricas en el conjunto de test para los 15 modelos de E1. Genera matrices de confusión normalizadas (% por clase real). Analiza MAE ordinal por país. Aplica prueba estadística de Friedman + post-hoc Nemenyi. Evalúa las 3 formulaciones de E2 por subregión. Selecciona el mejor modelo para la fase XAI y escribe su identificador en `results/modelo_xai_seleccionado.json`.
+Responde la pregunta de investigación PI1: ¿qué familia de modelos ofrece el mejor equilibrio entre rendimiento predictivo, estabilidad temporal e interpretabilidad? Calcula 8 métricas agregadas en el conjunto de test para los 15 modelos de E1 y genera sus matrices de confusión normalizadas (% por clase real). Para el **modelo principal** añade el reporte detallado: matriz de confusión en conteos y en porcentajes por clase real —con los errores ordinales graves (distancia ≥ 2 clases) resaltados— y el desglose de precision, recall y F1 por categoría del target con su soporte. Analiza MAE ordinal por país. Aplica prueba estadística de Friedman + post-hoc Nemenyi. Evalúa las formulaciones de E2. Selecciona el mejor modelo para la fase XAI y escribe su identificador en `results/modelo_xai_seleccionado.json`.
 
-**Genera:** `results/tables/metricas_*.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
+**Genera:** `results/tables/metricas_*.csv`, `results/tables/metricas_por_clase_*.csv`, `results/tables/matriz_confusion_*.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
 
 ---
 
@@ -171,19 +175,25 @@ Funciones de entrada/salida para artefactos del proyecto. Carga y deserializa pi
 
 ### `utils/metrics.py`
 
-Función central `evaluar()` que calcula 8 métricas sobre cualquier par (y_true, y_pred): `accuracy`, `balanced_accuracy`, `f1_macro`, `f1_weighted`, `kappa_lineal`, `kappa_cuadratico` (métrica primaria del proyecto), `mae_ordinal` y `auroc_macro`. Soporta salidas probabilísticas (`y_prob`) para AUROC y pesos de clase. Devuelve un diccionario con métricas y metadatos (modelo, estrategia, variante, split).
+Función central `evaluar()` que calcula 8 métricas agregadas sobre cualquier par (y_true, y_pred): `accuracy`, `balanced_accuracy`, `f1_macro`, `f1_weighted`, `kappa_lineal`, `kappa_cuadratico` (métrica primaria del proyecto), `mae_ordinal` y `auroc_macro`. Soporta salidas probabilísticas (`y_prob`) para AUROC y pesos de clase. Devuelve un diccionario con métricas y metadatos (modelo, estrategia, variante, split).
+
+Para el modelo principal el análisis desciende al nivel de categoría: `metricas_por_clase()` devuelve precision, recall, F1 y soporte de cada clase más los promedios macro y ponderado; `matriz_confusion_df()` devuelve la matriz de confusión etiquetada en conteos o en porcentajes (por fila, por columna o sobre el total); y `reporte_detallado()` combina las tres salidas, las imprime y las exporta a `results/tables/`.
 
 ### `utils/preprocessing.py`
 
-Transformaciones de datos previas al entrenamiento. `limpiar_nsnr()` convierte códigos NS/NR a NaN. `aplicar_transformaciones_deterministas()` armoniza escalas económicas entre olas y colapsa la victimización en binario. `construir_split()` crea los conjuntos train/val/test con las exclusiones de Venezuela/Nicaragua y calcula pesos muestrales compuestos. `imputar()` aplica MICE (BayesianRidge) para numéricas e imputación por moda para la variable categórica S_200, ajustando siempre solo sobre train. `normalizar()` aplica min-max (por defecto) o estandarización. `resumen_split()` imprime estadísticas de tamaño, distribución de clases y missingness.
+Transformaciones de datos previas al entrenamiento. `limpiar_nsnr()` convierte códigos NS/NR a NaN. `aplicar_transformaciones_deterministas()` armoniza escalas económicas entre olas y colapsa la victimización en binario. `construir_split()` crea los conjuntos train/val/test con las exclusiones de Venezuela/Nicaragua y calcula pesos muestrales compuestos. `imputar()` aplica MICE (BayesianRidge) para numéricas e imputación por moda para la variable categórica S_200, ajustando siempre solo sobre train. `normalizar()` aplica min-max (por defecto) o estandarización. `resumen_split()` imprime estadísticas de tamaño, distribución de clases y missingness. `resumen_conjuntos()`, `conjuntos_por_pais()` y `tablas_conjuntos()` producen las tablas descriptivas de los conjuntos (olas, número de olas, registros y países; registros por país y conjunto), con la opción de aplicar o no las exclusiones de Venezuela y Nicaragua para comparar la composición antes y después de ellas.
 
 ### `utils/models.py`
 
-Orquesta el entrenamiento de cada algoritmo. Una función por modelo (`entrenar_olo`, `entrenar_xgboost`, `entrenar_catboost`, `entrenar_lightgbm`, `entrenar_tabnet`, `entrenar_ridge`), todas con su propio bucle Optuna (TPE, maximizando Kappa cuadrático en val). Cada función serializa el pipeline completo (`.pkl`) y los hiperparámetros encontrados (`.json`). `predecir()` carga un pipeline existente, aplica las transformaciones necesarias y devuelve clase predicha, etiqueta y probabilidades por clase.
+Orquesta el entrenamiento de cada algoritmo. Una función por modelo (`entrenar_olo`, `entrenar_xgboost`, `entrenar_catboost`, `entrenar_lightgbm`, `entrenar_tabnet`), todas con su propio bucle Optuna (TPE, maximizando Kappa cuadrático en val).
+
+Cada función guarda en `models/hp_{modelo}_{estrategia}_{variante}.json` el registro **completo** de su configuración, no solo los parámetros que busca Optuna: `hp_optimizados` (los de Optuna), `hp_fijos` (objective, número de clases, semilla, device, n_jobs, verbosidad), `hp_completos` (la unión de ambos, que es lo que recibe el constructor), `espacio_busqueda` (tipo y rango de cada parámetro optimizado), `config_entrenamiento` (early stopping, épocas, batch size, eval_set, uso de sample_weight, iteración final) y `params_efectivos_modelo` (el `get_params()` del estimador entrenado, que incluye los valores por defecto de cada librería). Se consulta con `cargar_hiperparametros()` y se resume con `tabla_hiperparametros()`.
+
+`predecir()` carga un pipeline existente, aplica las transformaciones necesarias y devuelve clase predicha, etiqueta y probabilidades por clase.
 
 ### `utils/plots.py`
 
-Biblioteca de visualización con 80+ funciones organizadas por notebook. Funciones de apoyo comunes: `model_color()`, `save_figure()`. Para NB03: `plot_metricas_comparativas()`, `plot_matrices_confusion()`, `plot_rendimiento_por_pais()`. Para NB04: `plot_shap_bar_bloques()`, `plot_shap_beeswarm()`, `plot_ale()`. Para NB05: `plot_heatmap_estabilidad()`, `plot_bump_chart()`, `plot_spearman_estabilidad()`, `plot_shap_por_subregion()`. Para NB06: `plot_convergencias_teoricas()`, `plot_tabla_convergencias()`.
+Biblioteca de visualización organizada por notebook. Funciones de apoyo comunes: `model_color()`, `save_figure()`. Para NB02: `plot_matriz_correlacion()`, que dibuja la matriz de correlación (Spearman por defecto) con barra lateral de bloques temáticos y reporte de los pares con multicolinealidad. Para NB03: `plot_metricas_comparativas()`, `plot_matrices_confusion()`, `plot_matriz_confusion_modelo()`, `plot_metricas_por_clase()`, `plot_rendimiento_por_pais()`. Para NB04: `plot_shap_bar_bloques()`, `plot_shap_beeswarm()`, `plot_ale()`. Para NB05: `plot_heatmap_estabilidad()`, `plot_bump_chart()`, `plot_spearman_estabilidad()`, `plot_shap_por_subregion()`. Para NB06: `plot_convergencias_teoricas()`, `plot_tabla_convergencias()`.
 
 ---
 
@@ -273,19 +283,20 @@ Compara los **5 algoritmos** bajo **3 estrategias de manejo del desbalance de cl
 | `pesos_clase` | Pesos inversamente proporcionales a la frecuencia de cada clase |
 | `smotenc` | Sobremuestreo sintético de clases minoritarias (SMOTE-NC para variables mixtas) |
 
-**Genera:** `models/pipeline_{modelo}_{estrategia}.pkl`, `models/hp_{modelo}_{estrategia}.json`, `results/resultados_modelos.parquet`
+**Genera:** `models/pipeline_{modelo}_{estrategia}.pkl`, `models/hp_{modelo}_{estrategia}_{variante}.json`, `results/resultados_modelos.parquet`
 
 ---
 
 ### Experimento E2 — Formulaciones de la variable objetivo
 
-Fija la mejor estrategia de balanceo encontrada en E1 y evalúa los 5 algoritmos bajo **3 formulaciones distintas de la variable objetivo**, verificando si la codificación ordinal de 4 clases es óptima o si alternativas más simples o continuas ofrecen mejor rendimiento.
+Fija la mejor estrategia de balanceo encontrada en E1 y evalúa los 5 algoritmos bajo **2 formulaciones distintas de la variable objetivo**, verificando si la codificación ordinal de 4 clases es óptima o si una alternativa más simple ofrece mejor rendimiento.
 
 | Formulación | Descripción |
 |---|---|
 | `ordinal_4clases` | 4 clases ordinales; formulación principal — reutiliza los modelos de E1 |
 | `binario` | 2 clases: {0,1}→Insatisfecho, {2,3}→Satisfecho |
-| `likert_continuo` | Variable continua 0.0–3.0; Ridge regression con redondeo post-hoc |
+
+> La formulación de regresión sobre la escala Likert continua se descartó del diseño experimental: la métrica principal (Kappa cuadrático) ya penaliza el error proporcionalmente a la distancia ordinal, por lo que la comparación relevante es ordinal vs. binaria.
 
 **Genera:** `results/tables/metricas_e2_variantes_target.csv`
 
@@ -316,8 +327,8 @@ Fija la mejor estrategia de balanceo encontrada en E1 y evalúa los 5 algoritmos
 
 **Países (18) en 5 subregiones:**
 
-- **Cono Sur:** Argentina, Chile, Uruguay, Paraguay, Perú
-- **Región Andina:** Bolivia, Colombia, Ecuador
+- **Cono Sur:** Argentina, Chile, Uruguay, Paraguay
+- **Región Andina:** Bolivia, Colombia, Ecuador, Perú
 - **Brasil:** Brasil
 - **Centroamérica:** Costa Rica, El Salvador, Guatemala, Honduras, Panamá
 - **México y Caribe:** México, República Dominicana
