@@ -9,18 +9,24 @@ Convención de nombres de archivo:
   - pipeline_{modelo}_{estrategia}_binario.pkl      (E2: variante binaria)
   - hp_{modelo}_{estrategia}_{variante}.json        (registro de hiperparámetros)
   - train.parquet, val.parquet, test.parquet
-  - shap_{modelo}.parquet
+  - shap_{modelo}_{estrategia}[_claseN].parquet
   - resultados_modelos.parquet / .csv
 
 Estrategias de balanceo: sin_balanceo | pesos_clase | smotenc.
 Para leer los hiperparámetros usar `utils.models.cargar_hiperparametros()`.
+
+El modelo principal y su estrategia se resuelven con
+`modelo_xai_seleccionado()`, que lee la selección escrita por el NB03: como el
+nombre de los archivos SHAP incluye la estrategia, los notebooks 04, 05 y 06
+deben partir de la misma fuente para no buscar archivos inexistentes.
 """
 
+import json
 import joblib
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 
 from .config import PATHS
 
@@ -275,6 +281,65 @@ def guardar_shap_values(shap_array: np.ndarray,
     print(f"  ✓ SHAP guardado: {nombre} ({ruta.stat().st_size / 1024:.0f} KB)")
 
 
+def listar_shap_disponibles() -> pd.DataFrame:
+    """
+    Lista los archivos de valores SHAP presentes en results/shap/.
+
+    Retorna un DataFrame con columnas: modelo, estrategia, clase, archivo.
+    Útil para diagnosticar desajustes entre lo que guardó el NB04 y lo que
+    buscan los notebooks 05 y 06.
+    """
+    carpeta = PATHS["FOLDER_RESULTS_SHAP"]
+    filas = []
+    if carpeta.exists():
+        for ruta in sorted(carpeta.glob("shap_*.parquet")):
+            partes = ruta.stem.split("_")          # shap, modelo, estrategia…
+            clase  = None
+            if partes and partes[-1].startswith("clase"):
+                clase  = partes[-1].replace("clase", "")
+                partes = partes[:-1]
+            filas.append({
+                "modelo"    : partes[1] if len(partes) > 1 else "",
+                "estrategia": "_".join(partes[2:]) if len(partes) > 2 else "",
+                "clase"     : clase,
+                "archivo"   : ruta.name,
+            })
+    return pd.DataFrame(filas, columns=["modelo", "estrategia", "clase", "archivo"])
+
+
+def modelo_xai_seleccionado(fallback_modelo: str = "XGBoost",
+                            fallback_estrategia: str = "pesos_clase",
+                            verboso: bool = True) -> Tuple[str, str]:
+    """
+    Resuelve el modelo principal y su estrategia de balanceo.
+
+    Lee `results/modelo_xai_seleccionado.json`, que escribe el NB03 al elegir
+    el mejor modelo. Es la fuente única para los notebooks 04, 05 y 06: el
+    nombre de los archivos SHAP incluye la estrategia, así que si cada
+    notebook la fija por su cuenta los archivos no se encuentran.
+
+    Retorna
+    -------
+    (nombre_modelo, estrategia_balanceo)
+    """
+    ruta = PATHS["FOLDER_RESULTS"] / "modelo_xai_seleccionado.json"
+    if ruta.exists():
+        try:
+            sel = json.loads(ruta.read_text())
+            modelo     = sel.get("modelo_xai", fallback_modelo)
+            estrategia = sel.get("estrategia_balanceo", fallback_estrategia)
+            if verboso:
+                print(f"Modelo principal (selección del NB03): {modelo} [{estrategia}]")
+            return modelo, estrategia
+        except Exception as e:                                   # noqa: BLE001
+            if verboso:
+                print(f"⚠ {ruta.name} ilegible ({e}); se usa el respaldo.")
+    if verboso:
+        print(f"⚠ Sin {ruta.name} — se usa el respaldo "
+              f"{fallback_modelo} [{fallback_estrategia}]. Ejecuta el NB03.")
+    return fallback_modelo, fallback_estrategia
+
+
 def cargar_shap_values(nombre_modelo: str,
                        estrategia: str = "pesos_clase",
                        clase: Optional[int] = None) -> pd.DataFrame:
@@ -290,9 +355,17 @@ def cargar_shap_values(nombre_modelo: str,
     nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
     ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
     if not ruta.exists():
+        disponibles = listar_shap_disponibles()
+        detalle = ("\n  Archivos presentes en results/shap/:\n    " +
+                   "\n    ".join(disponibles["archivo"].tolist())
+                   if not disponibles.empty
+                   else "\n  results/shap/ está vacío.")
         raise FileNotFoundError(
-            f"Valores SHAP no encontrados: {ruta}\n"
-            f"Ejecuta la celda de cálculo SHAP en el notebook 04."
+            f"Valores SHAP no encontrados: {nombre}\n"
+            f"  Modelo '{nombre_modelo}' con estrategia '{estrategia}'."
+            f"{detalle}\n"
+            f"  Ejecuta la celda de cálculo SHAP del notebook 04 con la misma "
+            f"estrategia, o revisa results/modelo_xai_seleccionado.json."
         )
     return pd.read_parquet(ruta)
 
