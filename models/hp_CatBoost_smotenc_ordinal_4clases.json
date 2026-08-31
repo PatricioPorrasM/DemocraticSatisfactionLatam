@@ -1,0 +1,103 @@
+{
+  "modelo": "CatBoost",
+  "estrategia_balanceo": "smotenc",
+  "variante_target": "ordinal_4clases",
+  "semilla": 42,
+  "n_trials_optuna": 50,
+  "mejor_kappa_val_optuna": 0.526884,
+  "hp_optimizados": {
+    "iterations": 300,
+    "depth": 8,
+    "learning_rate": 0.015477942147190072,
+    "l2_leaf_reg": 7.024164226796244,
+    "bagging_temperature": 0.004069232418913049,
+    "border_count": 112,
+    "random_strength": 5.62606399081453
+  },
+  "hp_fijos": {
+    "loss_function": "MultiClass",
+    "random_seed": 42,
+    "verbose": false,
+    "task_type": "GPU"
+  },
+  "hp_completos": {
+    "loss_function": "MultiClass",
+    "random_seed": 42,
+    "verbose": false,
+    "task_type": "GPU",
+    "iterations": 300,
+    "depth": 8,
+    "learning_rate": 0.015477942147190072,
+    "l2_leaf_reg": 7.024164226796244,
+    "bagging_temperature": 0.004069232418913049,
+    "border_count": 112,
+    "random_strength": 5.62606399081453
+  },
+  "espacio_busqueda": {
+    "iterations": {
+      "tipo": "int",
+      "min": 300,
+      "max": 1000,
+      "paso": 100
+    },
+    "depth": {
+      "tipo": "int",
+      "min": 4,
+      "max": 8
+    },
+    "learning_rate": {
+      "tipo": "float",
+      "min": 0.01,
+      "max": 0.3,
+      "log": true
+    },
+    "l2_leaf_reg": {
+      "tipo": "float",
+      "min": 1.0,
+      "max": 10.0
+    },
+    "bagging_temperature": {
+      "tipo": "float",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "border_count": {
+      "tipo": "int",
+      "min": 32,
+      "max": 128
+    },
+    "random_strength": {
+      "tipo": "float",
+      "min": 0.0,
+      "max": 10.0
+    }
+  },
+  "config_entrenamiento": {
+    "usa_sample_weight": true,
+    "eval_set": "conjunto de validación",
+    "cat_features_idx": [
+      22
+    ],
+    "cat_features_nombre": [
+      "S_200"
+    ],
+    "nan_categoricas": "-999 como categoría explícita",
+    "n_features": 28,
+    "n_registros_train": 5848,
+    "arboles_usados": 300
+  },
+  "params_efectivos_modelo": {
+    "iterations": 300,
+    "learning_rate": 0.015477942147190072,
+    "depth": 8,
+    "l2_leaf_reg": 7.024164226796244,
+    "loss_function": "MultiClass",
+    "border_count": 112,
+    "random_seed": 42,
+    "verbose": false,
+    "random_strength": 5.62606399081453,
+    "bagging_temperature": 0.004069232418913049,
+    "task_type": "GPU"
+  },
+  "fecha_registro": "2026-08-30T19:37:41.968377"
+}

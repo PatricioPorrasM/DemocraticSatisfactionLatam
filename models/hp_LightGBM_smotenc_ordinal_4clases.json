@@ -1,0 +1,134 @@
+{
+  "modelo": "LightGBM",
+  "estrategia_balanceo": "smotenc",
+  "variante_target": "ordinal_4clases",
+  "semilla": 42,
+  "n_trials_optuna": 50,
+  "mejor_kappa_val_optuna": 0.515275,
+  "hp_optimizados": {
+    "n_estimators": 400,
+    "num_leaves": 121,
+    "max_depth": 3,
+    "learning_rate": 0.029081152235740062,
+    "subsample": 0.655249280363061,
+    "colsample_bytree": 0.7358007370344498,
+    "reg_alpha": 5.8286591751186935e-06,
+    "reg_lambda": 9.866136351347354e-07,
+    "min_child_samples": 37
+  },
+  "hp_fijos": {
+    "objective": "multiclass",
+    "num_class": 4,
+    "random_state": 42,
+    "n_jobs": -1,
+    "verbose": -1,
+    "device": "gpu"
+  },
+  "hp_completos": {
+    "objective": "multiclass",
+    "num_class": 4,
+    "random_state": 42,
+    "n_jobs": -1,
+    "verbose": -1,
+    "device": "gpu",
+    "n_estimators": 400,
+    "num_leaves": 121,
+    "max_depth": 3,
+    "learning_rate": 0.029081152235740062,
+    "subsample": 0.655249280363061,
+    "colsample_bytree": 0.7358007370344498,
+    "reg_alpha": 5.8286591751186935e-06,
+    "reg_lambda": 9.866136351347354e-07,
+    "min_child_samples": 37
+  },
+  "espacio_busqueda": {
+    "n_estimators": {
+      "tipo": "int",
+      "min": 200,
+      "max": 1000,
+      "paso": 100
+    },
+    "num_leaves": {
+      "tipo": "int",
+      "min": 20,
+      "max": 150
+    },
+    "max_depth": {
+      "tipo": "int",
+      "min": 3,
+      "max": 8
+    },
+    "learning_rate": {
+      "tipo": "float",
+      "min": 0.01,
+      "max": 0.3,
+      "log": true
+    },
+    "subsample": {
+      "tipo": "float",
+      "min": 0.6,
+      "max": 1.0
+    },
+    "colsample_bytree": {
+      "tipo": "float",
+      "min": 0.6,
+      "max": 1.0
+    },
+    "reg_alpha": {
+      "tipo": "float",
+      "min": 1e-08,
+      "max": 10.0,
+      "log": true
+    },
+    "reg_lambda": {
+      "tipo": "float",
+      "min": 1e-08,
+      "max": 10.0,
+      "log": true
+    },
+    "min_child_samples": {
+      "tipo": "int",
+      "min": 20,
+      "max": 100
+    }
+  },
+  "config_entrenamiento": {
+    "usa_sample_weight": true,
+    "eval_set": "conjunto de validación",
+    "early_stopping_rounds": 50,
+    "log_evaluation": -1,
+    "cat_features_nombre": [
+      "S_200"
+    ],
+    "cat_features_dtype": "pandas.CategoricalDtype compartido entre splits",
+    "n_features": 28,
+    "n_registros_train": 5848,
+    "best_iteration": 239,
+    "n_arboles_ajustados": 239
+  },
+  "params_efectivos_modelo": {
+    "boosting_type": "gbdt",
+    "class_weight": null,
+    "colsample_bytree": 0.7358007370344498,
+    "importance_type": "split",
+    "learning_rate": 0.029081152235740062,
+    "max_depth": 3,
+    "min_child_samples": 37,
+    "min_child_weight": 0.001,
+    "min_split_gain": 0.0,
+    "n_estimators": 400,
+    "n_jobs": -1,
+    "num_leaves": 121,
+    "objective": "multiclass",
+    "random_state": 42,
+    "reg_alpha": 5.8286591751186935e-06,
+    "reg_lambda": 9.866136351347354e-07,
+    "subsample": 0.655249280363061,
+    "subsample_for_bin": 200000,
+    "subsample_freq": 0,
+    "num_class": 4,
+    "verbose": -1,
+    "device": "gpu"
+  },
+  "fecha_registro": "2026-08-30T19:38:23.735588"
+}

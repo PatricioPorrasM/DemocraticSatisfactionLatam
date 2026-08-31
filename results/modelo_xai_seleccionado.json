@@ -1,0 +1,6 @@
+{
+  "modelo_xai": "LightGBM",
+  "estrategia_balanceo": "smotenc",
+  "metrica": "kappa_cuadratico",
+  "split_referencia": "test"
+}

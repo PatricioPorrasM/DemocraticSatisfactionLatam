@@ -1,0 +1,175 @@
+{
+  "modelo": "TabNet",
+  "estrategia_balanceo": "pesos_clase",
+  "variante_target": "ordinal_4clases",
+  "semilla": 42,
+  "n_trials_optuna": 20,
+  "mejor_kappa_val_optuna": 0.430377,
+  "hp_optimizados": {
+    "n_d": 16,
+    "n_a": 56,
+    "n_steps": 6,
+    "gamma": 1.968084966244884,
+    "lambda_sparse": 0.00021757966356619656,
+    "momentum": 0.2049656991591885,
+    "mask_type": "sparsemax",
+    "lr": 0.0026800714065680787
+  },
+  "hp_fijos": {
+    "optimizer_fn": "torch.optim.Adam",
+    "scheduler_fn": "torch.optim.lr_scheduler.StepLR",
+    "scheduler_params": {
+      "step_size": 10,
+      "gamma": 0.9
+    },
+    "cat_idxs": [
+      22
+    ],
+    "cat_dims": [
+      8
+    ],
+    "cat_emb_dim": 3,
+    "verbose": 0,
+    "device_name": "cuda",
+    "seed": 42,
+    "optimizer_params": {
+      "lr": 0.0026800714065680787
+    }
+  },
+  "hp_completos": {
+    "optimizer_fn": "torch.optim.Adam",
+    "scheduler_fn": "torch.optim.lr_scheduler.StepLR",
+    "scheduler_params": {
+      "step_size": 10,
+      "gamma": 0.9
+    },
+    "cat_idxs": [
+      22
+    ],
+    "cat_dims": [
+      8
+    ],
+    "cat_emb_dim": 3,
+    "verbose": 0,
+    "device_name": "cuda",
+    "seed": 42,
+    "optimizer_params": {
+      "lr": 0.0026800714065680787
+    },
+    "n_d": 16,
+    "n_a": 56,
+    "n_steps": 6,
+    "gamma": 1.968084966244884,
+    "lambda_sparse": 0.00021757966356619656,
+    "momentum": 0.2049656991591885,
+    "mask_type": "sparsemax",
+    "lr": 0.0026800714065680787
+  },
+  "espacio_busqueda": {
+    "n_d": {
+      "tipo": "int",
+      "min": 8,
+      "max": 64,
+      "paso": 8
+    },
+    "n_a": {
+      "tipo": "int",
+      "min": 8,
+      "max": 64,
+      "paso": 8
+    },
+    "n_steps": {
+      "tipo": "int",
+      "min": 3,
+      "max": 7
+    },
+    "gamma": {
+      "tipo": "float",
+      "min": 1.0,
+      "max": 2.0
+    },
+    "lambda_sparse": {
+      "tipo": "float",
+      "min": 1e-06,
+      "max": 0.001,
+      "log": true
+    },
+    "momentum": {
+      "tipo": "float",
+      "min": 0.01,
+      "max": 0.4
+    },
+    "mask_type": {
+      "tipo": "categorical",
+      "opciones": [
+        "sparsemax",
+        "entmax"
+      ]
+    },
+    "lr": {
+      "tipo": "float",
+      "min": 0.0001,
+      "max": 0.01,
+      "log": true
+    }
+  },
+  "config_entrenamiento": {
+    "max_epochs": 200,
+    "patience": 20,
+    "batch_size": 1024,
+    "virtual_batch_size": 128,
+    "eval_metric": [
+      "balanced_accuracy"
+    ],
+    "weights": 1,
+    "eval_set": "conjunto de validación",
+    "usa_sample_weight": false,
+    "nota": "TabNet usa pesos por clase (weights=1), no sample_weight individual",
+    "max_epochs_optuna": 100,
+    "patience_optuna": 15,
+    "n_features": 28,
+    "n_registros_train": 3458,
+    "epocas_entrenadas": 77,
+    "entrada": "X normalizada con MinMaxScaler"
+  },
+  "params_efectivos_modelo": {
+    "cat_dims": [
+      8
+    ],
+    "cat_emb_dim": [
+      3
+    ],
+    "cat_idxs": [
+      22
+    ],
+    "clip_value": 1,
+    "device_name": "cuda",
+    "epsilon": 1e-15,
+    "gamma": 1.968084966244884,
+    "grouped_features": [],
+    "input_dim": 28,
+    "lambda_sparse": 0.00021757966356619656,
+    "mask_type": "sparsemax",
+    "momentum": 0.2049656991591885,
+    "n_a": 56,
+    "n_d": 16,
+    "n_indep_decoder": 1,
+    "n_independent": 2,
+    "n_shared": 2,
+    "n_shared_decoder": 1,
+    "n_steps": 6,
+    "optimizer_fn": "Adam",
+    "optimizer_params": {
+      "lr": 0.0026800714065680787
+    },
+    "output_dim": 4,
+    "scheduler_fn": "StepLR",
+    "scheduler_params": {
+      "step_size": 10,
+      "gamma": 0.9
+    },
+    "seed": 42,
+    "verbose": 0
+  },
+  "fecha_registro": "2026-08-30T19:34:14.870433"
+}

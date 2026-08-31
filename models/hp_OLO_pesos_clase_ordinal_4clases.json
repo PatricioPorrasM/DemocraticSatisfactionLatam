@@ -1,0 +1,56 @@
+{
+  "modelo": "OLO",
+  "estrategia_balanceo": "pesos_clase",
+  "variante_target": "ordinal_4clases",
+  "semilla": 42,
+  "n_trials_optuna": 50,
+  "mejor_kappa_val_optuna": 0.324587,
+  "hp_optimizados": {
+    "alpha": 7.857977684064097
+  },
+  "hp_fijos": {
+    "C": 0.12725920589313844,
+    "solver": "lbfgs",
+    "max_iter": 500,
+    "random_state": 42,
+    "implementacion": "sklearn.LogisticRegression"
+  },
+  "hp_completos": {
+    "C": 0.12725920589313844,
+    "solver": "lbfgs",
+    "max_iter": 500,
+    "random_state": 42,
+    "implementacion": "sklearn.LogisticRegression",
+    "alpha": 7.857977684064097
+  },
+  "espacio_busqueda": {
+    "alpha": {
+      "tipo": "float",
+      "min": 0.0001,
+      "max": 10.0,
+      "log": true
+    }
+  },
+  "config_entrenamiento": {
+    "usa_sample_weight": true,
+    "entrada": "X normalizada con StandardScaler",
+    "n_clases": 4
+  },
+  "params_efectivos_modelo": {
+    "C": 0.12725920589313844,
+    "class_weight": null,
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": 0.0,
+    "max_iter": 500,
+    "n_jobs": null,
+    "penalty": "deprecated",
+    "random_state": 42,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "fecha_registro": "2026-08-30T19:27:32.569392"
+}

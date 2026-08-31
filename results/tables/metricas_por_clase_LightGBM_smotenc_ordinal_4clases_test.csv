@@ -1,0 +1,7 @@
+clase,etiqueta,precision,recall,f1,soporte,pct_soporte
+0,0 — Para nada satisfecho,0.5714,0.3871,0.4615,31,10.37
+1,1 — No muy satisfecho,0.434,0.4182,0.4259,55,18.39
+2,2 — Más bien satisfecho,0.5519,0.7481,0.6352,135,45.15
+3,3 — Muy satisfecho,0.6905,0.3718,0.4833,78,26.09
+,Promedio macro,0.5619,0.4813,0.5015,299,100.0
+,Promedio ponderado,0.5684,0.5518,0.5391,299,100.0

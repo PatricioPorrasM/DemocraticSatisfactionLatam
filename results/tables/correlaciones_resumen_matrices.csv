@@ -1,0 +1,4 @@
+matriz,n_variables,r_abs_max,r_abs_medio,n_pares_r_mayor_0.7,n_pares_totales
+Latinobarómetro,24,0.5512,0.1313,0,576
+V-Dem,4,0.8552,0.775,6,16
+Fusionado (LB × V-Dem),28,0.8574,0.1237,6,784
