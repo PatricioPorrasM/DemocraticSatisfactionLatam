@@ -4,24 +4,24 @@
   "variante_target": "ordinal_4clases",
   "semilla": 42,
   "n_trials_optuna": 50,
-  "mejor_kappa_val_optuna": 0.409532,
+  "mejor_kappa_val_optuna": 0.398473,
   "hp_optimizados": {
-    "alpha": 0.0074593432857265485
+    "alpha": 5.669849511478847
   },
   "hp_fijos": {
-    "C": 134.06005886784962,
+    "C": 0.17637152414282922,
     "solver": "lbfgs",
     "max_iter": 500,
     "random_state": 42,
     "implementacion": "sklearn.LogisticRegression"
   },
   "hp_completos": {
-    "C": 134.06005886784962,
+    "C": 0.17637152414282922,
     "solver": "lbfgs",
     "max_iter": 500,
     "random_state": 42,
     "implementacion": "sklearn.LogisticRegression",
-    "alpha": 0.0074593432857265485
+    "alpha": 5.669849511478847
   },
   "espacio_busqueda": {
     "alpha": {
@@ -37,7 +37,7 @@
     "n_clases": 4
   },
   "params_efectivos_modelo": {
-    "C": 134.06005886784962,
+    "C": 0.17637152414282922,
     "class_weight": null,
     "dual": false,
     "fit_intercept": true,
@@ -52,5 +52,5 @@
     "verbose": 0,
     "warm_start": false
   },
-  "fecha_registro": "2026-08-30T19:22:34.419919"
+  "fecha_registro": "2026-08-30T21:02:32.047248"
 }

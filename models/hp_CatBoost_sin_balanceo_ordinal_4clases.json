@@ -4,15 +4,15 @@
   "variante_target": "ordinal_4clases",
   "semilla": 42,
   "n_trials_optuna": 50,
-  "mejor_kappa_val_optuna": 0.497216,
+  "mejor_kappa_val_optuna": 0.458257,
   "hp_optimizados": {
-    "iterations": 600,
-    "depth": 4,
-    "learning_rate": 0.06756264729361224,
-    "l2_leaf_reg": 2.604357469499891,
-    "bagging_temperature": 0.40727487267955315,
-    "border_count": 36,
-    "random_strength": 9.544344683901617
+    "iterations": 900,
+    "depth": 8,
+    "learning_rate": 0.07025096552473238,
+    "l2_leaf_reg": 8.135892203489487,
+    "bagging_temperature": 0.3865268911916658,
+    "border_count": 123,
+    "random_strength": 0.7269106825066062
   },
   "hp_fijos": {
     "loss_function": "MultiClass",
@@ -25,13 +25,13 @@
     "random_seed": 42,
     "verbose": false,
     "task_type": "GPU",
-    "iterations": 600,
-    "depth": 4,
-    "learning_rate": 0.06756264729361224,
-    "l2_leaf_reg": 2.604357469499891,
-    "bagging_temperature": 0.40727487267955315,
-    "border_count": 36,
-    "random_strength": 9.544344683901617
+    "iterations": 900,
+    "depth": 8,
+    "learning_rate": 0.07025096552473238,
+    "l2_leaf_reg": 8.135892203489487,
+    "bagging_temperature": 0.3865268911916658,
+    "border_count": 123,
+    "random_strength": 0.7269106825066062
   },
   "espacio_busqueda": {
     "iterations": {
@@ -83,21 +83,21 @@
     ],
     "nan_categoricas": "-999 como categoría explícita",
     "n_features": 28,
-    "n_registros_train": 3458,
-    "arboles_usados": 393
+    "n_registros_train": 378592,
+    "arboles_usados": 341
   },
   "params_efectivos_modelo": {
-    "iterations": 600,
-    "learning_rate": 0.06756264729361224,
-    "depth": 4,
-    "l2_leaf_reg": 2.604357469499891,
+    "iterations": 900,
+    "learning_rate": 0.07025096552473238,
+    "depth": 8,
+    "l2_leaf_reg": 8.135892203489487,
     "loss_function": "MultiClass",
-    "border_count": 36,
+    "border_count": 123,
     "random_seed": 42,
     "verbose": false,
-    "random_strength": 9.544344683901617,
-    "bagging_temperature": 0.40727487267955315,
+    "random_strength": 0.7269106825066062,
+    "bagging_temperature": 0.3865268911916658,
     "task_type": "GPU"
   },
-  "fecha_registro": "2026-08-30T19:25:59.079208"
+  "fecha_registro": "2026-08-30T21:09:17.676109"
 }

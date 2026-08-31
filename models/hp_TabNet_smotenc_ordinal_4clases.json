@@ -4,16 +4,16 @@
   "variante_target": "ordinal_4clases",
   "semilla": 42,
   "n_trials_optuna": 20,
-  "mejor_kappa_val_optuna": 0.428058,
+  "mejor_kappa_val_optuna": 0.487401,
   "hp_optimizados": {
-    "n_d": 40,
-    "n_a": 40,
-    "n_steps": 3,
-    "gamma": 1.6075448519014384,
-    "lambda_sparse": 3.247673570627449e-06,
-    "momentum": 0.035370121264259015,
+    "n_d": 32,
+    "n_a": 16,
+    "n_steps": 4,
+    "gamma": 1.019850255479209,
+    "lambda_sparse": 1.0625361371523748e-05,
+    "momentum": 0.2774343927311199,
     "mask_type": "entmax",
-    "lr": 0.004138040112561018
+    "lr": 0.0005935228550354689
   },
   "hp_fijos": {
     "optimizer_fn": "torch.optim.Adam",
@@ -33,7 +33,7 @@
     "device_name": "cuda",
     "seed": 42,
     "optimizer_params": {
-      "lr": 0.004138040112561018
+      "lr": 0.0005935228550354689
     }
   },
   "hp_completos": {
@@ -54,16 +54,16 @@
     "device_name": "cuda",
     "seed": 42,
     "optimizer_params": {
-      "lr": 0.004138040112561018
+      "lr": 0.0005935228550354689
     },
-    "n_d": 40,
-    "n_a": 40,
-    "n_steps": 3,
-    "gamma": 1.6075448519014384,
-    "lambda_sparse": 3.247673570627449e-06,
-    "momentum": 0.035370121264259015,
+    "n_d": 32,
+    "n_a": 16,
+    "n_steps": 4,
+    "gamma": 1.019850255479209,
+    "lambda_sparse": 1.0625361371523748e-05,
+    "momentum": 0.2774343927311199,
     "mask_type": "entmax",
-    "lr": 0.004138040112561018
+    "lr": 0.0005935228550354689
   },
   "espacio_busqueda": {
     "n_d": {
@@ -128,8 +128,8 @@
     "max_epochs_optuna": 100,
     "patience_optuna": 15,
     "n_features": 28,
-    "n_registros_train": 5848,
-    "epocas_entrenadas": 47,
+    "n_registros_train": 657776,
+    "epocas_entrenadas": 29,
     "entrada": "X normalizada con MinMaxScaler"
   },
   "params_efectivos_modelo": {
@@ -145,22 +145,22 @@
     "clip_value": 1,
     "device_name": "cuda",
     "epsilon": 1e-15,
-    "gamma": 1.6075448519014384,
+    "gamma": 1.019850255479209,
     "grouped_features": [],
     "input_dim": 28,
-    "lambda_sparse": 3.247673570627449e-06,
+    "lambda_sparse": 1.0625361371523748e-05,
     "mask_type": "entmax",
-    "momentum": 0.035370121264259015,
-    "n_a": 40,
-    "n_d": 40,
+    "momentum": 0.2774343927311199,
+    "n_a": 16,
+    "n_d": 32,
     "n_indep_decoder": 1,
     "n_independent": 2,
     "n_shared": 2,
     "n_shared_decoder": 1,
-    "n_steps": 3,
+    "n_steps": 4,
     "optimizer_fn": "Adam",
     "optimizer_params": {
-      "lr": 0.004138040112561018
+      "lr": 0.0005935228550354689
     },
     "output_dim": 4,
     "scheduler_fn": "StepLR",
@@ -171,5 +171,5 @@
     "seed": 42,
     "verbose": 0
   },
-  "fecha_registro": "2026-08-30T19:39:47.974211"
+  "fecha_registro": "2026-08-31T04:27:45.192849"
 }

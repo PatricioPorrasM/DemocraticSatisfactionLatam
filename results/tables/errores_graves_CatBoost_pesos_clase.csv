@@ -1,0 +1,7 @@
+clase_pred,clase_real,distancia,tipo,n_casos,pct_test,paises_top
+0,2,2,Subestimacion,1016,2.9,"Costa Rica(256), Honduras(105)"
+0,3,3,Subestimacion,317,0.9,"Honduras(57), Costa Rica(56)"
+1,3,2,Subestimacion,496,1.41,"Paraguay(63), México(54)"
+2,0,2,Sobreestimacion,562,1.6,"República Dominicana(65), Guatemala(65)"
+3,0,3,Sobreestimacion,385,1.1,"Guatemala(55), Honduras(47)"
+3,1,2,Sobreestimacion,741,2.11,"Argentina(187), México(59)"

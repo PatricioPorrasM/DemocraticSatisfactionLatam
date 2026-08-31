@@ -4,17 +4,17 @@
   "variante_target": "ordinal_4clases",
   "semilla": 42,
   "n_trials_optuna": 50,
-  "mejor_kappa_val_optuna": 0.515593,
+  "mejor_kappa_val_optuna": 0.461032,
   "hp_optimizados": {
     "n_estimators": 900,
-    "num_leaves": 54,
+    "num_leaves": 20,
     "max_depth": 8,
-    "learning_rate": 0.19038229941921,
-    "subsample": 0.6001426937304715,
-    "colsample_bytree": 0.994418553625725,
-    "reg_alpha": 1.1630573610215895,
-    "reg_lambda": 6.966690307599147e-06,
-    "min_child_samples": 62
+    "learning_rate": 0.08867679093432076,
+    "subsample": 0.6331076319750306,
+    "colsample_bytree": 0.8448397766722598,
+    "reg_alpha": 6.288681919005581e-08,
+    "reg_lambda": 2.680507093650487e-06,
+    "min_child_samples": 99
   },
   "hp_fijos": {
     "objective": "multiclass",
@@ -32,14 +32,14 @@
     "verbose": -1,
     "device": "gpu",
     "n_estimators": 900,
-    "num_leaves": 54,
+    "num_leaves": 20,
     "max_depth": 8,
-    "learning_rate": 0.19038229941921,
-    "subsample": 0.6001426937304715,
-    "colsample_bytree": 0.994418553625725,
-    "reg_alpha": 1.1630573610215895,
-    "reg_lambda": 6.966690307599147e-06,
-    "min_child_samples": 62
+    "learning_rate": 0.08867679093432076,
+    "subsample": 0.6331076319750306,
+    "colsample_bytree": 0.8448397766722598,
+    "reg_alpha": 6.288681919005581e-08,
+    "reg_lambda": 2.680507093650487e-06,
+    "min_child_samples": 99
   },
   "espacio_busqueda": {
     "n_estimators": {
@@ -102,33 +102,33 @@
     ],
     "cat_features_dtype": "pandas.CategoricalDtype compartido entre splits",
     "n_features": 28,
-    "n_registros_train": 3458,
-    "best_iteration": 31,
-    "n_arboles_ajustados": 31
+    "n_registros_train": 378592,
+    "best_iteration": 89,
+    "n_arboles_ajustados": 89
   },
   "params_efectivos_modelo": {
     "boosting_type": "gbdt",
     "class_weight": null,
-    "colsample_bytree": 0.994418553625725,
+    "colsample_bytree": 0.8448397766722598,
     "importance_type": "split",
-    "learning_rate": 0.19038229941921,
+    "learning_rate": 0.08867679093432076,
     "max_depth": 8,
-    "min_child_samples": 62,
+    "min_child_samples": 99,
     "min_child_weight": 0.001,
     "min_split_gain": 0.0,
     "n_estimators": 900,
     "n_jobs": -1,
-    "num_leaves": 54,
+    "num_leaves": 20,
     "objective": "multiclass",
     "random_state": 42,
-    "reg_alpha": 1.1630573610215895,
-    "reg_lambda": 6.966690307599147e-06,
-    "subsample": 0.6001426937304715,
+    "reg_alpha": 6.288681919005581e-08,
+    "reg_lambda": 2.680507093650487e-06,
+    "subsample": 0.6331076319750306,
     "subsample_for_bin": 200000,
     "subsample_freq": 0,
     "num_class": 4,
     "verbose": -1,
     "device": "gpu"
   },
-  "fecha_registro": "2026-08-30T19:26:39.268623"
+  "fecha_registro": "2026-08-30T21:13:52.237889"
 }

@@ -1,0 +1,131 @@
+{
+  "modelo": "LightGBM",
+  "estrategia_balanceo": "pesos_clase",
+  "variante_target": "binario",
+  "semilla": 42,
+  "n_trials_optuna": 50,
+  "mejor_kappa_val_optuna": 0.439928,
+  "hp_optimizados": {
+    "n_estimators": 300,
+    "num_leaves": 52,
+    "max_depth": 7,
+    "learning_rate": 0.06449109319773375,
+    "subsample": 0.8657239010790557,
+    "colsample_bytree": 0.6537022273257639,
+    "reg_alpha": 0.027327997116568636,
+    "reg_lambda": 0.19023849175182966,
+    "min_child_samples": 55
+  },
+  "hp_fijos": {
+    "objective": "binary",
+    "random_state": 42,
+    "n_jobs": -1,
+    "verbose": -1,
+    "device": "gpu"
+  },
+  "hp_completos": {
+    "objective": "binary",
+    "random_state": 42,
+    "n_jobs": -1,
+    "verbose": -1,
+    "device": "gpu",
+    "n_estimators": 300,
+    "num_leaves": 52,
+    "max_depth": 7,
+    "learning_rate": 0.06449109319773375,
+    "subsample": 0.8657239010790557,
+    "colsample_bytree": 0.6537022273257639,
+    "reg_alpha": 0.027327997116568636,
+    "reg_lambda": 0.19023849175182966,
+    "min_child_samples": 55
+  },
+  "espacio_busqueda": {
+    "n_estimators": {
+      "tipo": "int",
+      "min": 200,
+      "max": 1000,
+      "paso": 100
+    },
+    "num_leaves": {
+      "tipo": "int",
+      "min": 20,
+      "max": 150
+    },
+    "max_depth": {
+      "tipo": "int",
+      "min": 3,
+      "max": 8
+    },
+    "learning_rate": {
+      "tipo": "float",
+      "min": 0.01,
+      "max": 0.3,
+      "log": true
+    },
+    "subsample": {
+      "tipo": "float",
+      "min": 0.6,
+      "max": 1.0
+    },
+    "colsample_bytree": {
+      "tipo": "float",
+      "min": 0.6,
+      "max": 1.0
+    },
+    "reg_alpha": {
+      "tipo": "float",
+      "min": 1e-08,
+      "max": 10.0,
+      "log": true
+    },
+    "reg_lambda": {
+      "tipo": "float",
+      "min": 1e-08,
+      "max": 10.0,
+      "log": true
+    },
+    "min_child_samples": {
+      "tipo": "int",
+      "min": 20,
+      "max": 100
+    }
+  },
+  "config_entrenamiento": {
+    "usa_sample_weight": true,
+    "eval_set": "conjunto de validación",
+    "early_stopping_rounds": 50,
+    "log_evaluation": -1,
+    "cat_features_nombre": [
+      "S_200"
+    ],
+    "cat_features_dtype": "pandas.CategoricalDtype compartido entre splits",
+    "n_features": 28,
+    "n_registros_train": 378592,
+    "best_iteration": 93,
+    "n_arboles_ajustados": 93
+  },
+  "params_efectivos_modelo": {
+    "boosting_type": "gbdt",
+    "class_weight": null,
+    "colsample_bytree": 0.6537022273257639,
+    "importance_type": "split",
+    "learning_rate": 0.06449109319773375,
+    "max_depth": 7,
+    "min_child_samples": 55,
+    "min_child_weight": 0.001,
+    "min_split_gain": 0.0,
+    "n_estimators": 300,
+    "n_jobs": -1,
+    "num_leaves": 52,
+    "objective": "binary",
+    "random_state": 42,
+    "reg_alpha": 0.027327997116568636,
+    "reg_lambda": 0.19023849175182966,
+    "subsample": 0.8657239010790557,
+    "subsample_for_bin": 200000,
+    "subsample_freq": 0,
+    "verbose": -1,
+    "device": "gpu"
+  },
+  "fecha_registro": "2026-08-31T04:37:04.950724"
+}

@@ -1,0 +1,103 @@
+{
+  "modelo": "CatBoost",
+  "estrategia_balanceo": "pesos_clase",
+  "variante_target": "binario",
+  "semilla": 42,
+  "n_trials_optuna": 50,
+  "mejor_kappa_val_optuna": 0.43889,
+  "hp_optimizados": {
+    "iterations": 500,
+    "depth": 7,
+    "learning_rate": 0.21394653450726148,
+    "l2_leaf_reg": 4.607791700652665,
+    "bagging_temperature": 0.02338753596703652,
+    "border_count": 100,
+    "random_strength": 3.06000039105979
+  },
+  "hp_fijos": {
+    "loss_function": "Logloss",
+    "random_seed": 42,
+    "verbose": false,
+    "task_type": "GPU"
+  },
+  "hp_completos": {
+    "loss_function": "Logloss",
+    "random_seed": 42,
+    "verbose": false,
+    "task_type": "GPU",
+    "iterations": 500,
+    "depth": 7,
+    "learning_rate": 0.21394653450726148,
+    "l2_leaf_reg": 4.607791700652665,
+    "bagging_temperature": 0.02338753596703652,
+    "border_count": 100,
+    "random_strength": 3.06000039105979
+  },
+  "espacio_busqueda": {
+    "iterations": {
+      "tipo": "int",
+      "min": 300,
+      "max": 1000,
+      "paso": 100
+    },
+    "depth": {
+      "tipo": "int",
+      "min": 4,
+      "max": 8
+    },
+    "learning_rate": {
+      "tipo": "float",
+      "min": 0.01,
+      "max": 0.3,
+      "log": true
+    },
+    "l2_leaf_reg": {
+      "tipo": "float",
+      "min": 1.0,
+      "max": 10.0
+    },
+    "bagging_temperature": {
+      "tipo": "float",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "border_count": {
+      "tipo": "int",
+      "min": 32,
+      "max": 128
+    },
+    "random_strength": {
+      "tipo": "float",
+      "min": 0.0,
+      "max": 10.0
+    }
+  },
+  "config_entrenamiento": {
+    "usa_sample_weight": true,
+    "eval_set": "conjunto de validación",
+    "cat_features_idx": [
+      22
+    ],
+    "cat_features_nombre": [
+      "S_200"
+    ],
+    "nan_categoricas": "-999 como categoría explícita",
+    "n_features": 28,
+    "n_registros_train": 378592,
+    "arboles_usados": 32
+  },
+  "params_efectivos_modelo": {
+    "iterations": 500,
+    "learning_rate": 0.21394653450726148,
+    "depth": 7,
+    "l2_leaf_reg": 4.607791700652665,
+    "loss_function": "Logloss",
+    "border_count": 100,
+    "random_seed": 42,
+    "verbose": false,
+    "random_strength": 3.06000039105979,
+    "bagging_temperature": 0.02338753596703652,
+    "task_type": "GPU"
+  },
+  "fecha_registro": "2026-08-31T04:35:59.234118"
+}

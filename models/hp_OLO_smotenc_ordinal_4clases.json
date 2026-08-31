@@ -4,7 +4,7 @@
   "variante_target": "ordinal_4clases",
   "semilla": 42,
   "n_trials_optuna": 50,
-  "mejor_kappa_val_optuna": 0.332617,
+  "mejor_kappa_val_optuna": 0.468977,
   "hp_optimizados": {
     "alpha": 0.0074593432857265485
   },
@@ -52,5 +52,5 @@
     "verbose": 0,
     "warm_start": false
   },
-  "fecha_registro": "2026-08-30T19:34:16.100417"
+  "fecha_registro": "2026-08-31T01:37:27.627845"
 }

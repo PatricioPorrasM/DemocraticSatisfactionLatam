@@ -4,16 +4,16 @@
   "variante_target": "ordinal_4clases",
   "semilla": 42,
   "n_trials_optuna": 20,
-  "mejor_kappa_val_optuna": 0.430377,
+  "mejor_kappa_val_optuna": 0.48328,
   "hp_optimizados": {
-    "n_d": 16,
+    "n_d": 8,
     "n_a": 56,
     "n_steps": 6,
-    "gamma": 1.968084966244884,
-    "lambda_sparse": 0.00021757966356619656,
-    "momentum": 0.2049656991591885,
+    "gamma": 1.7290071680409873,
+    "lambda_sparse": 0.00020597335357437193,
+    "momentum": 0.03887741417629524,
     "mask_type": "sparsemax",
-    "lr": 0.0026800714065680787
+    "lr": 0.005323617594751502
   },
   "hp_fijos": {
     "optimizer_fn": "torch.optim.Adam",
@@ -33,7 +33,7 @@
     "device_name": "cuda",
     "seed": 42,
     "optimizer_params": {
-      "lr": 0.0026800714065680787
+      "lr": 0.005323617594751502
     }
   },
   "hp_completos": {
@@ -54,16 +54,16 @@
     "device_name": "cuda",
     "seed": 42,
     "optimizer_params": {
-      "lr": 0.0026800714065680787
+      "lr": 0.005323617594751502
     },
-    "n_d": 16,
+    "n_d": 8,
     "n_a": 56,
     "n_steps": 6,
-    "gamma": 1.968084966244884,
-    "lambda_sparse": 0.00021757966356619656,
-    "momentum": 0.2049656991591885,
+    "gamma": 1.7290071680409873,
+    "lambda_sparse": 0.00020597335357437193,
+    "momentum": 0.03887741417629524,
     "mask_type": "sparsemax",
-    "lr": 0.0026800714065680787
+    "lr": 0.005323617594751502
   },
   "espacio_busqueda": {
     "n_d": {
@@ -128,8 +128,8 @@
     "max_epochs_optuna": 100,
     "patience_optuna": 15,
     "n_features": 28,
-    "n_registros_train": 3458,
-    "epocas_entrenadas": 77,
+    "n_registros_train": 378592,
+    "epocas_entrenadas": 109,
     "entrada": "X normalizada con MinMaxScaler"
   },
   "params_efectivos_modelo": {
@@ -145,14 +145,14 @@
     "clip_value": 1,
     "device_name": "cuda",
     "epsilon": 1e-15,
-    "gamma": 1.968084966244884,
+    "gamma": 1.7290071680409873,
     "grouped_features": [],
     "input_dim": 28,
-    "lambda_sparse": 0.00021757966356619656,
+    "lambda_sparse": 0.00020597335357437193,
     "mask_type": "sparsemax",
-    "momentum": 0.2049656991591885,
+    "momentum": 0.03887741417629524,
     "n_a": 56,
-    "n_d": 16,
+    "n_d": 8,
     "n_indep_decoder": 1,
     "n_independent": 2,
     "n_shared": 2,
@@ -160,7 +160,7 @@
     "n_steps": 6,
     "optimizer_fn": "Adam",
     "optimizer_params": {
-      "lr": 0.0026800714065680787
+      "lr": 0.005323617594751502
     },
     "output_dim": 4,
     "scheduler_fn": "StepLR",
@@ -171,5 +171,5 @@
     "seed": 42,
     "verbose": 0
   },
-  "fecha_registro": "2026-08-30T19:34:14.870433"
+  "fecha_registro": "2026-08-31T01:30:27.045334"
 }

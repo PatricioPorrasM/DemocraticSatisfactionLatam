@@ -11,7 +11,7 @@ from pathlib import Path
 # ====================================================
 
 PARAMETERS = {
-    "LOAD_SAMPLE": True,  # True: carga muestra de prueba (LB_SAMPLE); False: carga dataset completo
+    "LOAD_SAMPLE": False,  # True: carga muestra de prueba (LB_SAMPLE); False: carga dataset completo
     "MIN_NUMBER_RECORDS": 8,  # tamaño mínimo de muestra para entrenar modelos (si LOAD_SAMPLE=True)
     "MAX_NUMBER_RECORDS": 12,  # tamaño máximo de muestra para entrenar modelos (si LOAD_SAMPLE=True)
     "SEED": 42,
