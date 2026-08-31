@@ -1,0 +1,21 @@
+variable,etiqueta,bloque,shap_medio,ranking,rank_Easton,rank_Norris,rank_Lewis-Beck & Stegmaier,rank_Devine
+A_001_001,Apoyo a la democracia,Percepción política,0.2150659765986576,1,3.0,1.0,2.0,2.0
+H_002_031,Confianza Gobierno,Confianza institucional,0.14297424382834065,2,1.0,2.0,3.0,1.0
+B_006_061,Aprobación gobierno,Percepción política,0.14011428672963608,3,3.0,1.0,2.0,2.0
+C_006_003_011,Distribución ingreso justa,Evaluación económica,0.13915974045771848,4,2.0,4.0,1.0,3.0
+D_001_001,Situación económica país,Evaluación económica,0.1310400837141058,5,2.0,4.0,1.0,3.0
+B_001_101,País para todos / poderosos,Percepción política,0.10946043279782298,6,3.0,1.0,2.0,2.0
+v2x_egal,Componente igualitario,Contexto democrático,0.10611203384666912,7,,,,
+D_001_041,Expectativa económica país,Evaluación económica,0.08743373357207453,8,2.0,4.0,1.0,3.0
+D_001_021,Economía país vs. año anterior,Evaluación económica,0.08116917079929437,9,2.0,4.0,1.0,3.0
+H_002_041,Confianza Poder Judicial,Confianza institucional,0.08037682698554956,10,1.0,2.0,3.0,1.0
+G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.07696732531204482,11,4.0,3.0,4.0,3.0
+H_002_011,Confianza Congreso,Confianza institucional,0.06873129226572469,12,1.0,2.0,3.0,1.0
+I_001_001,Victimización delictiva,Corrupción y seguridad,0.06488159488403734,13,4.0,3.0,4.0,3.0
+S_101,Nivel educativo,Características sociodemográficas,0.058704924761264266,14,5.0,5.0,5.0,5.0
+S_301,Nivel socioeconómico,Características sociodemográficas,0.05261970859955278,15,5.0,5.0,5.0,5.0
+S_001,Sexo,Características sociodemográficas,0.04497489687239562,16,5.0,5.0,5.0,5.0
+H_002_131,Confianza Televisión,Confianza institucional,0.042572821163771375,17,1.0,2.0,3.0,1.0
+S_200,Situación ocupacional,Características sociodemográficas,0.04245769910472978,18,5.0,5.0,5.0,5.0
+D_001_091,Expectativa económica personal,Evaluación económica,0.04200777118021673,19,2.0,4.0,1.0,3.0
+v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.03840813663677917,20,,,,

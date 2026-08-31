@@ -1,0 +1,29 @@
+variable,etiqueta,bloque,shap_medio
+A_001_001,Apoyo a la democracia,Percepción política,0.2150659765986576
+H_002_031,Confianza Gobierno,Confianza institucional,0.14297424382834065
+B_006_061,Aprobación gobierno,Percepción política,0.14011428672963608
+C_006_003_011,Distribución ingreso justa,Evaluación económica,0.13915974045771848
+D_001_001,Situación económica país,Evaluación económica,0.1310400837141058
+B_001_101,País para todos / poderosos,Percepción política,0.10946043279782298
+v2x_egal,Componente igualitario,Contexto democrático,0.10611203384666912
+D_001_041,Expectativa económica país,Evaluación económica,0.08743373357207453
+D_001_021,Economía país vs. año anterior,Evaluación económica,0.08116917079929437
+H_002_041,Confianza Poder Judicial,Confianza institucional,0.08037682698554956
+G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.07696732531204482
+H_002_011,Confianza Congreso,Confianza institucional,0.06873129226572469
+I_001_001,Victimización delictiva,Corrupción y seguridad,0.06488159488403734
+S_101,Nivel educativo,Características sociodemográficas,0.058704924761264266
+S_301,Nivel socioeconómico,Características sociodemográficas,0.05261970859955278
+S_001,Sexo,Características sociodemográficas,0.04497489687239562
+H_002_131,Confianza Televisión,Confianza institucional,0.042572821163771375
+S_200,Situación ocupacional,Características sociodemográficas,0.04245769910472978
+D_001_091,Expectativa económica personal,Evaluación económica,0.04200777118021673
+v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.03840813663677917
+v2xcl_rol,Igualdad ante la ley,Contexto democrático,0.036203943813275
+H_002_161,Confianza FF.AA.,Confianza institucional,0.03484562713461441
+v2x_polyarchy,Democracia electoral,Contexto democrático,0.033295250340909556
+A_007_001,Interés en política,Percepción política,0.027444420781593568
+G_002_011,Conoce caso de corrupción,Corrupción y seguridad,0.02461295485047525
+S_002,Edad,Características sociodemográficas,0.022342038305725717
+H_002_241,Confianza Partidos Políticos,Confianza institucional,0.02061987895657579
+H_002_111,Confianza Policía,Confianza institucional,0.007554915906369363
