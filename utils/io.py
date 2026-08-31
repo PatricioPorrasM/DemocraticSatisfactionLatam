@@ -175,6 +175,77 @@ def cargar_pesos_train() -> np.ndarray:
 # VALORES SHAP
 # ─────────────────────────────────────────────────────────────────────────────
 
+def normalizar_shap_2d(shap_vals,
+                       n_features: int,
+                       n_muestras: Optional[int] = None) -> np.ndarray:
+    """
+    Normaliza cualquier salida de `shap` a una matriz (n_muestras × n_features).
+
+    La forma del retorno de `shap` cambia según la versión de la librería, el
+    tipo de modelo y el número de clases:
+
+    - lista de `n_clases` arrays (n_muestras × n_features) — shap < 0.45 multiclase
+    - array (n_muestras × n_features × n_clases)           — shap ≥ 0.45 multiclase
+    - array (n_clases × n_muestras × n_features)           — algunas versiones
+    - array (n_muestras × n_features)                      — binario o regresión
+
+    En los casos multiclase la dimensión de clases se agrega con la media del
+    valor absoluto, que es la convención de importancia global del proyecto.
+    Los ejes se identifican por su longitud, no por su posición, de modo que
+    la función es estable ante cambios de versión de `shap`.
+
+    Parámetros
+    ----------
+    shap_vals  : salida de `explainer.shap_values()`.
+    n_features : número de features (obligatorio; desambigua los ejes).
+    n_muestras : número de registros explicados. Si es None se asume que es
+                 el mayor de los ejes restantes (n_muestras >> n_clases).
+
+    Retorna
+    -------
+    Array 2-D (n_muestras × n_features).
+    """
+    if isinstance(shap_vals, (list, tuple)):
+        arr = np.stack([np.asarray(v, dtype=float) for v in shap_vals], axis=-1)
+    else:
+        arr = np.asarray(shap_vals, dtype=float)
+
+    if arr.ndim == 2:
+        if arr.shape[1] == n_features:
+            return arr
+        if arr.shape[0] == n_features:
+            return arr.T
+        raise ValueError(
+            f"Valores SHAP con forma {arr.shape} incompatibles con "
+            f"{n_features} features."
+        )
+
+    if arr.ndim == 3:
+        ejes = list(range(3))
+        eje_f = next((i for i in ejes if arr.shape[i] == n_features), None)
+        if eje_f is None:
+            raise ValueError(
+                f"Valores SHAP con forma {arr.shape}: ningún eje coincide con "
+                f"{n_features} features."
+            )
+        restantes = [i for i in ejes if i != eje_f]
+        if n_muestras is not None:
+            eje_m = next((i for i in restantes if arr.shape[i] == n_muestras), None)
+            if eje_m is None:
+                raise ValueError(
+                    f"Valores SHAP con forma {arr.shape}: ningún eje coincide "
+                    f"con {n_muestras} registros."
+                )
+        else:
+            # Sin n_muestras: el eje de clases es el más corto
+            eje_m = max(restantes, key=lambda i: arr.shape[i])
+        eje_c = next(i for i in restantes if i != eje_m)
+        arr = np.transpose(arr, (eje_m, eje_f, eje_c))
+        return np.abs(arr).mean(axis=2)
+
+    raise ValueError(f"Valores SHAP con {arr.ndim} dimensiones no soportados.")
+
+
 def guardar_shap_values(shap_array: np.ndarray,
                         feature_names: list,
                         nombre_modelo: str,
@@ -186,7 +257,8 @@ def guardar_shap_values(shap_array: np.ndarray,
     Parámetros
     ----------
     shap_array    : array NumPy (n_muestras × n_features) o
-                    (n_muestras × n_features × n_clases).
+                    (n_muestras × n_features × n_clases). Se normaliza a 2-D
+                    con `normalizar_shap_2d()`.
     feature_names : lista de nombres de features.
     nombre_modelo : nombre del modelo.
     estrategia    : estrategia de balanceo usada (se incluye en el nombre).
@@ -195,10 +267,7 @@ def guardar_shap_values(shap_array: np.ndarray,
     Naming: shap_{modelo}_{estrategia}[_claseN].parquet
     """
     PATHS["FOLDER_RESULTS_SHAP"].mkdir(parents=True, exist_ok=True)
-    if shap_array.ndim == 3:
-        arr_2d = np.abs(shap_array).mean(axis=2)
-    else:
-        arr_2d = shap_array
+    arr_2d = normalizar_shap_2d(shap_array, len(feature_names))
     sufijo = f"_clase{clase}" if clase is not None else ""
     nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
     ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
