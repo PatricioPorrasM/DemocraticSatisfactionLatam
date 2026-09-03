@@ -285,6 +285,10 @@ def tablas_conjuntos(
         print(encabezado)
         print("=" * 72)
         print()
+        print("Distribución de registros por año:")
+        for año, n in df[COL_AÑO].value_counts().sort_index().items():
+            print(f"  {int(año)}: {n:,}")
+        print()
         print("Tabla resumen de los conjuntos de datos:")
         print(df_resumen[["conjunto", "olas_rango", "n_olas",
                           "n_registros", "n_paises"]].to_string(index=False))
