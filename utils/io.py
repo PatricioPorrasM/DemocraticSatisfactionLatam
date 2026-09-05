@@ -126,28 +126,6 @@ def cargar_resultados(split: str = "test") -> pd.DataFrame:
     return df
 
 
-def cargar_mejor_modelo(metrica: str = "kappa_cuadratico",
-                        estrategia: str = None,
-                        variante: str = None) -> str:
-    """
-    Retorna el nombre del modelo con mayor valor en la métrica indicada.
-
-    Parámetros
-    ----------
-    metrica    : columna a maximizar (default: 'kappa_cuadratico').
-    estrategia : filtrar por estrategia_balanceo (opcional).
-    variante   : filtrar por variante_target (opcional).
-    """
-    df = cargar_resultados(split="test")
-    if estrategia and "estrategia_balanceo" in df.columns:
-        df = df[df["estrategia_balanceo"] == estrategia]
-    if variante and "variante_target" in df.columns:
-        df = df[df["variante_target"] == variante]
-    if df.empty:
-        raise ValueError("No hay resultados con los filtros indicados.")
-    return df.loc[df[metrica].idxmax(), "modelo"]
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # SPLITS PROCESADOS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -167,14 +145,6 @@ def cargar_split_parquet(split: str = "test") -> pd.DataFrame:
             f"Ejecuta el notebook 02."
         )
     return pd.read_parquet(ruta)
-
-
-def cargar_pesos_train() -> np.ndarray:
-    """Carga los sample_weights del conjunto de entrenamiento."""
-    ruta = PATHS["FOLDER_PROCS"] / "train_weights.parquet"
-    if not ruta.exists():
-        raise FileNotFoundError(f"Pesos no encontrados: {ruta}")
-    return pd.read_parquet(ruta)["sample_weight"].values
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -252,6 +222,51 @@ def normalizar_shap_2d(shap_vals,
     raise ValueError(f"Valores SHAP con {arr.ndim} dimensiones no soportados.")
 
 
+def ruta_shap(nombre_modelo: str,
+              estrategia: str = "pesos_clase",
+              clase: Optional[int] = None) -> Path:
+    """
+    Ruta del archivo de valores SHAP de un modelo.
+
+    La estrategia de balanceo forma parte del nombre porque los valores SHAP
+    de un mismo modelo difieren según cómo se trató el desbalance.
+
+    Naming: ``shap_{modelo}_{estrategia}[_claseN].parquet``
+    """
+    sufijo = f"_clase{clase}" if clase is not None else ""
+    return (PATHS["FOLDER_RESULTS_SHAP"] /
+            f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet")
+
+
+def shap_vigente(nombre_modelo: str,
+                 estrategia: str = "pesos_clase",
+                 clase: Optional[int] = None) -> bool:
+    """
+    Indica si los valores SHAP guardados corresponden al pipeline actual.
+
+    Devuelve ``False`` si el archivo no existe o si el pipeline se reentrenó
+    después de calcularlos, comparando la fecha de entrenamiento registrada en
+    el artefacto con la fecha de modificación del Parquet. Sin esta
+    comprobación, reutilizar el caché tras un reentrenamiento produciría
+    explicaciones de un modelo que ya no es el que se reporta.
+    """
+    ruta = ruta_shap(nombre_modelo, estrategia, clase)
+    if not ruta.exists():
+        return False
+    try:
+        art = cargar_pipeline(nombre_modelo, estrategia)
+        entrenado = art.get("fecha_entrenamiento")
+        if not entrenado:
+            return True
+        from datetime import datetime
+        t_modelo = datetime.fromisoformat(entrenado).timestamp()
+        return ruta.stat().st_mtime >= t_modelo
+    except Exception:                                            # noqa: BLE001
+        # Si el pipeline no se puede inspeccionar, no se puede afirmar que el
+        # caché esté obsoleto; se conserva y el llamador decide.
+        return True
+
+
 def guardar_shap_values(shap_array: np.ndarray,
                         feature_names: list,
                         nombre_modelo: str,
@@ -274,11 +289,9 @@ def guardar_shap_values(shap_array: np.ndarray,
     """
     PATHS["FOLDER_RESULTS_SHAP"].mkdir(parents=True, exist_ok=True)
     arr_2d = normalizar_shap_2d(shap_array, len(feature_names))
-    sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
-    ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
+    ruta   = ruta_shap(nombre_modelo, estrategia, clase)
     pd.DataFrame(arr_2d, columns=feature_names).to_parquet(ruta, index=False)
-    print(f"  ✓ SHAP guardado: {nombre} ({ruta.stat().st_size / 1024:.0f} KB)")
+    print(f"  ✓ SHAP guardado: {ruta.name} ({ruta.stat().st_size / 1024:.0f} KB)")
 
 
 def listar_shap_disponibles() -> pd.DataFrame:
@@ -351,9 +364,8 @@ def cargar_shap_values(nombre_modelo: str,
     estrategia    : estrategia de balanceo (debe coincidir con la usada al guardar).
     clase         : índice de clase (0–3) o None para media absoluta.
     """
-    sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
-    ruta   = PATHS["FOLDER_RESULTS_SHAP"] / nombre
+    ruta   = ruta_shap(nombre_modelo, estrategia, clase)
+    nombre = ruta.name
     if not ruta.exists():
         disponibles = listar_shap_disponibles()
         detalle = ("\n  Archivos presentes en results/shap/:\n    " +
@@ -374,6 +386,4 @@ def shap_disponible(nombre_modelo: str,
                     estrategia: str = "pesos_clase",
                     clase: Optional[int] = None) -> bool:
     """Verifica si los valores SHAP ya están calculados."""
-    sufijo = f"_clase{clase}" if clase is not None else ""
-    nombre = f"shap_{nombre_modelo}_{estrategia}{sufijo}.parquet"
-    return (PATHS["FOLDER_RESULTS_SHAP"] / nombre).exists()
+    return ruta_shap(nombre_modelo, estrategia, clase).exists()

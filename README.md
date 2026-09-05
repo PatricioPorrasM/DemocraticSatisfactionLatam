@@ -123,25 +123,37 @@ Preprocesa los datos consolidados y ejecuta los dos experimentos del proyecto. U
 
 **EDA** (secciones 10 y 12): distribución del target, missingness por variable y conjunto, correlaciones de Spearman de cada feature con el target y tres matrices de correlación entre features —Latinobarómetro (nivel individual), V-Dem (nivel país-año) y dataset fusionado— para documentar la redundancia informativa.
 
-**Experimento E1:** entrena 5 algoritmos × 3 estrategias de balanceo = 15 modelos. Cada modelo se optimiza con Optuna (TPE, 20–50 trials, objetivo: Kappa cuadrático en val).
+**Experimento E1:** entrena 5 algoritmos × 3 estrategias de balanceo = 15 modelos. Cada modelo se optimiza con Optuna (TPE, maximizando el kappa cuadrático en validación): 50 ensayos para los árboles de gradiente y 20 para la línea base ordinal y para TabNet, cuyo costo por ensayo es mucho mayor. La línea base es una regresión logística ordinal acumulativa (`mord.LogisticIT`); si `mord` no está instalado la ejecución se detiene, en lugar de sustituirla por un modelo multinomial.
 
 **Experimento E2:** fija la mejor estrategia de balanceo de E1 y entrena los 5 algoritmos bajo 2 formulaciones de la variable objetivo (ordinal de 4 clases y binaria).
 
-**Genera:** `data/processed/{train,val,test}.parquet`, `models/pipeline_*.pkl`, `models/hp_*.json`, `results/tables/conjuntos_*.csv`, `results/tables/correlaciones_matriz_*.csv`, `results/tables/hiperparametros_modelos.csv`, `results/resultados_modelos.{csv,parquet}`
+**Validación temporal en pliegues históricos** (sección 19): replica el esquema de validación en tres cortes hacia atrás con ventana de entrenamiento expansiva (train 1995–2007 / val 2008 / test 2009–2010; train 1995–2010 / val 2011 / test 2013–2015; train 1995–2015 / val 2016 / test 2017–2018), definidos en `SPLITS_TEMPORALES`. Cada pliegue reajusta imputación, escalado, pesos de clase e hiperparámetros solo con su propia ventana de entrenamiento y aplica las mismas reglas de exclusión de países, de modo que la dispersión del kappa cuadrático y del MAE ordinal entre cortes acota la variabilidad temporal del rendimiento. Los pliegues no sustituyen a los modelos reportados: sus hiperparámetros se registran con el sufijo `_foldN` y no se persisten pipelines. Se controla con `PARAMETERS["EJECUTAR_FOLDS_TEMPORALES"]`.
+
+**Genera:** `data/processed/{train,val,test}.parquet`, `models/pipeline_*.pkl`, `models/hp_*.json`, `results/tables/conjuntos_*.csv`, `results/tables/correlaciones_matriz_*.csv`, `results/tables/hiperparametros_modelos.csv`, `results/tables/validacion_temporal_folds.csv`, `results/tables/validacion_temporal_resumen.csv`, `results/resultados_modelos.{csv,parquet}`
 
 ---
 
 ### NB03 — `03_evaluacion_comparativa.ipynb`
 
-Responde la pregunta de investigación PI1: ¿qué familia de modelos ofrece el mejor equilibrio entre rendimiento predictivo, estabilidad temporal e interpretabilidad? Calcula 8 métricas agregadas en el conjunto de test para los 15 modelos de E1 y genera sus matrices de confusión normalizadas (% por clase real). Para el **modelo principal** añade el reporte detallado: matriz de confusión en conteos y en porcentajes por clase real —con los errores ordinales graves (distancia ≥ 2 clases) resaltados— y el desglose de precision, recall y F1 por categoría del target con su soporte. Analiza MAE ordinal por país. Aplica prueba estadística de Friedman + post-hoc Nemenyi. Evalúa las formulaciones de E2. Selecciona el mejor modelo para la fase XAI y escribe su identificador en `results/modelo_xai_seleccionado.json`.
+Responde la pregunta de investigación PI1: ¿qué familia de modelos ofrece el mejor equilibrio entre rendimiento predictivo e interpretabilidad? Calcula 8 métricas agregadas en validación y en prueba para los 15 modelos de E1 y genera sus matrices de confusión normalizadas (% por clase real).
 
-**Genera:** `results/tables/metricas_*.csv`, `results/tables/metricas_por_clase_*.csv`, `results/tables/matriz_confusion_*.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
+**Separación entre selección y evaluación:** la configuración principal (modelo × estrategia) se elige maximizando el kappa cuadrático en el conjunto de **validación** (2020); el conjunto de prueba (2023–2024) se usa solo para reportar. La selección se escribe en `results/modelo_xai_seleccionado.json`, que es la fuente única para los notebooks 04, 05 y 06.
+
+**Modelo principal:** reporte detallado con la matriz de confusión en conteos y en porcentajes por clase real —con los errores ordinales graves (distancia ≥ 2 clases) resaltados— y el desglose de precision, recall y F1 por categoría del target con su soporte.
+
+**Incertidumbre:** bootstrap de clústeres país-año (1.000 repeticiones) para el intervalo de confianza de cada métrica, y bootstrap pareado para la diferencia entre cada configuración y la principal. Es la única inferencia que el notebook hace sobre diferencias entre modelos: el test de Friedman con las estrategias como bloques se descartó porque con n = 3 bloques su potencia es nula, los bloques no son conjuntos de datos independientes y el contraste ignora la variabilidad muestral del conjunto de prueba.
+
+**Métricas ponderadas:** cada métrica se reporta también ponderada por el factor de expansión muestral `X_020`, para distinguir el rendimiento sobre la muestra encuestada del rendimiento sobre la población que representa.
+
+Analiza además el MAE ordinal por país y subregión y evalúa las formulaciones de E2.
+
+**Genera:** `results/tables/metricas_*.csv`, `results/tables/metricas_por_clase_*.csv`, `results/tables/matriz_confusion_*.csv`, `results/tables/bootstrap_ic_modelos.csv`, `results/tables/bootstrap_pareado_vs_principal.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
 
 ---
 
 ### NB04 — `04_explicabilidad_xai.ipynb`
 
-Responde PI2 y OE4: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el mejor modelo seleccionado en NB03. Calcula valores SHAP globales (importancia por bloque temático) y locales (beeswarm por observación) usando TreeExplainer para modelos de árbol y KernelExplainer para OLO. Genera gráficos ALE para detectar efectos no lineales y umbrales. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de mayor error ordinal y 50 con discordancia institucional (alta poliarquía + baja satisfacción predicha). Para TabNet incluye análisis de pesos de atención nativos. Documenta errores graves (distancia ordinal ≥ 2).
+Responde PI2 y OE4: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el mejor modelo seleccionado en NB03. Calcula valores SHAP globales (importancia por bloque temático) y locales (beeswarm por observación) usando TreeExplainer para modelos de árbol y KernelExplainer para OLO. Genera gráficos ALE para detectar efectos no lineales y umbrales. Cuantifica la incertidumbre del ranking de importancias con un bootstrap de clústeres país-año: intervalo del valor |SHAP|, intervalo del rango de cada variable, porcentaje de réplicas en que entra en el top-k, y concordancia (ρ de Spearman y W de Kendall) entre los rankings de los modelos cuyo rendimiento el NB03 no distingue entre sí. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de mayor error ordinal y 50 con discordancia institucional (alta poliarquía + baja satisfacción predicha); las tres cuotas se fijan en `PARAMETERS["CASOS_LIME_*"]`. Para TabNet incluye análisis de pesos de atención nativos. Documenta errores graves (distancia ordinal ≥ 2).
 
 **Genera:** `results/shap/*.parquet`, `results/tables/shap_importancias_*.csv`, `results/tables/lime_*.csv`, `results/tables/errores_graves_*.csv`, `results/figures/04_*.png`
 
@@ -149,7 +161,7 @@ Responde PI2 y OE4: ¿qué variables explican la satisfacción con la democracia
 
 ### NB05 — `05_estabilidad_temporal_regional.ipynb`
 
-Responde PI3 y OE3: ¿son robustos los determinantes identificados a través de subregiones geográficas? Con el diseño de split único se evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de test entre las 5 subregiones. Calcula correlaciones de Spearman entre pares de subregiones → prueba H5 (r ≥ 0.7 = determinantes robustos). Analiza la varianza entre bloques temáticos por región → prueba H4 (confianza/corrupción varían más que sociodemográficos). Genera heatmaps de estabilidad, bump charts de rankings y análisis de MAE ordinal por país y estrategia.
+Responde PI3 y OE3: ¿son robustos los determinantes identificados a través de subregiones geográficas? Evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de prueba entre las 5 subregiones. Calcula correlaciones de Spearman entre pares de subregiones → prueba H5 (r ≥ 0.7 = determinantes robustos). Analiza la varianza entre bloques temáticos por región → prueba H4 (confianza/corrupción varían más que sociodemográficos). Incluye el MAE ordinal por país y estrategia de balanceo. La estabilidad **temporal** del rendimiento se estima por separado en la sección 19 del NB02.
 
 **Genera:** `results/tables/spearman_subregiones.csv`, `results/tables/mae_subregiones.csv`, `results/tables/mae_por_pais_todos.csv`, `results/figures/05_*.png`
 
@@ -167,11 +179,21 @@ Responde OE5: ¿coinciden los patrones explicativos algorítmicos con las predic
 
 ### `utils/config.py`
 
-Concentra toda la configuración del proyecto. Define rutas (`PATHS`), parámetros globales (`SEED=42`, `YEAR_START/END`), el split temporal (`SPLIT`), las 5 subregiones geográficas (`SUBREGIONES`), los 6 bloques temáticos de features (`BLOQUES`), las paletas de color por modelo y clase (`THEME`), y las etiquetas en español para variables y clases objetivo (`ETIQUETAS`, `ETIQUETAS_FEATURES`). Incluye también las listas de variables excluidas (`VARS_EXCLUIR_LB`, `VARS_EXCLUIR_VDEM`), el año de corte de Venezuela (`AÑO_CORTE_VEN=2017`) y los países excluidos de validación/test (`PAISES_EXCLUIR_EVAL`). Funciones exportadas: `setup_plots()`, `bloque_de(var)`, `clean_process_folders()`.
+Punto único de control del proyecto. `MODO_EJECUCION` selecciona el perfil de la corrida (`"real"` o `"humo"`, ver el Paso 2 de la sección de ejecución), y `PARAMETERS` —la unión de `_PARAMETERS_COMUNES` con el perfil activo de `PERFILES_EJECUCION`— reúne **todas** las variables que gobiernan la ejecución —uso de GPU y paralelismo, presupuesto de Optuna por familia de modelo, activación de los pliegues temporales, métrica y conjunto de selección, repeticiones y nivel de clúster del bootstrap, y los parámetros de SHAP, LIME y ALE—, cada una comentada con su valor sugerido para la corrida definitiva. Los notebooks leen de ahí y no definen banderas propias, de modo que reconfigurar un experimento se hace en un solo archivo.
+
+Define además las rutas (`PATHS`), el corte temporal definitivo (`SPLIT`), los pliegues históricos (`SPLITS_TEMPORALES`), las 5 subregiones (`SUBREGIONES`), los 6 bloques temáticos de features (`BLOQUES`), las paletas por modelo y clase (`THEME`) y las etiquetas en español (`ETIQUETAS`, `ETIQUETAS_FEATURES`). Incluye las listas de variables excluidas (`VARS_EXCLUIR_LB`, `VARS_EXCLUIR_VDEM`), el año de corte de Venezuela (`AÑO_CORTE_VEN=2017`) y los países excluidos de validación y prueba (`PAISES_EXCLUIR_EVAL`).
+
+Funciones exportadas: `resumen_modo()`, que imprime el perfil activo al inicio de cada notebook y avisa de forma llamativa cuando la corrida es una prueba de humo; `es_prueba_de_humo()`; `hw_cfg()`, que arma la configuración de hardware y presupuesto que reciben las funciones de entrenamiento y degrada a CPU si no hay GPU visible; `setup_plots()`; `bloque_de(var)`; y `clean_process_folders()`.
 
 ### `utils/io.py`
 
-Funciones de entrada/salida para artefactos del proyecto. Carga y deserializa pipelines (`cargar_pipeline`), splits Parquet (`cargar_split_parquet`), métricas (`cargar_resultados`), matrices SHAP (`cargar_shap_values`, `guardar_shap_values`). Permite consultar el mejor modelo por métrica (`cargar_mejor_modelo`) y listar todos los pipelines disponibles (`listar_pipelines_disponibles`). Incluye manejo de fallback CPU para pipelines TabNet entrenados en GPU.
+Funciones de entrada/salida para los artefactos del proyecto. Carga y deserializa pipelines (`cargar_pipeline`), conjuntos Parquet (`cargar_split_parquet`), métricas (`cargar_resultados`) y matrices SHAP (`cargar_shap_values`, `guardar_shap_values`, `ruta_shap`), y lista lo disponible con `listar_pipelines_disponibles()` y `listar_shap_disponibles()`. Incluye el respaldo a CPU para pipelines TabNet entrenados en GPU.
+
+`modelo_xai_seleccionado()` resuelve el modelo principal y su estrategia leyendo la selección que escribe el NB03: como la estrategia forma parte del nombre de los archivos SHAP, los notebooks 04, 05 y 06 deben partir de la misma fuente para no buscar archivos inexistentes.
+
+`normalizar_shap_2d()` lleva cualquier salida de `shap` a una matriz (n_muestras × n_features) identificando los ejes por su longitud, de modo que el código es estable ante los cambios de forma entre versiones de la librería y entre tipos de modelo.
+
+`shap_vigente()` compara la fecha de entrenamiento del pipeline con la de modificación del Parquet de valores SHAP, para que un reentrenamiento invalide el caché en lugar de producir explicaciones de un modelo que ya no es el que se reporta.
 
 ### `utils/metrics.py`
 
@@ -181,19 +203,25 @@ Para el modelo principal el análisis desciende al nivel de categoría: `metrica
 
 ### `utils/preprocessing.py`
 
-Transformaciones de datos previas al entrenamiento. `limpiar_nsnr()` convierte códigos NS/NR a NaN. `aplicar_transformaciones_deterministas()` armoniza escalas económicas entre olas y colapsa la victimización en binario. `construir_split()` crea los conjuntos train/val/test con las exclusiones de Venezuela/Nicaragua y calcula pesos muestrales compuestos. `imputar()` aplica MICE (BayesianRidge) para numéricas e imputación por moda para la variable categórica S_200, ajustando siempre solo sobre train. `normalizar()` aplica min-max (por defecto) o estandarización. `resumen_split()` imprime estadísticas de tamaño, distribución de clases y missingness. `resumen_conjuntos()`, `conjuntos_por_pais()` y `tablas_conjuntos()` producen las tablas descriptivas de los conjuntos (olas, número de olas, registros y países; registros por país y conjunto), con la opción de aplicar o no las exclusiones de Venezuela y Nicaragua para comparar la composición antes y después de ellas.
+Transformaciones de datos previas al entrenamiento. `limpiar_nsnr()` convierte códigos NS/NR a NaN. `construir_split()` crea los conjuntos de entrenamiento, validación y prueba con las exclusiones de Venezuela y Nicaragua y calcula los pesos muestrales compuestos; acepta el parámetro `split`, de modo que los pliegues históricos de `SPLITS_TEMPORALES` se construyen con las mismas reglas que el corte definitivo. `imputar()` aplica MICE (BayesianRidge) para numéricas e imputación por moda para la variable categórica S_200, ajustando siempre solo sobre train. `normalizar()` aplica min-max (por defecto) o estandarización. `resumen_split()` imprime estadísticas de tamaño, distribución de clases y missingness. `resumen_conjuntos()`, `conjuntos_por_pais()` y `tablas_conjuntos()` producen las tablas descriptivas de los conjuntos (olas, número de olas, registros y países; registros por país y conjunto), con la opción de aplicar o no las exclusiones de Venezuela y Nicaragua para comparar la composición antes y después de ellas.
+
+`preparar_features_modelo()` devuelve una matriz numérica al formato exacto que espera un modelo ya entrenado: texto con la categoría `-999` para CatBoost, `pandas.Categorical` con las categorías del propio booster para LightGBM, y sin cambios para los demás. Es lo que permite que LIME y ALE, que solo manejan números, puedan llamar a `predict_proba`.
+
+`predecir_conjunto()` reconstruye las predicciones de un pipeline sobre un conjunto completo aplicando la misma cadena de preprocesamiento del entrenamiento —imputación y escalado en OLO y TabNet, valores ausentes nativos y codificación categórica propia en los árboles—. Es la única implementación de esa cadena: los notebooks 03, 04 y 05 la usan en lugar de repetirla.
 
 ### `utils/models.py`
 
-Orquesta el entrenamiento de cada algoritmo. Una función por modelo (`entrenar_olo`, `entrenar_xgboost`, `entrenar_catboost`, `entrenar_lightgbm`, `entrenar_tabnet`), todas con su propio bucle Optuna (TPE, maximizando Kappa cuadrático en val).
+Orquesta el entrenamiento de cada algoritmo. Una función por modelo (`entrenar_olo`, `entrenar_xgboost`, `entrenar_catboost`, `entrenar_lightgbm`, `entrenar_tabnet`), todas con su propio bucle Optuna (TPE, maximizando el kappa cuadrático en validación).
 
-Cada función guarda en `models/hp_{modelo}_{estrategia}_{variante}.json` el registro **completo** de su configuración, no solo los parámetros que busca Optuna: `hp_optimizados` (los de Optuna), `hp_fijos` (objective, número de clases, semilla, device, n_jobs, verbosidad), `hp_completos` (la unión de ambos, que es lo que recibe el constructor), `espacio_busqueda` (tipo y rango de cada parámetro optimizado), `config_entrenamiento` (early stopping, épocas, batch size, eval_set, uso de sample_weight, iteración final) y `params_efectivos_modelo` (el `get_params()` del estimador entrenado, que incluye los valores por defecto de cada librería). Se consulta con `cargar_hiperparametros()` y se resume con `tabla_hiperparametros()`.
+`entrenar_olo` ajusta un logit ordinal acumulativo (`mord.LogisticIT`): un único vector de coeficientes compartido por todas las categorías y K−1 umbrales. El registro de hiperparámetros guarda el número de coeficientes y los umbrales estimados como evidencia de que el modelo es ordinal.
 
-`predecir()` carga un pipeline existente, aplica las transformaciones necesarias y devuelve clase predicha, etiqueta y probabilidades por clase.
+Las tres estrategias de balanceo se traducen a cada familia de modelos según lo que admite: OLO y los árboles de gradiente reciben `sample_weight` con el producto del factor de expansión muestral por el peso de clase; TabNet, que no admite pesos por registro, recibe el peso de clase en su **función de pérdida** (entropía cruzada ponderada) y muestrea de forma uniforme en las tres estrategias. Como consecuencia, el factor de expansión muestral no interviene en el ajuste de TabNet, lo que queda documentado como limitación del diseño.
+
+Cada función guarda en `models/hp_{modelo}_{estrategia}_{variante}[_foldN].json` el registro **completo** de su configuración, no solo los parámetros que busca Optuna: `hp_optimizados` (los de Optuna), `hp_fijos` (objective, número de clases, semilla, device, n_jobs, verbosidad), `hp_completos` (la unión de ambos, que es lo que recibe el constructor), `espacio_busqueda` (tipo y rango de cada parámetro optimizado), `config_entrenamiento` (early stopping, épocas, batch size, eval_set, uso de sample_weight, iteración final) y `params_efectivos_modelo` (el `get_params()` del estimador entrenado, que incluye los valores por defecto de cada librería). Se consulta con `cargar_hiperparametros()` y se resume con `tabla_hiperparametros()`.
 
 ### `utils/plots.py`
 
-Biblioteca de visualización organizada por notebook. Funciones de apoyo comunes: `model_color()`, `save_figure()`. Para NB02: `plot_matriz_correlacion()`, que dibuja la matriz de correlación (Spearman por defecto) con barra lateral de bloques temáticos y reporte de los pares con multicolinealidad. Para NB03: `plot_metricas_comparativas()`, `plot_matrices_confusion()`, `plot_matriz_confusion_modelo()`, `plot_metricas_por_clase()`, `plot_rendimiento_por_pais()`. Para NB04: `plot_shap_bar_bloques()`, `plot_shap_beeswarm()`, `plot_ale()`. Para NB05: `plot_heatmap_estabilidad()`, `plot_bump_chart()`, `plot_spearman_estabilidad()`, `plot_shap_por_subregion()`. Para NB06: `plot_convergencias_teoricas()`, `plot_tabla_convergencias()`.
+Biblioteca de visualización organizada por notebook. Funciones de apoyo comunes: `model_color()`, `save_figure()`. Para NB02: `plot_matriz_correlacion()`, que dibuja la matriz de correlación (Spearman por defecto) con barra lateral de bloques temáticos y reporte de los pares con multicolinealidad. Para NB03: `plot_metricas_comparativas()`, `plot_matrices_confusion()`, `plot_matriz_confusion_modelo()`, `plot_metricas_por_clase()`, `plot_rendimiento_por_pais()`. Para NB04: `plot_shap_bar_bloques()`, `plot_importancia_con_ic()`, `plot_shap_beeswarm()`, `plot_ale()`, `plot_spearman_estabilidad()`. Para NB05: `plot_shap_por_subregion()`, `plot_spearman_estabilidad()`. Para NB06: `plot_convergencias_teoricas()`, `plot_tabla_convergencias()`.
 
 ---
 
@@ -216,14 +244,64 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Paso 2 — Ejecutar el pipeline
+### Paso 2 — Elegir el modo de ejecución
+
+Hay un único interruptor, `MODO_EJECUCION` en `utils/config.py`, que ajusta de
+una vez todos los parámetros que dependen del tamaño de la corrida:
+
+| Modo | Para qué | Datos | Optuna | Épocas TabNet | Bootstrap | Duración |
+|---|---|---|---|---|---|---|
+| `"real"` | corrida definitiva, la que produce las cifras del documento | olas completas | 50 / 20 / 20 ensayos | 200 | 1.000 réplicas | horas, en GPU |
+| `"humo"` | verificar que el flujo completo corre sin errores antes de lanzar la real | muestra reducida | 2 ensayos | 12 | 50 réplicas | minutos (NB02–NB06) |
+
+El recorte de épocas de TabNet no es un detalle menor: con las 200 épocas del
+perfil real, el ajuste de la red domina el tiempo y una prueba de humo pasaría
+de minutos a horas. Con 12 épocas la red no converge —no es el objetivo— pero se
+ejercitan igual el bucle de entrenamiento, el early stopping y la pérdida
+ponderada por clase.
+
+El NB01 lee y armoniza las olas de Latinobarómetro en los dos modos, así que su
+duración no cambia; el ahorro está en los notebooks 02 a 06.
+
+El perfil de humo **recorta el volumen de cada etapa, nunca desactiva una
+etapa**: los pliegues temporales, el bootstrap, SHAP, LIME y ALE se ejecutan
+igual, de modo que la prueba recorre las mismas rutas de código que la corrida
+real. Sus cifras, en cambio, no son publicables, y los notebooks lo advierten
+con un banner al inicio.
+
+Se cambia editando una línea de `utils/config.py`:
+
+```python
+MODO_EJECUCION = "real"   # o "humo"
+```
+
+o sin tocar el archivo, con una variable de entorno:
+
+```bash
+MODO_EJECUCION=humo bash run_all.sh
+```
+
+Los parámetros que dependen del modo están en `PERFILES_EJECUCION`, y los que
+no, en `_PARAMETERS_COMUNES`. Ambos perfiles deben declarar exactamente las
+mismas claves: si falta una, `utils/config.py` falla al importarse en lugar de
+dejar que la corrida se rompa a mitad de camino.
+
+Para no confundir los artefactos de una prueba con los de la corrida
+definitiva, el modo queda estampado en `results/resultados_modelos.csv`
+(columna `modo_ejecucion`) y en cada `models/hp_*.json`.
+
+### Paso 3 — Ejecutar el pipeline
 
 #### Opción A — Ejecución automática (recomendada)
 
 Ejecuta los 6 notebooks en orden usando Papermill. Los notebooks ejecutados se guardan en `notebooks/output/` y los logs en `logs/`.
 
 ```bash
-bash run_all.sh
+# Primero una prueba de humo, para verificar que todo corre
+MODO_EJECUCION=humo bash run_all.sh
+
+# Y después la corrida definitiva
+MODO_EJECUCION=real bash run_all.sh
 ```
 
 **Nota**: Para ejecutar el proyecto en un servidor linux se recomienda usar la herramienta "tmux". Este proyecto fue ejecutado en un servidor con las siguientes características, y duró al rededor de 6 horas en promedio para completar la ejecución.
@@ -242,7 +320,7 @@ bash run_all.sh
 
 #### Opción B — Ejecución manual en orden
 
-Si se prefiere ejecutar notebook a notebook (por ejemplo, en Jupyter Lab o VS Code), respetar estrictamente el orden siguiente:
+Si se prefiere ejecutar notebook a notebook (por ejemplo, en Jupyter Lab o VS Code), respetar estrictamente el orden siguiente, porque cada uno consume los artefactos del anterior:
 
 | Orden | Notebook | Descripción breve |
 |---|---|---|
@@ -253,7 +331,34 @@ Si se prefiere ejecutar notebook a notebook (por ejemplo, en Jupyter Lab o VS Co
 | 5 | `05_estabilidad_temporal_regional.ipynb` | Estabilidad de rankings SHAP por subregión |
 | 6 | `06_contraste_teorico.ipynb` | Contrasta patrones algorítmicos con teoría democrática |
 
-> **Nota:** NB02 es el notebook de mayor duración (15 modelos con HPO Optuna). Se recomienda ejecutarlo en un entorno con GPU o con al menos 16 GB de RAM.
+**El modo de ejecución se fija editando una línea de `utils/config.py`**, porque
+al ejecutar a mano no hay variable de entorno que lo controle:
+
+```python
+MODO = "humo"   # o "real"
+```
+
+Tres cosas que hay que tener presentes al ejecutar notebook a notebook:
+
+1. **Hay que reiniciar el kernel después de editar `MODO`.** Python conserva en
+   memoria el módulo `utils.config` ya importado, así que un notebook con el
+   kernel vivo seguirá usando el modo anterior. En Jupyter Lab: *Kernel →
+   Restart Kernel*; en VS Code: *Restart* en la barra del notebook.
+
+2. **El banner de la primera celda confirma el modo activo.** Antes de dar por
+   buena una cifra, comprobar que dice `MODO CORRIDA REAL`; en modo de humo el
+   aviso es imposible de pasar por alto.
+
+3. **El NB01 hay que reejecutarlo al cambiar de modo.** Es el que genera la
+   muestra reducida (`data/base/latinobarometro_muestra.csv`) con las cuotas
+   `MIN/MAX_NUMBER_RECORDS` del perfil activo, y es la que carga el NB02 cuando
+   `LOAD_SAMPLE=True`. Si la muestra en disco viene del otro perfil, el NB02 se
+   detiene con un mensaje explícito en lugar de continuar con olas de validación
+   demasiado pequeñas para representar las cuatro clases.
+
+> **Nota:** NB02 es el notebook de mayor duración (15 modelos con HPO Optuna, más
+> los pliegues temporales). Se recomienda ejecutarlo en un entorno con GPU o con
+> al menos 16 GB de RAM.
 
 ---
 
@@ -350,4 +455,3 @@ Fija la mejor estrategia de balanceo encontrada en E1 y evalúa los 5 algoritmos
 | `imbalanced-learn` | Manejo de desbalance de clases (SMOTE-NC) |
 | `papermill` | Ejecución parametrizada de notebooks desde `run_all.sh` |
 | `pyarrow` | Lectura y escritura de archivos Parquet |
-| `scikit-posthocs` | Pruebas post-hoc estadísticas (Nemenyi) |

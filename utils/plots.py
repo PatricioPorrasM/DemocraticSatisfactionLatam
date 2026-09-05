@@ -19,7 +19,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import matplotlib.ticker as mticker
 import seaborn as sns
 from pathlib import Path
 from typing import Optional, List, Dict, Tuple
@@ -594,6 +593,64 @@ def plot_shap_bar_bloques(
     plt.show()
 
 
+def plot_importancia_con_ic(
+    df_boot: pd.DataFrame,
+    top_n: int = 15,
+    titulo: str = "Importancia global con intervalo de confianza",
+    subtitulo: Optional[str] = None,
+    columna_valor: str = "importancia",
+    nombre_archivo: Optional[str] = None,
+) -> None:
+    """
+    Barras horizontales de importancia con barras de error del bootstrap.
+
+    Parámetros
+    ----------
+    df_boot       : salida de `utils.xai.bootstrap_importancia_shap`, con las
+                    columnas etiqueta, importancia, ic_inf, ic_sup y rango.
+    top_n         : número de variables a mostrar.
+    titulo        : título principal.
+    subtitulo     : segunda línea del título (modelo, clúster, réplicas).
+    columna_valor : columna con la estimación puntual.
+    nombre_archivo: nombre para guardar. None = no guardar.
+    """
+    top = df_boot.head(top_n).iloc[::-1]
+    etiquetas = [
+        f"{e}  [{int(a)}–{int(b)}]"
+        for e, a, b in zip(top["etiqueta"], top["rango_ic_inf"], top["rango_ic_sup"])
+    ] if {"rango_ic_inf", "rango_ic_sup"}.issubset(top.columns) else list(top["etiqueta"])
+
+    colores = [THEME.get("blocks", {}).get(b, "#AAAAAA")
+               for b in top.get("bloque", ["" ] * len(top))]
+    err_inf = (top[columna_valor] - top["ic_inf"]).clip(lower=0).values
+    err_sup = (top["ic_sup"] - top[columna_valor]).clip(lower=0).values
+
+    fig, ax = plt.subplots(figsize=(11, max(5, top_n * 0.42)))
+    ax.barh(etiquetas, top[columna_valor].values, color=colores,
+            edgecolor="white", linewidth=0.4)
+    ax.errorbar(top[columna_valor].values, np.arange(len(top)),
+                xerr=[err_inf, err_sup], fmt="none",
+                ecolor=THEME["semantic"]["text"], elinewidth=1.2, capsize=3)
+    ax.set_xlabel("|SHAP| medio (con IC 95% por bootstrap de clústeres)")
+    titulo_full = titulo if subtitulo is None else f"{titulo}\n{subtitulo}"
+    ax.set_title(titulo_full, fontweight="bold")
+    ax.grid(True, axis="x", alpha=0.3)
+    ax.tick_params(axis="y", labelsize=9)
+
+    vistos = {}
+    for b in top.get("bloque", []):
+        if b and b not in vistos:
+            vistos[b] = THEME.get("blocks", {}).get(b, "#AAAAAA")
+    if vistos:
+        patches = [mpatches.Patch(color=c, label=b) for b, c in vistos.items()]
+        ax.legend(handles=patches, fontsize=8, loc="lower right",
+                  title="Bloque temático", title_fontsize=8)
+
+    if nombre_archivo:
+        save_figure(nombre_archivo)
+    plt.show()
+
+
 def plot_shap_beeswarm(
     shap_values: np.ndarray,
     X: pd.DataFrame,
@@ -692,7 +749,9 @@ def plot_ale(
     ax.fill_between(ale_quantiles, ale_values, alpha=0.15, color=color)
     ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     ax.set_xlabel(etiq)
-    ax.set_ylabel("Efecto ALE sobre satisfacción democrática")
+    # La curva describe el desplazamiento de la PREDICCIÓN del modelo respecto
+    # de su promedio, no un efecto sobre la satisfacción observada.
+    ax.set_ylabel("Cambio en la predicción del modelo (ALE)")
     ax.set_title(titulo, fontweight="bold")
     ax.grid(True, alpha=0.3)
 
@@ -712,133 +771,6 @@ def plot_ale(
 # ═════════════════════════════════════════════════════════════════════════════
 # SECCIÓN 5 — ESTABILIDAD TEMPORAL Y REGIONAL (notebook 05)
 # ═════════════════════════════════════════════════════════════════════════════
-
-def plot_heatmap_estabilidad(
-    df_rankings: pd.DataFrame,
-    metrica: str = "mean_abs_shap",
-    titulo: str = "Importancia SHAP por bloque temático",
-    nombre_archivo: Optional[str] = None,
-) -> None:
-    """
-    Heatmap de importancia SHAP por variable y bloque temático,
-    con barra lateral de bloques temáticos.
-
-    Parámetros
-    ----------
-    df_rankings   : DataFrame con índice=variable, columnas=bloques o modelos,
-                    valores=importancia (|SHAP| medio normalizado).
-    metrica       : nombre de la métrica para el colorbar.
-    titulo        : título del gráfico.
-    nombre_archivo: nombre para guardar. None = no guardar.
-    """
-    # Ordenar variables por bloque
-    vars_ord   = []
-    bloqs_ord  = []
-    for bloque in BLOQUES:
-        for v in BLOQUES[bloque]:
-            if v in df_rankings.index:
-                vars_ord.append(v)
-                bloqs_ord.append(bloque)
-
-    # Variables no clasificadas al final
-    for v in df_rankings.index:
-        if v not in vars_ord:
-            vars_ord.append(v)
-            bloqs_ord.append("Sin clasificar")
-
-    df_plot = df_rankings.loc[vars_ord]
-    etiq_y  = [ETIQUETAS_FEATURES.get(v, v) for v in vars_ord]
-    df_plot.index = etiq_y
-
-    fig, (ax_bar, ax_heat) = plt.subplots(
-        1, 2, figsize=(12, max(8, len(vars_ord) * 0.38)),
-        gridspec_kw={"width_ratios": [0.04, 0.96]},
-    )
-    _barra_bloques(ax_bar, vars_ord, bloqs_ord)
-
-    sns.heatmap(
-        df_plot, annot=True, fmt=".3f", cmap="YlOrRd",
-        linewidths=0.3, ax=ax_heat,
-        annot_kws={"size": 8},
-        cbar_kws={"label": metrica, "shrink": 0.6},
-    )
-    ax_heat.set_title(titulo, fontweight="bold", pad=12)
-    ax_heat.set_xlabel("Subregión")
-    ax_heat.set_ylabel("")
-    ax_heat.tick_params(axis="y", labelsize=9)
-
-    # Líneas separadoras entre bloques
-    n_acum = 0
-    bloques_vistos = []
-    for v, b in zip(vars_ord, bloqs_ord):
-        n_acum += 1
-        if b not in bloques_vistos:
-            bloques_vistos.append(b)
-        else:
-            if bloqs_ord[vars_ord.index(v) - 1] != b:
-                ax_heat.axhline(n_acum - 1, color="white", linewidth=2)
-
-    if nombre_archivo:
-        save_figure(nombre_archivo)
-    plt.show()
-
-
-def plot_bump_chart(
-    df_rankings: pd.DataFrame,
-    top_n: int = 15,
-    titulo: str = "Cambio en ranking de importancia SHAP",
-    nombre_archivo: Optional[str] = None,
-) -> None:
-    """
-    Bump chart del ranking de importancia SHAP entre estrategias o modelos.
-
-    Muestra las top_n variables más importantes
-    y traza su trayectoria de ranking.
-
-    Parámetros
-    ----------
-    df_rankings   : DataFrame con índice=variable, columnas=bloques o modelos,
-                    valores=importancia. Se calcula el ranking internamente.
-    top_n         : número de variables a incluir.
-    titulo        : título del gráfico.
-    nombre_archivo: nombre para guardar. None = no guardar.
-    """
-    # Calcular rankings (1 = más importante)
-    df_rank = df_rankings.rank(ascending=False, method="min")
-    sp_cols = list(df_rank.columns)
-
-    # Seleccionar top_n por la última columna disponible
-    ultimo_sp = sp_cols[-1]
-    top_vars  = df_rank[ultimo_sp].sort_values().head(top_n).index.tolist()
-    df_top    = df_rank.loc[top_vars, sp_cols]
-
-    fig, ax = plt.subplots(figsize=(8, max(6, top_n * 0.5)))
-
-    for var in top_vars:
-        bloque = bloque_de(var)
-        color  = THEME.get("blocks", {}).get(bloque, "#888888")
-        y_vals = df_top.loc[var].values
-        ax.plot(sp_cols, y_vals, marker="o", linewidth=2, markersize=8,
-                color=color, alpha=0.85)
-        # Etiqueta al final
-        ax.text(sp_cols[-1], y_vals[-1],
-                f"  {ETIQUETAS_FEATURES.get(var, var)}",
-                va="center", fontsize=8, color=color)
-
-    ax.invert_yaxis()
-    ax.set_ylabel("Ranking de importancia (1 = más importante)")
-    ax.set_title(titulo, fontweight="bold")
-    ax.set_xticks(sp_cols)
-    ax.set_xticklabels([sp
-                        for sp in sp_cols], fontsize=9)
-    ax.grid(True, axis="y", alpha=0.3)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    if nombre_archivo:
-        save_figure(nombre_archivo)
-    plt.show()
-
 
 def plot_spearman_estabilidad(
     df_correlaciones: pd.DataFrame,

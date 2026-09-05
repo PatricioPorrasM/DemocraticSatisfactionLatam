@@ -3,8 +3,11 @@ pyreadstat>=1.2.6   # Lectura de archivos .dta (Stata) y .sav (SPSS)
 openpyxl>=3.1.2    # Lectura del Excel de series de tiempo
 numpy>=1.26.0
 tqdm>=4.66.0
-pandas>=2.1.0
 scikit-learn>=1.4.0
+mord>=0.7             # Regresión logística ordinal acumulativa: es la línea
+                      # base OLO del diseño experimental, así que sin este
+                      # paquete utils.models.entrenar_olo interrumpe la
+                      # ejecución en lugar de sustituirla por otro modelo.
 xgboost>=2.0.0
 lightgbm>=4.3.0
 catboost>=1.2.0
@@ -19,5 +22,4 @@ missingno>=0.5.2
 shap>=0.52.0
 lime>=0.2.0.1
 alibi>=0.5.5
-scikit-posthocs
 papermill 

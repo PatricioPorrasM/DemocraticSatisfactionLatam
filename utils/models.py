@@ -4,7 +4,25 @@ utils/models.py
 Entrenamiento de los cinco modelos del proyecto con optimización Optuna (TPE)
 maximizando el Kappa cuadrático en el conjunto de validación.
 
-Modelos: OLO (baseline ordinal), XGBoost, CatBoost, LightGBM y TabNet.
+Modelos
+-------
+- **OLO**: regresión logística ordinal acumulativa (``mord.LogisticIT``), un
+  único vector de coeficientes y K-1 umbrales. Es la línea base ordinal del
+  diseño experimental, por lo que la ausencia de ``mord`` interrumpe la
+  ejecución en lugar de sustituirla por un modelo multinomial.
+- **XGBoost**, **CatBoost**, **LightGBM**: árboles de gradiente.
+- **TabNet**: red de atención tabular.
+
+Tratamiento del desbalance
+--------------------------
+Las tres estrategias de balanceo (``sin_balanceo``, ``pesos_clase``,
+``smotenc``) se traducen a cada familia de modelos así:
+
+- OLO y árboles de gradiente reciben ``sample_weight``, que combina el factor
+  de expansión muestral con el peso de clase cuando corresponde.
+- TabNet no admite ``sample_weight`` por registro, así que el peso de clase se
+  aplica en la función de pérdida (entropía cruzada ponderada) y el muestreo
+  se deja uniforme (``weights=0``) en las tres estrategias.
 
 Registro de hiperparámetros
 ---------------------------
@@ -27,26 +45,29 @@ Se accede con `cargar_hiperparametros()` y se resume con `tabla_hiperparametros(
 """
 
 import json
-import joblib
+import warnings
 import numpy as np
 import pandas as pd
 import torch
 import optuna
 from optuna.samplers import TPESampler
-from sklearn.linear_model import LogisticRegression
+from scipy.optimize import OptimizeWarning
 from sklearn.metrics import cohen_kappa_score
 from datetime import datetime
 from typing import Dict, Optional, Tuple
 
 from .config import PATHS, PARAMETERS, N_CLASES, VARS_CATEGORICAS
 from .metrics import evaluar
-from .preprocessing import aplicar_transformaciones_deterministas
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 try:
     import mord as _mord
     MORD_OK = True
+    # mord 0.7 pasa la opción 'disp' a scipy.optimize.minimize, que ya no la
+    # reconoce; el aviso no afecta la solución obtenida.
+    warnings.filterwarnings("ignore", category=OptimizeWarning,
+                            module="mord.threshold_based")
 except ImportError:
     MORD_OK = False
 
@@ -97,14 +118,17 @@ def _json_seguro(obj):
 
 
 def ruta_hiperparametros(nombre_modelo: str, estrategia: str,
-                         variante_target: str = "ordinal_4clases"):
+                         variante_target: str = "ordinal_4clases",
+                         sufijo: str = ""):
     """
     Ruta del archivo JSON de hiperparámetros.
 
     La variante del target forma parte del nombre para que los modelos de E1
-    (ordinal) y de E2 (binario) no se sobrescriban entre sí.
+    (ordinal) y de E2 (binario) no se sobrescriban entre sí. El sufijo separa
+    los pliegues temporales (``"_fold1"``, …) del corte definitivo (``""``).
     """
-    return PATHS["FOLDER_MODELS"] / f"hp_{nombre_modelo}_{estrategia}_{variante_target}.json"
+    return (PATHS["FOLDER_MODELS"] /
+            f"hp_{nombre_modelo}_{estrategia}_{variante_target}{sufijo}.json")
 
 
 def _params_efectivos(clf) -> Dict:
@@ -133,6 +157,7 @@ def guardar_hiperparametros(
     clf=None,
     n_trials: Optional[int] = None,
     mejor_kappa_val: Optional[float] = None,
+    sufijo: str = "",
 ) -> Dict:
     """
     Persiste el registro completo de hiperparámetros de un modelo.
@@ -144,6 +169,10 @@ def guardar_hiperparametros(
         "modelo"                  : nombre_modelo,
         "estrategia_balanceo"     : estrategia,
         "variante_target"         : variante_target,
+        "pliegue"                 : sufijo.lstrip("_") or "final",
+        # Deja constancia de si el artefacto viene de la corrida definitiva o
+        # de una prueba de humo, para que sus cifras no se confundan.
+        "modo_ejecucion"          : PARAMETERS["MODO_EJECUCION"],
         "semilla"                 : PARAMETERS["SEED"],
         "n_trials_optuna"         : n_trials,
         "mejor_kappa_val_optuna"  : (round(float(mejor_kappa_val), 6)
@@ -156,7 +185,7 @@ def guardar_hiperparametros(
         "params_efectivos_modelo" : _params_efectivos(clf) if clf is not None else {},
         "fecha_registro"          : datetime.now().isoformat(),
     }
-    ruta = ruta_hiperparametros(nombre_modelo, estrategia, variante_target)
+    ruta = ruta_hiperparametros(nombre_modelo, estrategia, variante_target, sufijo)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(json.dumps(registro, indent=2, ensure_ascii=False),
                     encoding="utf-8")
@@ -164,29 +193,16 @@ def guardar_hiperparametros(
 
 
 def cargar_hiperparametros(nombre_modelo: str, estrategia: str,
-                           variante_target: str = "ordinal_4clases") -> Dict:
-    """
-    Carga el registro de hiperparámetros de un modelo.
-
-    Acepta también los archivos del formato antiguo (diccionario plano con
-    solo los parámetros de Optuna) y los normaliza a la estructura actual.
-    """
-    ruta = ruta_hiperparametros(nombre_modelo, estrategia, variante_target)
+                           variante_target: str = "ordinal_4clases",
+                           sufijo: str = "") -> Dict:
+    """Carga el registro de hiperparámetros de un modelo."""
+    ruta = ruta_hiperparametros(nombre_modelo, estrategia, variante_target, sufijo)
     if not ruta.exists():
         raise FileNotFoundError(
             f"Registro de hiperparámetros no encontrado: {ruta}\n"
             f"Ejecuta el notebook 02."
         )
-    datos = json.loads(ruta.read_text(encoding="utf-8"))
-    if "hp_optimizados" not in datos:      # formato antiguo: dict plano
-        datos = {
-            "modelo": nombre_modelo, "estrategia_balanceo": estrategia,
-            "variante_target": variante_target,
-            "hp_optimizados": datos, "hp_fijos": {}, "hp_completos": datos,
-            "espacio_busqueda": {}, "config_entrenamiento": {},
-            "params_efectivos_modelo": {},
-        }
-    return datos
+    return json.loads(ruta.read_text(encoding="utf-8"))
 
 
 def tabla_hiperparametros(carpeta=None) -> pd.DataFrame:
@@ -204,14 +220,12 @@ def tabla_hiperparametros(carpeta=None) -> pd.DataFrame:
         except Exception as e:                                  # noqa: BLE001
             print(f"  ⚠ No se pudo leer {ruta.name}: {e}")
             continue
-        if "hp_optimizados" not in d:
-            d = {"modelo": ruta.stem, "hp_optimizados": d,
-                 "hp_fijos": {}, "hp_completos": d}
         hp_completos = d.get("hp_completos", {})
         filas.append({
             "modelo"              : d.get("modelo"),
             "estrategia_balanceo" : d.get("estrategia_balanceo"),
             "variante_target"     : d.get("variante_target"),
+            "pliegue"             : d.get("pliegue", "final"),
             "n_hp_optimizados"    : len(d.get("hp_optimizados", {})),
             "n_hp_completos"      : len(hp_completos),
             "n_trials_optuna"     : d.get("n_trials_optuna"),
@@ -225,12 +239,13 @@ def tabla_hiperparametros(carpeta=None) -> pd.DataFrame:
         })
     if not filas:
         return pd.DataFrame(columns=[
-            "modelo", "estrategia_balanceo", "variante_target",
+            "modelo", "estrategia_balanceo", "variante_target", "pliegue",
             "n_hp_optimizados", "n_hp_completos", "n_trials_optuna",
             "kappa_val_optuna", "hp_optimizados", "hp_completos",
             "config_entrenamiento", "archivo"])
     return pd.DataFrame(filas).sort_values(
-        ["variante_target", "modelo", "estrategia_balanceo"]).reset_index(drop=True)
+        ["pliegue", "variante_target", "modelo", "estrategia_balanceo"]
+    ).reset_index(drop=True)
 
 
 def _hp_previos(nombre: str, estrategia: str, variante: str, cfg: dict):
@@ -243,10 +258,11 @@ def _hp_previos(nombre: str, estrategia: str, variante: str, cfg: dict):
     """
     if cfg["ejecutar_hp"]:
         return None, None, None
-    ruta = ruta_hiperparametros(nombre, estrategia, variante)
+    sufijo = cfg.get("sufijo_hp", "")
+    ruta = ruta_hiperparametros(nombre, estrategia, variante, sufijo)
     if not ruta.exists():
         return None, None, None
-    registro = cargar_hiperparametros(nombre, estrategia, variante)
+    registro = cargar_hiperparametros(nombre, estrategia, variante, sufijo)
     hp = registro.get("hp_optimizados", {})
     print(f"  HPs cargados desde {ruta.name}: {hp}")
     return (hp, registro.get("mejor_kappa_val_optuna"),
@@ -318,9 +334,17 @@ def entrenar_olo(
 ) -> Tuple:
     nombre = "OLO"
     seed   = PARAMETERS["SEED"]
-    n_trials_efectivos = cfg["n_trials"]
+    # mord.LogisticIT resuelve el problema con L-BFGS-B sobre un objetivo
+    # escrito en Python puro, así que cada ensayo cuesta bastante más que uno
+    # de los modelos arbóreos y se le asigna un presupuesto propio.
+    n_trials_efectivos = cfg.get("n_trials_olo", cfg["n_trials"])
 
     print(f"{'='*52}  Entrenando {nombre} — {estrategia}  {'='*52}")
+    if not MORD_OK:
+        raise ImportError(
+            "mord no está instalado y la línea base ordinal es parte del diseño "
+            "experimental. Instalar con: pip install mord>=0.7"
+        )
 
     best_hp, kappa_val, n_trials_reg = _hp_previos(
         nombre, estrategia, variante_target, cfg)
@@ -330,13 +354,8 @@ def entrenar_olo(
 
         def obj(trial):
             alpha = trial.suggest_float("alpha", 1e-4, 10.0, log=True)
-            if MORD_OK:
-                m = _mord.LogisticIT(alpha=alpha, max_iter=500)
-                m.fit(X_tr_np, y_tr_np, sample_weight=w_tr)
-            else:
-                m = LogisticRegression(C=1/alpha, solver="lbfgs",
-                                       max_iter=500, random_state=seed)
-                m.fit(X_tr_np, y_tr_np, sample_weight=w_tr)
+            m = _mord.LogisticIT(alpha=alpha, max_iter=500)
+            m.fit(X_tr_np, y_tr_np, sample_weight=w_tr)
             return cohen_kappa_score(y_val_np, m.predict(X_val_np), weights="quadratic")
 
         study = optuna.create_study(direction="maximize", sampler=TPESampler(seed=seed))
@@ -346,20 +365,15 @@ def entrenar_olo(
         print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
         guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
                                 espacio_busqueda=ESPACIO_OLO,
-                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+                                sufijo=cfg.get("sufijo_hp", ""))
 
     alpha = best_hp.get("alpha", 1.0)
-    if MORD_OK:
-        hp_fijos = {"max_iter": 500, "implementacion": "mord.LogisticIT"}
-        clf = _mord.LogisticIT(alpha=alpha, max_iter=500)
-        clf.fit(np.array(X_tr), np.array(y_tr), sample_weight=w_tr)
-    else:
-        hp_fijos = {"C": 1/alpha, "solver": "lbfgs", "max_iter": 500,
-                    "random_state": seed,
-                    "implementacion": "sklearn.LogisticRegression"}
-        clf = LogisticRegression(C=1/alpha, solver="lbfgs",
-                                 max_iter=500, random_state=seed)
-        clf.fit(np.array(X_tr), np.array(y_tr), sample_weight=w_tr)
+    hp_fijos = {"max_iter": 500, "implementacion": "mord.LogisticIT",
+                "formulacion": "logit acumulativo con umbrales de umbral "
+                               "inmediato (immediate-threshold)"}
+    clf = _mord.LogisticIT(alpha=alpha, max_iter=500)
+    clf.fit(np.array(X_tr), np.array(y_tr), sample_weight=w_tr)
 
     guardar_hiperparametros(
         nombre, estrategia, variante_target, best_hp,
@@ -368,8 +382,13 @@ def entrenar_olo(
             "usa_sample_weight": True,
             "entrada": "X normalizada con StandardScaler",
             "n_clases": int(len(np.unique(np.array(y_tr)))),
+            # Evidencia de que el modelo es ordinal y no multinomial: un único
+            # vector de coeficientes compartido y K-1 umbrales estimados.
+            "n_coeficientes": int(np.size(clf.coef_)),
+            "umbrales_theta": [round(float(t), 6) for t in np.atleast_1d(clf.theta_)],
         },
         clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+        sufijo=cfg.get("sufijo_hp", ""),
     )
 
     y_pred_val = clf.predict(np.array(X_val))
@@ -432,7 +451,8 @@ def entrenar_xgboost(
         print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
         guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
                                 hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_XGBOOST,
-                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+                                sufijo=cfg.get("sufijo_hp", ""))
 
     clf = xgb.XGBClassifier(**best_hp, **hp_fijos)
     clf.fit(X_tr, y_tr, sample_weight=w_tr,
@@ -449,6 +469,7 @@ def entrenar_xgboost(
             "n_registros_train" : int(len(y_tr)),
         },
         clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+        sufijo=cfg.get("sufijo_hp", ""),
     )
 
     y_pred_val = clf.predict(X_val)
@@ -518,7 +539,8 @@ def entrenar_catboost(
         print(f"  Mejor Kappa Val: {kappa_val:.4f} | {best_hp}")
         guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
                                 hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_CATBOOST,
-                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+                                sufijo=cfg.get("sufijo_hp", ""))
 
     pool_tr  = Pool(X_tr_c, label=y_tr.values, weight=w_tr, cat_features=cat_idx)
     pool_val = Pool(X_val_c, label=y_val.values, cat_features=cat_idx)
@@ -539,6 +561,7 @@ def entrenar_catboost(
             "arboles_usados"     : int(getattr(clf, "tree_count_", 0) or 0),
         },
         clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+        sufijo=cfg.get("sufijo_hp", ""),
     )
 
     y_pred_val = clf.predict(X_val_c).flatten()
@@ -632,7 +655,8 @@ def entrenar_lightgbm(
         guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
                                 hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_LIGHTGBM,
                                 config_entrenamiento=CONFIG_FIT,
-                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+                                sufijo=cfg.get("sufijo_hp", ""))
 
     clf = lgb.LGBMClassifier(**best_hp, **hp_fijos)
     clf.fit(X_tr_l, y_tr, sample_weight=w_tr,
@@ -653,6 +677,7 @@ def entrenar_lightgbm(
             "n_arboles_ajustados": int(getattr(clf, "n_estimators_", 0) or 0),
         },
         clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+        sufijo=cfg.get("sufijo_hp", ""),
     )
 
     y_pred_val = clf.predict(X_val_l)
@@ -665,9 +690,43 @@ def entrenar_lightgbm(
     return clf, m_val, m_te
 
 
+def _pesos_clase_tabnet(y_tr, estrategia: str, pesos_clase: Optional[Dict],
+                        dispositivo: str):
+    """
+    Función de pérdida de TabNet para la estrategia de balanceo indicada.
+
+    En la estrategia ``pesos_clase`` el desbalance se corrige dentro de la
+    pérdida, con una entropía cruzada ponderada por la frecuencia inversa de
+    cada clase, y no reponderando el muestreo. Así el brazo con pesos difiere
+    realmente del baseline: el parámetro ``weights`` de ``fit`` solo controla
+    el ``WeightedRandomSampler``, de modo que dejarlo activo en las tres
+    estrategias las volvería equivalentes.
+
+    Retorna ``(loss_fn, vector_de_pesos)``; ``(None, None)`` cuando no se
+    aplican pesos y corresponde la pérdida por defecto.
+    """
+    if estrategia != "pesos_clase":
+        return None, None
+
+    clases = np.unique(y_tr)
+    n_clases = len(clases)
+    # Se reutiliza el vector calculado sobre el conjunto de entrenamiento para
+    # el resto de los modelos; si no corresponde al número de clases de esta
+    # variante del target (por ejemplo en la variante binaria), se recalcula
+    # con la misma fórmula de frecuencia inversa.
+    if pesos_clase and len(pesos_clase) == n_clases:
+        vector = [float(pesos_clase[c]) for c in sorted(pesos_clase)]
+    else:
+        vector = [len(y_tr) / (n_clases * int((y_tr == c).sum())) for c in clases]
+
+    tensor = torch.tensor(vector, dtype=torch.float32, device=dispositivo)
+    return torch.nn.CrossEntropyLoss(weight=tensor), vector
+
+
 def entrenar_tabnet(
     X_tr_sc, y_tr, X_val_sc, y_val, X_te_sc, y_te,
     estrategia: str, cat_idxs: list, cat_dims: list,
+    pesos_clase: Optional[Dict] = None,
     variante_target: str = "ordinal_4clases", cfg: dict = None,
 ) -> Tuple:
     nombre = "TabNet"
@@ -676,7 +735,13 @@ def entrenar_tabnet(
     print(f"\n{'='*52}\n  Entrenando {nombre} — {estrategia}\n{'='*52}")
     print(f"  Dispositivo: {cfg['dispositivo_tn']}")
 
-    n_trials_efectivos = min(cfg["n_trials"], 20)   # búsqueda acotada
+    loss_fn, vector_pesos = _pesos_clase_tabnet(
+        y_tr, estrategia, pesos_clase, cfg["dispositivo_tn"])
+    if vector_pesos is not None:
+        print("  Pérdida ponderada por clase: " +
+              ", ".join(f"{w:.4f}" for w in vector_pesos))
+
+    n_trials_efectivos = cfg.get("n_trials_tabnet", cfg["n_trials"])
     hp_fijos = {
         "optimizer_fn"    : "torch.optim.Adam",
         "scheduler_fn"    : "torch.optim.lr_scheduler.StepLR",
@@ -689,18 +754,23 @@ def entrenar_tabnet(
         "seed"            : seed,
     }
     CONFIG_FIT = {
-        "max_epochs"        : 200,
-        "patience"          : 20,
+        "max_epochs"        : PARAMETERS["EPOCAS_TABNET"],
+        "patience"          : PARAMETERS["PACIENCIA_TABNET"],
         "batch_size"        : 1024,
         "virtual_batch_size": 128,
         "eval_metric"       : ["balanced_accuracy"],
-        "weights"           : 1,
+        # weights=0 desactiva el WeightedRandomSampler: el muestreo es uniforme
+        # en las tres estrategias y el balanceo, cuando corresponde, se aplica
+        # en la función de pérdida.
+        "weights"           : 0,
         "eval_set"          : "conjunto de validación",
         "usa_sample_weight" : False,
-        "nota"              : ("TabNet usa pesos por clase (weights=1), "
-                               "no sample_weight individual"),
-        "max_epochs_optuna" : 100,
-        "patience_optuna"   : 15,
+        "loss_fn"           : ("CrossEntropyLoss ponderada por frecuencia "
+                               "inversa de clase" if loss_fn is not None
+                               else "cross_entropy (por defecto)"),
+        "pesos_clase"       : vector_pesos,
+        "max_epochs_optuna" : PARAMETERS["EPOCAS_TABNET_OPTUNA"],
+        "patience_optuna"   : PARAMETERS["PACIENCIA_TABNET_OPTUNA"],
     }
 
     best_hp, kappa_val, n_trials_reg = _hp_previos(
@@ -730,8 +800,10 @@ def entrenar_tabnet(
                 X_tr_sc.astype(np.float32), y_tr,
                 eval_set=[(X_val_sc.astype(np.float32), y_val)],
                 eval_metric=["balanced_accuracy"],
-                max_epochs=100, patience=15,
-                batch_size=1024, virtual_batch_size=128, weights=1,
+                max_epochs=PARAMETERS["EPOCAS_TABNET_OPTUNA"],
+                patience=PARAMETERS["PACIENCIA_TABNET_OPTUNA"],
+                batch_size=1024, virtual_batch_size=128,
+                weights=0, loss_fn=loss_fn,
             )
             return cohen_kappa_score(y_val,
                                      m.predict(X_val_sc.astype(np.float32)),
@@ -745,7 +817,8 @@ def entrenar_tabnet(
         guardar_hiperparametros(nombre, estrategia, variante_target, best_hp,
                                 hp_fijos=hp_fijos, espacio_busqueda=ESPACIO_TABNET,
                                 config_entrenamiento=CONFIG_FIT,
-                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val)
+                                n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+                                sufijo=cfg.get("sufijo_hp", ""))
 
     best_hp = dict(best_hp)
     lr_opt  = best_hp.pop("lr", 1e-3)
@@ -762,8 +835,10 @@ def entrenar_tabnet(
         X_tr_sc.astype(np.float32), y_tr,
         eval_set=[(X_val_sc.astype(np.float32), y_val)],
         eval_metric=["balanced_accuracy"],
-        max_epochs=200, patience=20,
-        batch_size=1024, virtual_batch_size=128, weights=1,
+        max_epochs=PARAMETERS["EPOCAS_TABNET"],
+        patience=PARAMETERS["PACIENCIA_TABNET"],
+        batch_size=1024, virtual_batch_size=128,
+        weights=0, loss_fn=loss_fn,
     )
     best_hp["lr"] = lr_opt
 
@@ -783,6 +858,7 @@ def entrenar_tabnet(
             "entrada"          : "X normalizada con MinMaxScaler",
         },
         clf=clf, n_trials=n_trials_reg, mejor_kappa_val=kappa_val,
+        sufijo=cfg.get("sufijo_hp", ""),
     )
 
     y_pred_val = clf.predict(X_val_sc.astype(np.float32))
@@ -790,69 +866,11 @@ def entrenar_tabnet(
     y_pred_te  = clf.predict(X_te_sc.astype(np.float32))
     y_prob_te  = clf.predict_proba(X_te_sc.astype(np.float32))
 
-    print("  ⚠ Limitación: TabNet usa pesos por clase, no sample_weight individual.")
+    # TabNet no admite sample_weight por registro: el factor de expansión
+    # muestral X_020 no interviene en su entrenamiento, a diferencia del resto
+    # de los modelos. Queda registrado como limitación del diseño.
+    print("  Nota: TabNet no admite sample_weight por registro; el factor de "
+          "expansión muestral no interviene en su ajuste.")
     m_val = evaluar(y_val, y_pred_val, y_prob_val, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="val")
     m_te  = evaluar(y_te, y_pred_te, y_prob_te, nombre, estrategia_balanceo=estrategia, variante_target=variante_target, split="test")
     return clf, m_val, m_te
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# PREDICCIÓN EN PRODUCCIÓN
-# ═════════════════════════════════════════════════════════════════════════════
-
-def predecir(
-    datos_crudos: dict,
-    nombre_modelo: str = "XGBoost",
-    estrategia: str    = "pesos_clase",
-    año_encuesta: int  = 2024,
-) -> dict:
-    ruta = PATHS["FOLDER_MODELS"] / f"pipeline_{nombre_modelo}_{estrategia}.pkl"
-    assert ruta.exists(), f"Pipeline no encontrado: {ruta}"
-    art  = joblib.load(ruta)
-    tipo = art["tipo_modelo"]
-
-    df_in = pd.DataFrame([datos_crudos])
-    df_t  = aplicar_transformaciones_deterministas(df_in, art["transformaciones"], año_encuesta)
-    df_t  = df_t.reindex(columns=art["features"])
-
-    feats = art["features"]
-
-    if tipo == "olo":
-        X_imp = pd.DataFrame(art["imp_num"].transform(df_t[feats]), columns=feats)
-        X_sc  = pd.DataFrame(art["scaler"].transform(X_imp), columns=feats)
-        y_pred = art["modelo"].predict(X_sc.values)
-        y_prob = art["modelo"].predict_proba(X_sc.values)[0]
-
-    elif tipo == "tabnet":
-        X_imp = pd.DataFrame(art["imp_num"].transform(df_t[feats]), columns=feats)
-        X_sc  = pd.DataFrame(art["scaler"].transform(X_imp), columns=feats)
-        y_pred = art["modelo"].predict(X_sc.values.astype(np.float32))
-        y_prob = art["modelo"].predict_proba(X_sc.values.astype(np.float32))[0]
-
-    else:
-        X_in = df_t[feats].copy()
-        if nombre_modelo == "CatBoost":
-            for col in art.get("vars_categoricas", []):
-                if col in X_in.columns:
-                    X_in[col] = X_in[col].fillna(-999).astype(int).astype(str)
-        elif nombre_modelo == "LightGBM":
-            for col in art.get("vars_categoricas", []):
-                if col in X_in.columns:
-                    cats = sorted(X_in[col].dropna().unique().tolist())
-                    ct = pd.CategoricalDtype(categories=cats, ordered=False)
-                    X_in[col] = X_in[col].astype(ct)
-        y_raw  = art["modelo"].predict(X_in)
-        y_pred = y_raw.flatten() if hasattr(y_raw, "flatten") else y_raw
-        y_prob = art["modelo"].predict_proba(X_in)
-        if y_prob.ndim == 2:
-            y_prob = y_prob[0]
-
-    clase = int(y_pred[0]) if hasattr(y_pred, "__len__") else int(y_pred)
-    ets   = art["etiquetas_target"]
-    return {
-        "clase_predicha" : clase,
-        "etiqueta"       : ets[clase],
-        "probabilidades" : {ets[i]: float(p) for i, p in enumerate(y_prob)},
-        "modelo"         : nombre_modelo,
-        # Campo de split ya no aplica en diseño de validación único
-    }

@@ -2,6 +2,18 @@
 
 set -e
 
+# Modo de ejecución: "real" (corrida definitiva) o "humo" (prueba rápida).
+#
+#   bash run_all.sh              -> usa el modo fijado en utils/config.py
+#   MODO_EJECUCION=humo bash run_all.sh   -> prueba de humo
+#   MODO_EJECUCION=real bash run_all.sh   -> corrida definitiva
+#
+# La variable se exporta para que la vean los kernels que lanza papermill.
+if [ -n "$MODO_EJECUCION" ]; then
+  export MODO_EJECUCION
+  echo "MODO_EJECUCION=$MODO_EJECUCION"
+fi
+
 # Ir a la raíz del proyecto
 cd "$(dirname "$0")"
 

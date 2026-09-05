@@ -7,17 +7,304 @@ import seaborn as sns
 from pathlib import Path
 
 # ====================================================
-# PARAMETERS
+# MODO DE EJECUCIÓN — el único interruptor que hay que mover
+#
+#   "real" : corrida definitiva. Dataset completo, presupuestos de Optuna y de
+#            bootstrap completos, pliegues temporales activos. Es la que produce
+#            las cifras que van al documento. Coste: horas en GPU.
+#   "humo" : prueba de humo. Recorre TODO el flujo de los seis notebooks —
+#            incluidos los pliegues temporales, el bootstrap, SHAP, LIME y ALE —
+#            con la muestra reducida y presupuestos mínimos, para verificar que
+#            no hay errores antes de lanzar la corrida real. Sus cifras NO son
+#            publicables.
+#            El NB01 lee y armoniza las olas de Latinobarómetro en los dos
+#            modos, así que su duración no cambia; el ahorro está en los
+#            notebooks 02 a 06, que pasan de horas a minutos.
+#
+# Cómo se cambia, según cómo se ejecute el proyecto:
+#
+#   - Notebook a notebook (Jupyter Lab, VS Code): editar MODO abajo.
+#     Después de editarlo hay que REINICIAR EL KERNEL, porque Python conserva
+#     en memoria el módulo ya importado y no volvería a leer el archivo.
+#
+#   - Corrida completa con papermill: no hace falta tocar el archivo, la
+#     variable de entorno tiene prioridad sobre MODO.
+#         MODO_EJECUCION=humo bash run_all.sh
+#
+# Todo lo que depende del modo está en PERFILES_EJECUCION; lo que no depende
+# está en _PARAMETERS_COMUNES. Ningún notebook define banderas propias.
+# ====================================================
+
+# ┌───────────────────────────────────────────────────────────────────────┐
+# │  ESTA ES LA LÍNEA QUE SE EDITA:  "real"  o  "humo"                    │
+MODO = "humo"
+# └───────────────────────────────────────────────────────────────────────┘
+
+# La variable de entorno, si está definida, tiene prioridad sobre MODO: es la
+# que usa run_all.sh para no tener que editar el archivo en el servidor.
+MODO_EJECUCION = os.environ.get("MODO_EJECUCION", MODO).strip().lower()
+
+
+# ── Parámetros que NO cambian entre modos ───────────────────────────────────
+_PARAMETERS_COMUNES = {
+    # Semilla única del proyecto: numpy, torch, Optuna, SMOTE-NC y bootstrap.
+    "SEED": 42,
+    # Rango de años admitido al armonizar Latinobarómetro con V-Dem.
+    "YEAR_START": 1995,
+    "YEAR_END": 2024,
+
+    # ── Hardware y paralelismo (NB02) ────────────────────────────────────────
+    # USAR_GPU: True activa 'device=gpu' en XGBoost y LightGBM, 'task_type=GPU'
+    # en CatBoost y 'cuda' en TabNet. Si no hay GPU visible, hw_cfg() degrada a
+    # CPU automáticamente, así que dejarlo en True es seguro en cualquier
+    # máquina.
+    "USAR_GPU": True,
+    # N_JOBS: hilos para los modelos que corren en CPU. -1 usa todos los núcleos.
+    "N_JOBS": -1,
+
+    # ── Búsqueda de hiperparámetros con Optuna (NB02 §14–§15) ────────────────
+    # EJECUTAR_BUSQUEDA_HP: True corre la búsqueda TPE; False reutiliza los
+    # hiperparámetros ya registrados en models/hp_*.json (útil para repetir
+    # solo la evaluación sin volver a optimizar). Se deja en True en los dos
+    # modos: la prueba de humo también debe ejercitar la búsqueda.
+    "EJECUTAR_BUSQUEDA_HP": True,
+
+    # ── Validación temporal en pliegues históricos (NB02 §19) ───────────────
+    # Estrategia de balanceo con la que se corren los pliegues. Se usa una sola
+    # porque el objetivo es medir estabilidad temporal, no repetir E1.
+    "ESTRATEGIA_FOLDS": "pesos_clase",
+
+    # ── Evaluación comparativa (NB03) ────────────────────────────────────────
+    # Métrica que ordena los modelos y guía la selección. El kappa cuadrático
+    # penaliza los errores en proporción a la distancia ordinal.
+    "METRICA_PRINCIPAL": "kappa_cuadratico",
+    # Conjunto donde se ELIGE la configuración principal. Debe ser 'val': el
+    # conjunto de prueba se reserva para reportar, no para seleccionar.
+    "CONJUNTO_SELECCION": "val",
+    # True dibuja una matriz de confusión por cada modelo × estrategia (15);
+    # False solo la del modelo principal.
+    "CONFUSION_TODOS_MODELOS": True,
+    # True añade, junto a cada métrica, su versión ponderada por el factor de
+    # expansión muestral X_020.
+    "REPORTAR_PONDERADAS": True,
+    "NIVEL_CONFIANZA": 0.95,
+    # Unidad que se remuestrea: los registros de un mismo país-año comparten
+    # los indicadores de V-Dem, así que se remuestrean clústeres completos.
+    # 'pais_anio' (32 clústeres en test) o 'pais' (16, más conservador).
+    "NIVEL_CLUSTER": "pais_anio",
+    # Lista y orden de los modelos en todas las tablas y figuras comparativas.
+    "MODELOS": ["OLO", "XGBoost", "CatBoost", "LightGBM", "TabNet"],
+
+    # ── Explicabilidad (NB04) ────────────────────────────────────────────────
+    # MODELO_XAI: 'auto' toma la configuración principal que seleccionó el NB03
+    # (results/modelo_xai_seleccionado.json); un nombre concreto la fija a mano.
+    "MODELO_XAI": "auto",
+    # Conjunto sobre el que se explican las predicciones.
+    "SPLIT_REFERENCIA_XAI": "test",
+    # SHAP para TabNet exige KernelExplainer sobre la red completa (horas).
+    # False usa en su lugar las máscaras de atención propias del modelo.
+    "SHAP_PARA_TABNET": False,
+    # True recalcula SHAP incluso si existe el parquet guardado. El notebook
+    # además invalida el caché por sí solo cuando el pipeline es más nuevo que
+    # el parquet, así que basta dejarlo en False.
+    "FORZAR_RECALCULO_SHAP": False,
+    # Variables mostradas en los gráficos de importancia.
+    "TOP_N_SHAP": 20,
+    # True añade el gráfico de las variables que más pesan en los errores graves.
+    "LIME_SOBRE_ERRORES": True,
+    "NIVEL_CLUSTER_XAI": "pais_anio",
+    # Modelos con rendimiento estadísticamente indistinguible cuyos rankings se
+    # comparan entre sí (diagnóstico de identificabilidad del ranking).
+    "MODELOS_CONCORDANCIA": ["CatBoost", "XGBoost", "LightGBM"],
+    # Variables por bloque temático para las que se calcula la curva ALE.
+    "VARS_ALE_POR_BLOQUE": 2,
+
+    # ── Contraste teórico (NB06) ─────────────────────────────────────────────
+    # Variables del ranking empírico sobre las que se calcula el porcentaje de
+    # convergencia con el bloque que cada teoría predice como dominante.
+    "TOP_N_CONTRASTE": 10,
+    # Variables incluidas en la tabla detallada de convergencias y divergencias.
+    "TOP_N_TABLA_CONVERGENCIAS": 20,
+    # Variables consideradas en el mapa de calor bloque × teoría.
+    "TOP_N_HEATMAP": 10,
+}
+
+
+# ── Parámetros que SÍ cambian entre modos ───────────────────────────────────
+#
+# Las dos columnas tienen exactamente las mismas claves: el perfil de humo
+# recorta el volumen de cada etapa, nunca desactiva una etapa entera, para que
+# la prueba ejercite todas las rutas de código que usará la corrida real.
+PERFILES_EJECUCION = {
+
+    "real": {
+        # Carga de datos (NB01/NB02): las olas completas.
+        "LOAD_SAMPLE": False,
+        "MIN_NUMBER_RECORDS": 8,     # solo afectan a la muestra de inspección
+        "MAX_NUMBER_RECORDS": 12,    # que genera el NB01; sin efecto aquí
+        # Optuna: los presupuestos difieren porque el costo por ensayo cambia
+        # mucho entre familias de modelos.
+        "N_TRIALS_OPTUNA": 50,       # árboles de gradiente
+        "N_TRIALS_OLO": 20,          # mord.LogisticIT: L-BFGS-B en Python puro
+        "N_TRIALS_TABNET": 20,       # cada ensayo entrena una red completa
+        # Pliegues temporales históricos.
+        "EJECUTAR_FOLDS_TEMPORALES": True,
+        "N_TRIALS_FOLDS": 15,
+        # Bootstrap de clústeres.
+        "N_BOOTSTRAP": 1000,
+        "N_BOOTSTRAP_SHAP": 1000,
+        # TabNet: épocas y paciencia del early stopping. Es el modelo más
+        # costoso por ajuste, así que su presupuesto de épocas también depende
+        # del modo.
+        "EPOCAS_TABNET": 200,
+        "PACIENCIA_TABNET": 20,
+        "EPOCAS_TABNET_OPTUNA": 100,     # por ensayo de la búsqueda
+        "PACIENCIA_TABNET_OPTUNA": 15,
+        # SHAP y LIME.
+        "N_MUESTRAS_SHAP_OLO": 500,
+        "CASOS_LIME_REPRESENTATIVOS": 100,  # estratificados por clase × subregión
+        "CASOS_LIME_ERRORES": 50,           # mayor distancia ordinal |ŷ - y|
+        "CASOS_LIME_DISCORDANTES": 50,      # poliarquía alta y satisfacción baja
+    },
+
+    "humo": {
+        # Muestra reducida: el NB01 la genera con MIN/MAX registros por ola y
+        # país. Con 60–80 por celda quedan ~30.000 registros, suficientes para
+        # que cada ola de validación tenga las cuatro clases representadas y el
+        # kappa y el AUROC se puedan calcular sin degenerar.
+        "LOAD_SAMPLE": True,
+        "MIN_NUMBER_RECORDS": 60,
+        "MAX_NUMBER_RECORDS": 80,
+        # Optuna: dos ensayos bastan para recorrer el bucle de búsqueda, el
+        # guardado del registro y el reajuste final.
+        "N_TRIALS_OPTUNA": 2,
+        "N_TRIALS_OLO": 2,
+        "N_TRIALS_TABNET": 2,
+        # Los pliegues se ejecutan también en humo: es justo el código nuevo
+        # que más conviene probar antes de la corrida real.
+        "EJECUTAR_FOLDS_TEMPORALES": True,
+        "N_TRIALS_FOLDS": 1,
+        # Bootstrap: 50 réplicas dan intervalos inservibles pero recorren todo
+        # el camino de remuestreo, agregación y guardado de tablas.
+        "N_BOOTSTRAP": 50,
+        "N_BOOTSTRAP_SHAP": 50,
+        # TabNet: sin recortar las épocas, el ajuste de la red domina el
+        # tiempo de la prueba y la deja en horas en lugar de minutos. Con este
+        # presupuesto la red no converge —no es el objetivo— pero se ejercitan
+        # el bucle de entrenamiento, el early stopping y la pérdida ponderada.
+        "EPOCAS_TABNET": 12,
+        "PACIENCIA_TABNET": 4,
+        "EPOCAS_TABNET_OPTUNA": 8,
+        "PACIENCIA_TABNET_OPTUNA": 3,
+        # SHAP y LIME: lo justo para que cada grupo tenga casos.
+        "N_MUESTRAS_SHAP_OLO": 50,
+        "CASOS_LIME_REPRESENTATIVOS": 8,
+        "CASOS_LIME_ERRORES": 4,
+        "CASOS_LIME_DISCORDANTES": 4,
+    },
+}
+
+if MODO_EJECUCION not in PERFILES_EJECUCION:
+    raise ValueError(
+        f"MODO_EJECUCION={MODO_EJECUCION!r} no reconocido. "
+        f"Valores admitidos: {sorted(PERFILES_EJECUCION)}."
+    )
+
+# Las dos columnas deben cubrir las mismas claves: si una se añade en un perfil
+# y se olvida en el otro, el modo correspondiente fallaría a mitad de la corrida.
+_claves = {m: set(p) for m, p in PERFILES_EJECUCION.items()}
+if _claves["real"] != _claves["humo"]:
+    raise ValueError(
+        "Los perfiles de ejecución no tienen las mismas claves. "
+        f"Solo en 'real': {sorted(_claves['real'] - _claves['humo'])}. "
+        f"Solo en 'humo': {sorted(_claves['humo'] - _claves['real'])}."
+    )
+
+
+# ====================================================
+# PARAMETERS — punto único de control de la ejecución
+#
+# Unión de los parámetros comunes y del perfil activo. Es el diccionario que
+# leen los notebooks; no se edita a mano, se edita MODO_EJECUCION o el perfil
+# correspondiente.
 # ====================================================
 
 PARAMETERS = {
-    "LOAD_SAMPLE": False,  # True: carga muestra de prueba (LB_SAMPLE); False: carga dataset completo
-    "MIN_NUMBER_RECORDS": 8,  # tamaño mínimo de muestra para entrenar modelos (si LOAD_SAMPLE=True)
-    "MAX_NUMBER_RECORDS": 12,  # tamaño máximo de muestra para entrenar modelos (si LOAD_SAMPLE=True)
-    "SEED": 42,
-    "YEAR_START": 1995,
-    "YEAR_END": 2024,
+    "MODO_EJECUCION": MODO_EJECUCION,
+    **_PARAMETERS_COMUNES,
+    **PERFILES_EJECUCION[MODO_EJECUCION],
 }
+
+
+def es_prueba_de_humo() -> bool:
+    """True si la corrida activa es una prueba de humo y no la definitiva."""
+    return PARAMETERS["MODO_EJECUCION"] == "humo"
+
+
+def resumen_modo() -> None:
+    """
+    Imprime el modo activo y los parámetros que dependen de él.
+
+    Se llama al inicio de cada notebook. En modo de humo el aviso es
+    deliberadamente llamativo, para que ninguna cifra de una prueba termine
+    citada como resultado.
+    """
+    perfil = PERFILES_EJECUCION[PARAMETERS["MODO_EJECUCION"]]
+    if es_prueba_de_humo():
+        print("#" * 72)
+        print("#  MODO PRUEBA DE HUMO — muestra reducida y presupuestos mínimos")
+        print("#  Las cifras de esta corrida NO son publicables.")
+        print("#  Para la corrida definitiva: MODO_EJECUCION = \"real\" en")
+        print("#  utils/config.py, o MODO_EJECUCION=real en el entorno.")
+        print("#" * 72)
+    else:
+        print("=" * 72)
+        print("  MODO CORRIDA REAL — dataset completo y presupuestos completos")
+        print("=" * 72)
+    print("Parámetros que dependen del modo:")
+    for clave in sorted(perfil):
+        print(f"  {clave:<28}: {perfil[clave]}")
+
+
+def hw_cfg(n_trials=None, sufijo_hp=""):
+    """Configuración de hardware y presupuesto que reciben las funciones
+    ``entrenar_*`` de :mod:`utils.models`.
+
+    Degrada a CPU si ``PARAMETERS["USAR_GPU"]`` es True pero no hay GPU
+    visible, de modo que el mismo notebook corre en servidor y en portátil.
+
+    Parameters
+    ----------
+    n_trials : int, optional
+        Sobrescribe el presupuesto de Optuna de los árboles de gradiente. Se
+        usa en los pliegues temporales, que corren con menos ensayos.
+    sufijo_hp : str
+        Sufijo de los archivos ``models/hp_*.json``. Vacío para el split
+        principal; ``"_foldN"`` para los pliegues históricos, de modo que sus
+        registros no sobrescriban los del modelo final.
+    """
+    try:
+        import torch
+        gpu_disponible = torch.cuda.is_available()
+    except Exception:
+        gpu_disponible = False
+
+    usar_gpu = bool(PARAMETERS["USAR_GPU"]) and gpu_disponible
+    trials_arboles = PARAMETERS["N_TRIALS_OPTUNA"] if n_trials is None else n_trials
+
+    return {
+        "usar_gpu"      : usar_gpu,
+        # 'gpu' es el alias que aceptan tanto XGBoost (parámetro device) como
+        # LightGBM (device_type) para "el dispositivo GPU por defecto".
+        "device_cuda"   : "gpu" if usar_gpu else "cpu",
+        "dispositivo_tn": "cuda" if usar_gpu else "cpu",
+        "n_jobs"        : PARAMETERS["N_JOBS"],
+        "ejecutar_hp"   : PARAMETERS["EJECUTAR_BUSQUEDA_HP"],
+        "n_trials"      : trials_arboles,
+        "n_trials_olo"  : PARAMETERS["N_TRIALS_OLO"] if n_trials is None else n_trials,
+        "n_trials_tabnet": PARAMETERS["N_TRIALS_TABNET"] if n_trials is None else n_trials,
+        "sufijo_hp"     : sufijo_hp,
+    }
 
 # ====================================================
 # PATHS
@@ -152,6 +439,51 @@ SPLIT = {
               2006, 2007, 2008, 2009, 2010, 2011, 2013, 2015, 2016, 2017, 2018],
     "val":   [2020],
     "test":  [2023, 2024],
+}
+
+# ====================================================
+# PLIEGUES TEMPORALES HISTÓRICOS — validación de la estabilidad del split
+#
+# El split anterior es único, así que su métrica no lleva asociada una
+# desviación entre periodos: no se sabe si el rendimiento observado en
+# 2023-2024 es típico o propio de esa coyuntura. Para estimarlo se replica el
+# mismo esquema hacia atrás en tres cortes con ventana de entrenamiento
+# expansiva (origen fijo en 1995), cada uno con una ola de validación y dos de
+# prueba inmediatamente posteriores, sin solapamiento entre conjuntos.
+#
+# Los pliegues NO reemplazan al split principal ni cambian el modelo que se
+# reporta: sirven para acotar la variabilidad temporal de kappa cuadrático y
+# del MAE ordinal, que se informa como media ± desviación estándar.
+#
+# Las reglas de exclusión son idénticas en los cuatro cortes (corte de
+# Venezuela en AÑO_CORTE_VEN y exclusión de PAISES_EXCLUIR_EVAL en validación
+# y prueba), porque se aplican sobre el dataframe antes de construir el split.
+# Nicaragua sí tiene datos en las olas históricas, pero se excluye igual para
+# que los cuatro cortes midan el mismo dominio de países.
+# ====================================================
+
+SPLITS_TEMPORALES = {
+    "fold1": {
+        "train": [1995, 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2004,
+                  2005, 2006, 2007],
+        "val":   [2008],
+        "test":  [2009, 2010],
+    },
+    "fold2": {
+        "train": [1995, 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2004,
+                  2005, 2006, 2007, 2008, 2009, 2010],
+        "val":   [2011],
+        "test":  [2013, 2015],
+    },
+    "fold3": {
+        "train": [1995, 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2004,
+                  2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2015],
+        "val":   [2016],
+        "test":  [2017, 2018],
+    },
+    # Corte definitivo: el mismo SPLIT que entrena los modelos reportados.
+    # Se incluye para que la tabla de estabilidad lo muestre junto a los demás.
+    "final": SPLIT,
 }
 
 # ====================================================

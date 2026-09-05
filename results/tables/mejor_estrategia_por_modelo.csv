@@ -1,0 +1,6 @@
+modelo,mejor_estrategia_val,kappa_val,kappa_test_de_esa_config,mejor_estrategia_test,coincide_val_test
+CatBoost,pesos_clase,0.4883,0.5418,pesos_clase,sí
+LightGBM,pesos_clase,0.4828,0.5315,pesos_clase,sí
+OLO,pesos_clase,0.4722,0.5198,pesos_clase,sí
+TabNet,smotenc,0.4874,0.5335,smotenc,sí
+XGBoost,pesos_clase,0.4829,0.5371,pesos_clase,sí
