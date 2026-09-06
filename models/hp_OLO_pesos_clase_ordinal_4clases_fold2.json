@@ -1,0 +1,49 @@
+{
+  "modelo": "OLO",
+  "estrategia_balanceo": "pesos_clase",
+  "variante_target": "ordinal_4clases",
+  "pliegue": "fold2",
+  "modo_ejecucion": "real",
+  "semilla": 42,
+  "n_trials_optuna": 15,
+  "mejor_kappa_val_optuna": 0.427957,
+  "hp_optimizados": {
+    "alpha": 0.0074593432857265485
+  },
+  "hp_fijos": {
+    "max_iter": 500,
+    "implementacion": "mord.LogisticIT",
+    "formulacion": "logit acumulativo con umbrales de umbral inmediato (immediate-threshold)"
+  },
+  "hp_completos": {
+    "max_iter": 500,
+    "implementacion": "mord.LogisticIT",
+    "formulacion": "logit acumulativo con umbrales de umbral inmediato (immediate-threshold)",
+    "alpha": 0.0074593432857265485
+  },
+  "espacio_busqueda": {
+    "alpha": {
+      "tipo": "float",
+      "min": 0.0001,
+      "max": 10.0,
+      "log": true
+    }
+  },
+  "config_entrenamiento": {
+    "usa_sample_weight": true,
+    "entrada": "X normalizada con StandardScaler",
+    "n_clases": 4,
+    "n_coeficientes": 28,
+    "umbrales_theta": [
+      -0.382647,
+      -0.081457,
+      0.260086
+    ]
+  },
+  "params_efectivos_modelo": {
+    "alpha": 0.0074593432857265485,
+    "max_iter": 500,
+    "verbose": 0
+  },
+  "fecha_registro": "2026-09-05T22:36:39.200233"
+}

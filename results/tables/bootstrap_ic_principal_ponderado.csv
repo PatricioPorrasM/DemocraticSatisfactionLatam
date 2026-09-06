@@ -1,0 +1,5 @@
+metrica,valor,ic_inf,ic_sup,ee_bootstrap,B,n_clusteres
+kappa_cuadratico,0.5394,0.4949,0.5745,0.021,1000,32
+mae_ordinal,0.5691,0.5417,0.5965,0.0142,1000,32
+accuracy,0.5159,0.4981,0.5342,0.0095,1000,32
+f1_macro,0.4781,0.4541,0.4951,0.0105,1000,32

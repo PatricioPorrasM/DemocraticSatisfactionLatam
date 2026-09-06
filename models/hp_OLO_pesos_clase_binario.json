@@ -2,26 +2,24 @@
   "modelo": "OLO",
   "estrategia_balanceo": "pesos_clase",
   "variante_target": "binario",
+  "pliegue": "final",
+  "modo_ejecucion": "real",
   "semilla": 42,
-  "n_trials_optuna": 50,
-  "mejor_kappa_val_optuna": 0.411244,
+  "n_trials_optuna": 20,
+  "mejor_kappa_val_optuna": 0.413294,
   "hp_optimizados": {
-    "alpha": 5.669849511478847
+    "alpha": 0.0074593432857265485
   },
   "hp_fijos": {
-    "C": 0.17637152414282922,
-    "solver": "lbfgs",
     "max_iter": 500,
-    "random_state": 42,
-    "implementacion": "sklearn.LogisticRegression"
+    "implementacion": "mord.LogisticIT",
+    "formulacion": "logit acumulativo con umbrales de umbral inmediato (immediate-threshold)"
   },
   "hp_completos": {
-    "C": 0.17637152414282922,
-    "solver": "lbfgs",
     "max_iter": 500,
-    "random_state": 42,
-    "implementacion": "sklearn.LogisticRegression",
-    "alpha": 5.669849511478847
+    "implementacion": "mord.LogisticIT",
+    "formulacion": "logit acumulativo con umbrales de umbral inmediato (immediate-threshold)",
+    "alpha": 0.0074593432857265485
   },
   "espacio_busqueda": {
     "alpha": {
@@ -34,23 +32,16 @@
   "config_entrenamiento": {
     "usa_sample_weight": true,
     "entrada": "X normalizada con StandardScaler",
-    "n_clases": 2
+    "n_clases": 2,
+    "n_coeficientes": 28,
+    "umbrales_theta": [
+      -0.126154
+    ]
   },
   "params_efectivos_modelo": {
-    "C": 0.17637152414282922,
-    "class_weight": null,
-    "dual": false,
-    "fit_intercept": true,
-    "intercept_scaling": 1,
-    "l1_ratio": 0.0,
+    "alpha": 0.0074593432857265485,
     "max_iter": 500,
-    "n_jobs": null,
-    "penalty": "deprecated",
-    "random_state": 42,
-    "solver": "lbfgs",
-    "tol": 0.0001,
-    "verbose": 0,
-    "warm_start": false
+    "verbose": 0
   },
-  "fecha_registro": "2026-08-31T04:28:14.114556"
+  "fecha_registro": "2026-09-05T19:47:08.154828"
 }

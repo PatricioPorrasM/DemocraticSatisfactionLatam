@@ -1,8 +1,8 @@
 {
   "modelo_xai": "CatBoost",
-  "estrategia_balanceo": "pesos_clase",
+  "estrategia_balanceo": "smotenc",
   "metrica": "kappa_cuadratico",
   "conjunto_seleccion": "val",
-  "valor_metrica_seleccion": 0.4882819596557435,
+  "valor_metrica_seleccion": 0.4839513711529595,
   "split_referencia": "test"
 }

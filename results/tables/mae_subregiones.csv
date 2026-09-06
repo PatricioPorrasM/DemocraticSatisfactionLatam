@@ -1,6 +1,6 @@
 subregion,n_registros,mae_ordinal,kappa_cuadratico,accuracy,mejor_pais,peor_pais
-Cono Sur,9403,0.6208,0.5131,0.4791,Chile,Argentina
-Región Andina,9389,0.5518,0.4578,0.5346,Perú,Colombia
-Brasil,2331,0.5869,0.5399,0.4903,Brasil,Brasil
-Centroamérica,9655,0.7197,0.5405,0.4621,El Salvador,Costa Rica
-México y Caribe,4306,0.64,0.5179,0.4837,México,República Dominicana
+Cono Sur,9403,0.5788,0.5042,0.4973,Chile,Argentina
+Región Andina,9389,0.4908,0.4519,0.5697,Perú,Colombia
+Brasil,2331,0.5457,0.5364,0.5148,Brasil,Brasil
+Centroamérica,9655,0.6292,0.548,0.4858,El Salvador,Costa Rica
+México y Caribe,4306,0.5945,0.5217,0.5065,México,República Dominicana

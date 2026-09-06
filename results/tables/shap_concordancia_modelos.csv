@@ -1,3 +1,4 @@
-,CatBoost,LightGBM
-CatBoost,1.0,0.9449
-LightGBM,0.9449,1.0
+,CatBoost,XGBoost,LightGBM
+CatBoost,1.0,0.9625,0.8614
+XGBoost,0.9625,1.0,0.9243
+LightGBM,0.8614,0.9243,1.0

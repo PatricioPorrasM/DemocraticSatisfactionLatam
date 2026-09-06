@@ -37,7 +37,7 @@ from pathlib import Path
 
 # ┌───────────────────────────────────────────────────────────────────────┐
 # │  ESTA ES LA LÍNEA QUE SE EDITA:  "real"  o  "humo"                    │
-MODO = "humo"
+MODO = "real"
 # └───────────────────────────────────────────────────────────────────────┘
 
 # La variable de entorno, si está definida, tiene prioridad sobre MODO: es la

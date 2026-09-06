@@ -2,9 +2,11 @@
   "modelo": "LightGBM",
   "estrategia_balanceo": "smotenc",
   "variante_target": "ordinal_4clases",
+  "pliegue": "final",
+  "modo_ejecucion": "real",
   "semilla": 42,
   "n_trials_optuna": 50,
-  "mejor_kappa_val_optuna": 0.459886,
+  "mejor_kappa_val_optuna": 0.45987,
   "hp_optimizados": {
     "n_estimators": 500,
     "num_leaves": 113,
@@ -130,5 +132,5 @@
     "verbose": -1,
     "device": "gpu"
   },
-  "fecha_registro": "2026-08-31T01:48:17.818961"
+  "fecha_registro": "2026-09-05T16:35:37.090428"
 }

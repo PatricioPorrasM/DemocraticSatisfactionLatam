@@ -1,0 +1,183 @@
+{
+  "modelo": "TabNet",
+  "estrategia_balanceo": "pesos_clase",
+  "variante_target": "ordinal_4clases",
+  "pliegue": "fold2",
+  "modo_ejecucion": "real",
+  "semilla": 42,
+  "n_trials_optuna": 15,
+  "mejor_kappa_val_optuna": 0.451787,
+  "hp_optimizados": {
+    "n_d": 24,
+    "n_a": 64,
+    "n_steps": 6,
+    "gamma": 1.5986584841970366,
+    "lambda_sparse": 2.9380279387035354e-06,
+    "momentum": 0.07083786293111903,
+    "mask_type": "entmax",
+    "lr": 0.0015930522616241021
+  },
+  "hp_fijos": {
+    "optimizer_fn": "torch.optim.Adam",
+    "scheduler_fn": "torch.optim.lr_scheduler.StepLR",
+    "scheduler_params": {
+      "step_size": 10,
+      "gamma": 0.9
+    },
+    "cat_idxs": [
+      22
+    ],
+    "cat_dims": [
+      8
+    ],
+    "cat_emb_dim": 3,
+    "verbose": 0,
+    "device_name": "cuda",
+    "seed": 42,
+    "optimizer_params": {
+      "lr": 0.0015930522616241021
+    }
+  },
+  "hp_completos": {
+    "optimizer_fn": "torch.optim.Adam",
+    "scheduler_fn": "torch.optim.lr_scheduler.StepLR",
+    "scheduler_params": {
+      "step_size": 10,
+      "gamma": 0.9
+    },
+    "cat_idxs": [
+      22
+    ],
+    "cat_dims": [
+      8
+    ],
+    "cat_emb_dim": 3,
+    "verbose": 0,
+    "device_name": "cuda",
+    "seed": 42,
+    "optimizer_params": {
+      "lr": 0.0015930522616241021
+    },
+    "n_d": 24,
+    "n_a": 64,
+    "n_steps": 6,
+    "gamma": 1.5986584841970366,
+    "lambda_sparse": 2.9380279387035354e-06,
+    "momentum": 0.07083786293111903,
+    "mask_type": "entmax",
+    "lr": 0.0015930522616241021
+  },
+  "espacio_busqueda": {
+    "n_d": {
+      "tipo": "int",
+      "min": 8,
+      "max": 64,
+      "paso": 8
+    },
+    "n_a": {
+      "tipo": "int",
+      "min": 8,
+      "max": 64,
+      "paso": 8
+    },
+    "n_steps": {
+      "tipo": "int",
+      "min": 3,
+      "max": 7
+    },
+    "gamma": {
+      "tipo": "float",
+      "min": 1.0,
+      "max": 2.0
+    },
+    "lambda_sparse": {
+      "tipo": "float",
+      "min": 1e-06,
+      "max": 0.001,
+      "log": true
+    },
+    "momentum": {
+      "tipo": "float",
+      "min": 0.01,
+      "max": 0.4
+    },
+    "mask_type": {
+      "tipo": "categorical",
+      "opciones": [
+        "sparsemax",
+        "entmax"
+      ]
+    },
+    "lr": {
+      "tipo": "float",
+      "min": 0.0001,
+      "max": 0.01,
+      "log": true
+    }
+  },
+  "config_entrenamiento": {
+    "max_epochs": 200,
+    "patience": 20,
+    "batch_size": 1024,
+    "virtual_batch_size": 128,
+    "eval_metric": [
+      "balanced_accuracy"
+    ],
+    "weights": 0,
+    "eval_set": "conjunto de validación",
+    "usa_sample_weight": false,
+    "loss_fn": "CrossEntropyLoss ponderada por frecuencia inversa de clase",
+    "pesos_clase": [
+      2.6838355048859937,
+      0.9126973137635004,
+      0.5716429042217366,
+      1.2781160319553246
+    ],
+    "max_epochs_optuna": 100,
+    "patience_optuna": 15,
+    "n_features": 28,
+    "n_registros_train": 263660,
+    "epocas_entrenadas": 128,
+    "entrada": "X normalizada con MinMaxScaler"
+  },
+  "params_efectivos_modelo": {
+    "cat_dims": [
+      8
+    ],
+    "cat_emb_dim": [
+      3
+    ],
+    "cat_idxs": [
+      22
+    ],
+    "clip_value": 1,
+    "device_name": "cuda",
+    "epsilon": 1e-15,
+    "gamma": 1.5986584841970366,
+    "grouped_features": [],
+    "input_dim": 28,
+    "lambda_sparse": 2.9380279387035354e-06,
+    "mask_type": "entmax",
+    "momentum": 0.07083786293111903,
+    "n_a": 64,
+    "n_d": 24,
+    "n_indep_decoder": 1,
+    "n_independent": 2,
+    "n_shared": 2,
+    "n_shared_decoder": 1,
+    "n_steps": 6,
+    "optimizer_fn": "Adam",
+    "optimizer_params": {
+      "lr": 0.0015930522616241021
+    },
+    "output_dim": 4,
+    "scheduler_fn": "StepLR",
+    "scheduler_params": {
+      "step_size": 10,
+      "gamma": 0.9
+    },
+    "seed": 42,
+    "verbose": 0
+  },
+  "fecha_registro": "2026-09-05T23:56:34.991054"
+}

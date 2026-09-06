@@ -2,6 +2,8 @@
   "modelo": "XGBoost",
   "estrategia_balanceo": "sin_balanceo",
   "variante_target": "ordinal_4clases",
+  "pliegue": "final",
+  "modo_ejecucion": "real",
   "semilla": 42,
   "n_trials_optuna": 50,
   "mejor_kappa_val_optuna": 0.45775,
@@ -137,5 +139,5 @@
     "verbosity": 0,
     "num_class": 4
   },
-  "fecha_registro": "2026-08-30T21:04:39.843830"
+  "fecha_registro": "2026-09-05T12:03:10.418286"
 }
