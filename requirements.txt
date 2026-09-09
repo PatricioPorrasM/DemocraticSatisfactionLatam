@@ -2,6 +2,7 @@ pandas>=2.1.0
 pyreadstat>=1.2.6   # Lectura de archivos .dta (Stata) y .sav (SPSS)
 openpyxl>=3.1.2    # Lectura del Excel de series de tiempo
 numpy>=1.26.0
+scipy>=1.11.0
 tqdm>=4.66.0
 scikit-learn>=1.4.0
 mord>=0.7             # Regresión logística ordinal acumulativa: es la línea
@@ -11,6 +12,13 @@ mord>=0.7             # Regresión logística ordinal acumulativa: es la línea
 xgboost>=2.0.0
 lightgbm>=4.3.0
 catboost>=1.2.0
+torch>=2.1.0          # dependencia directa: la usan hw_cfg() para detectar la
+                      # GPU y entrenar_tabnet() para la pérdida ponderada. En un
+                      # servidor con GPU hay que instalarla con el wheel de CUDA
+                      # que corresponda ANTES de este archivo, p. ej.
+                      #   pip install torch --index-url https://download.pytorch.org/whl/cu121
+                      # Si se instala el wheel de CPU, hw_cfg() degrada a CPU sin
+                      # error y la corrida se alarga sin avisar.
 pytorch-tabnet>=4.1.0
 optuna>=3.5.0
 imbalanced-learn>=0.12.0

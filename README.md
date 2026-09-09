@@ -92,7 +92,7 @@ DemocraticSatisfactionLatam/
 | `data/processed/` | Splits listos para ML en formato Parquet (`train.parquet`, `val.parquet`, `test.parquet` y pesos de entrenamiento), generados por NB02. |
 | `data/variables/` | Diccionario de variables: mapeo de códigos por ola (`latinobarometro_variable_mapping.csv`) y selección de 40 variables con etiquetas (`variables_selection.csv`). |
 | `logs/` | Logs de ejecución generados por `run_all.sh` al ejecutar los notebooks con Papermill. |
-| `models/` | Pipelines serializados (`.pkl`) y registros completos de hiperparámetros (`.json`) de los 15 modelos de E1 (5 algoritmos × 3 estrategias de balanceo) más los 5 de E2 (variante binaria), generados por NB02. |
+| `models/` | Pipelines serializados (`.pkl`) y registros completos de hiperparámetros (`.json`) de los 15 modelos de E1 (5 algoritmos × 3 estrategias de balanceo) más el de E2 (la configuración ganadora en su variante binaria), generados por NB02. |
 | `notebooks/` | Pipeline de análisis compuesto por 6 notebooks numerados que deben ejecutarse en orden. |
 | `notebooks/output/` | Copias ejecutadas de los notebooks generadas por `run_all.sh` vía Papermill. |
 | `results/figures/` | Visualizaciones PNG generadas por NB03–NB06 (métricas comparativas, matrices de confusión, SHAP, ALE, estabilidad regional, contraste teórico). |
@@ -125,7 +125,7 @@ Preprocesa los datos consolidados y ejecuta los dos experimentos del proyecto. U
 
 **Experimento E1:** entrena 5 algoritmos × 3 estrategias de balanceo = 15 modelos. Cada modelo se optimiza con Optuna (TPE, maximizando el kappa cuadrático en validación): 50 ensayos para los árboles de gradiente y 20 para la línea base ordinal y para TabNet, cuyo costo por ensayo es mucho mayor. La línea base es una regresión logística ordinal acumulativa (`mord.LogisticIT`); si `mord` no está instalado la ejecución se detiene, en lugar de sustituirla por un modelo multinomial.
 
-**Experimento E2:** fija la mejor estrategia de balanceo de E1 y entrena los 5 algoritmos bajo 2 formulaciones de la variable objetivo (ordinal de 4 clases y binaria).
+**Experimento E2:** toma la configuración ganadora de E1 (algoritmo × estrategia de balanceo) y la entrena bajo 2 formulaciones de la variable objetivo (ordinal de 4 clases y binaria). Un solo entrenamiento adicional.
 
 **Validación temporal en pliegues históricos** (sección 19): replica el esquema de validación en tres cortes hacia atrás con ventana de entrenamiento expansiva (train 1995–2007 / val 2008 / test 2009–2010; train 1995–2010 / val 2011 / test 2013–2015; train 1995–2015 / val 2016 / test 2017–2018), definidos en `SPLITS_TEMPORALES`. Cada pliegue reajusta imputación, escalado, pesos de clase e hiperparámetros solo con su propia ventana de entrenamiento y aplica las mismas reglas de exclusión de países, de modo que la dispersión del kappa cuadrático y del MAE ordinal entre cortes acota la variabilidad temporal del rendimiento. Los pliegues no sustituyen a los modelos reportados: sus hiperparámetros se registran con el sufijo `_foldN` y no se persisten pipelines. Se controla con `PARAMETERS["EJECUTAR_FOLDS_TEMPORALES"]`.
 
@@ -141,13 +141,15 @@ Responde la pregunta de investigación PI1: ¿qué familia de modelos ofrece el 
 
 **Modelo principal:** reporte detallado con la matriz de confusión en conteos y en porcentajes por clase real —con los errores ordinales graves (distancia ≥ 2 clases) resaltados— y el desglose de precision, recall y F1 por categoría del target con su soporte.
 
+**Contraste de H2:** calcula el desglose por categoría de las 15 configuraciones y, para cada modelo, la diferencia pareada del F1 de la clase 0 —la minoritaria— entre cada estrategia de balanceo y su propia línea base sin balanceo, con el mismo bootstrap de clústeres país-año. Se usa el F1 de la clase 0 y no el macro porque el promedio entre las cuatro categorías diluye el efecto que la hipótesis predice. La regla de decisión se declara en el notebook antes de los resultados y se evalúa por separado para `pesos_clase` y para `smotenc`. No requiere reentrenar ningún modelo: reutiliza las predicciones ya reconstruidas.
+
 **Incertidumbre:** bootstrap de clústeres país-año (1.000 repeticiones) para el intervalo de confianza de cada métrica, y bootstrap pareado para la diferencia entre cada configuración y la principal. Es la única inferencia que el notebook hace sobre diferencias entre modelos: el test de Friedman con las estrategias como bloques se descartó porque con n = 3 bloques su potencia es nula, los bloques no son conjuntos de datos independientes y el contraste ignora la variabilidad muestral del conjunto de prueba.
 
 **Métricas ponderadas:** cada métrica se reporta también ponderada por el factor de expansión muestral `X_020`, para distinguir el rendimiento sobre la muestra encuestada del rendimiento sobre la población que representa.
 
 Analiza además el MAE ordinal por país y subregión y evalúa las formulaciones de E2.
 
-**Genera:** `results/tables/metricas_*.csv`, `results/tables/metricas_por_clase_*.csv`, `results/tables/matriz_confusion_*.csv`, `results/tables/bootstrap_ic_modelos.csv`, `results/tables/bootstrap_pareado_vs_principal.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
+**Genera:** `results/tables/metricas_*.csv`, `results/tables/metricas_por_clase_*.csv`, `results/tables/metricas_por_clase_todas_configuraciones.csv`, `results/tables/h2_balanceo_clase_minoritaria.csv`, `results/tables/matriz_confusion_*.csv`, `results/tables/bootstrap_ic_modelos.csv`, `results/tables/bootstrap_pareado_vs_principal.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
 
 ---
 
@@ -161,9 +163,9 @@ Responde PI2 y OE4: ¿qué variables explican la satisfacción con la democracia
 
 ### NB05 — `05_estabilidad_temporal_regional.ipynb`
 
-Responde PI3 y OE3: ¿son robustos los determinantes identificados a través de subregiones geográficas? Evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de prueba entre las 5 subregiones. Calcula correlaciones de Spearman entre pares de subregiones → prueba H5 (r ≥ 0.7 = determinantes robustos). Analiza la varianza entre bloques temáticos por región → prueba H4 (confianza/corrupción varían más que sociodemográficos). Incluye el MAE ordinal por país y estrategia de balanceo. La estabilidad **temporal** del rendimiento se estima por separado en la sección 19 del NB02.
+Responde PI3 y la tercera cláusula del OE3: ¿son robustos los determinantes identificados a través de subregiones geográficas? Evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de prueba entre las 5 subregiones. Calcula correlaciones de Spearman entre cada par de subregiones y evalúa el umbral sobre el **mínimo** de esas correlaciones → prueba H5. Calcula el coeficiente de variación de la importancia media de cada bloque temático entre subregiones y compara los bloques que H4 predice contra el bloque de referencia, con la regla de decisión declarada antes de los resultados → prueba H4. Incluye el MAE ordinal por país y estrategia de balanceo. La estabilidad **temporal** del rendimiento se estima por separado en la sección 19 del NB02.
 
-**Genera:** `results/tables/spearman_subregiones.csv`, `results/tables/mae_subregiones.csv`, `results/tables/mae_por_pais_todos.csv`, `results/figures/05_*.png`
+**Genera:** `results/tables/spearman_subregiones.csv`, `results/tables/h4_variacion_bloques_subregion.csv`, `results/tables/mae_subregiones.csv`, `results/tables/mae_por_pais_todos.csv`, `results/figures/05_*.png`
 
 ---
 
@@ -394,12 +396,14 @@ Compara los **5 algoritmos** bajo **3 estrategias de manejo del desbalance de cl
 
 ### Experimento E2 — Formulaciones de la variable objetivo
 
-Fija la mejor estrategia de balanceo encontrada en E1 y evalúa los 5 algoritmos bajo **2 formulaciones distintas de la variable objetivo**, verificando si la codificación ordinal de 4 clases es óptima o si una alternativa más simple ofrece mejor rendimiento.
+Toma la **configuración ganadora de E1** —el algoritmo con mayor kappa cuadrático en validación, con la estrategia de balanceo con la que lo consiguió— y la evalúa bajo **2 formulaciones distintas de la variable objetivo**, verificando si la codificación ordinal de 4 clases es óptima o si una alternativa más simple ofrece mejor rendimiento. Ninguna otra combinación se reentrena: E2 contrasta formulaciones del target, no modelos ni estrategias.
 
 | Formulación | Descripción |
 |---|---|
-| `ordinal_4clases` | 4 clases ordinales; formulación principal — reutiliza los modelos de E1 |
+| `ordinal_4clases` | 4 clases ordinales; formulación principal — reutiliza el modelo de E1 |
 | `binario` | 2 clases: {0,1}→Insatisfecho, {2,3}→Satisfecho |
+
+La estrategia de balanceo se **re-aplica sobre el target binario** en lugar de heredar el ajuste hecho sobre las cuatro clases (los pesos de clase se recalculan por frecuencia inversa sobre las dos clases; SMOTE-NC se vuelve a ejecutar con el target binario), de modo que la única diferencia entre las dos filas comparadas sea la formulación. Los hiperparámetros se optimizan de nuevo para la variante binaria. El criterio con el que se elige la configuración ganadora está en un solo lugar, `utils.metrics.seleccionar_configuracion_ganadora`, y el NB03 verifica que su selección coincide con la que usó el NB02.
 
 > La formulación de regresión sobre la escala Likert continua se descartó del diseño experimental: la métrica principal (Kappa cuadrático) ya penaliza el error proporcionalmente a la distancia ordinal, por lo que la comparación relevante es ordinal vs. binaria.
 
@@ -412,10 +416,12 @@ Fija la mejor estrategia de balanceo encontrada en E1 y evalúa los 5 algoritmos
 | ID | Enunciado | Notebook de contraste |
 | --- | --- | --- |
 | H1 | Los modelos de gradient boosting superan a la regresión logística ordinal en Kappa cuadrático | NB03 |
-| H2 | Las estrategias de balanceo mejoran el F1 de la clase minoritaria (clase 0) respecto a la línea base sin balanceo | NB03 |
+| H2 | Las estrategias de balanceo mejoran el F1 de la clase minoritaria (clase 0) respecto a la línea base sin balanceo | NB03 §7.1 |
 | H3 | Los bloques de confianza institucional, corrupción y evaluación económica concentran ≥ 60% de las variables del top-15 SHAP | NB06 |
-| H4 | Los determinantes de corrupción y confianza presentan mayor variación regional que los factores sociodemográficos | NB05 |
-| H5 | La correlación de Spearman entre rankings SHAP de distintas subregiones es ≥ 0.7, indicando determinantes robustos en toda América Latina | NB05 |
+| H4 | La contribución SHAP de los bloques de confianza institucional y de corrupción y seguridad presenta mayor variación relativa entre subregiones —coeficiente de variación de su importancia media entre las cinco subregiones— que la del bloque de características sociodemográficas | NB05 §7 |
+| H5 | La correlación de Spearman entre los rankings de importancia SHAP de cada par de subregiones es ≥ 0.7, indicando determinantes robustos en toda América Latina | NB05 §7 |
+
+H4 y H5 se contrastan sobre la **configuración seleccionada en E1** y en su **formulación ordinal de cuatro clases**, que es el único alcance en el que el proyecto calcula valores SHAP. H4 usa el coeficiente de variación y no el rango absoluto porque los bloques difieren en dos órdenes de magnitud de contribución: un rango absoluto crece con la magnitud del bloque en lugar de medir variación comparable entre bloques. Los bloques implicados se fijan en `PARAMETERS["BLOQUES_H4"]` y `PARAMETERS["BLOQUE_REF_H4"]`.
 
 ---
 

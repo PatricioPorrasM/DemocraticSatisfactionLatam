@@ -60,7 +60,18 @@ def construir_split(
 
     Retorna
     -------
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, w_te
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_muestral_tr
+
+    Solo se devuelven pesos del conjunto de entrenamiento, que es el único que
+    se pondera: la validación entra sin ponderar en el ``eval_set`` de Optuna y
+    las métricas representativas de la muestra se calculan al reportar con
+    `pesos_muestrales()`, que no incluye el peso de clase.
+
+    `w_tr` es el peso de ajuste (factor de expansión muestral × peso de clase) y
+    `w_muestral_tr` es solo el primer factor, que se devuelve aparte para poder
+    recomponer el peso con otro vector de clases sin reconstruir el split: es lo
+    que necesita el E2 para recalcular la frecuencia inversa sobre las dos
+    clases de la variante binaria.
     """
     split = split or SPLIT
     feats = [f for f in features if f in df.columns and f != COL_PESO]
@@ -80,19 +91,13 @@ def construir_split(
     X_val, y_val = df_val[feats], df_val[COL_TARGET].astype(int)
     X_te,  y_te  = df_te[feats],  df_te[COL_TARGET].astype(int)
 
-    def _pesos(df_sub, y):
-        w_m = (df_sub[COL_PESO].fillna(1.0)
-               if COL_PESO in df_sub.columns
-               else pd.Series(np.ones(len(df_sub)), index=df_sub.index))
-        w_m = w_m / w_m.mean()
-        w_c = y.map(pesos_clase)
-        return (w_m.values * w_c.values).astype(float)
+    w_m = (df_tr[COL_PESO].fillna(1.0)
+           if COL_PESO in df_tr.columns
+           else pd.Series(np.ones(len(df_tr)), index=df_tr.index))
+    w_muestral_tr = (w_m / w_m.mean()).to_numpy().astype(float)
+    w_tr = (w_muestral_tr * y_tr.map(pesos_clase).to_numpy()).astype(float)
 
-    w_tr  = _pesos(df_tr,  y_tr)
-    w_val = _pesos(df_val, y_val)
-    w_te  = _pesos(df_te,  y_te)
-
-    return X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val, w_te
+    return X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_muestral_tr
 
 
 def pesos_muestrales(df_sub: pd.DataFrame, normalizar: bool = True) -> np.ndarray:

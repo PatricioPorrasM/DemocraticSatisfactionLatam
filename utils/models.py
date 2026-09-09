@@ -19,10 +19,17 @@ Las tres estrategias de balanceo (``sin_balanceo``, ``pesos_clase``,
 ``smotenc``) se traducen a cada familia de modelos así:
 
 - OLO y árboles de gradiente reciben ``sample_weight``, que combina el factor
-  de expansión muestral con el peso de clase cuando corresponde.
+  de expansión muestral con el peso de clase cuando corresponde. Solo se
+  ponderan los registros de entrenamiento: el conjunto de validación entra sin
+  ponderar en el ``eval_set``, porque su papel es ordenar los ensayos de Optuna
+  y el kappa que los ordena se calcula sobre las predicciones sin ponderar.
 - TabNet no admite ``sample_weight`` por registro, así que el peso de clase se
   aplica en la función de pérdida (entropía cruzada ponderada) y el muestreo
   se deja uniforme (``weights=0``) en las tres estrategias.
+
+Los pesos que reciben estas funciones corresponden siempre a la variante del
+target que se está ajustando: el E2 recalcula la frecuencia inversa sobre las
+dos clases binarias en lugar de heredar la de cuatro clases.
 
 Registro de hiperparámetros
 ---------------------------
@@ -328,7 +335,7 @@ ESPACIO_TABNET = {
 # ═════════════════════════════════════════════════════════════════════════════
 
 def entrenar_olo(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr,
     estrategia: str, variante_target: str = "ordinal_4clases",
     cfg: dict = None,
 ) -> Tuple:
@@ -402,7 +409,7 @@ def entrenar_olo(
 
 
 def entrenar_xgboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr,
     estrategia: str, variante_target: str = "ordinal_4clases",
     cfg: dict = None,
 ) -> Tuple:
@@ -483,7 +490,7 @@ def entrenar_xgboost(
 
 
 def entrenar_catboost(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr,
     estrategia: str, variante_target: str = "ordinal_4clases",
     cfg: dict = None,
 ) -> Tuple:
@@ -575,9 +582,9 @@ def entrenar_catboost(
 
 
 def entrenar_lightgbm(
-    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr, w_val,
-    pesos_clase: dict, estrategia: str,
-    variante_target: str = "ordinal_4clases", cfg: dict = None,
+    X_tr, y_tr, X_val, y_val, X_te, y_te, w_tr,
+    estrategia: str, variante_target: str = "ordinal_4clases",
+    cfg: dict = None,
 ) -> Tuple:
     nombre = "LightGBM"
     seed   = PARAMETERS["SEED"]

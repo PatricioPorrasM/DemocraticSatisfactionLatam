@@ -114,8 +114,22 @@ _PARAMETERS_COMUNES = {
     "LIME_SOBRE_ERRORES": True,
     "NIVEL_CLUSTER_XAI": "pais_anio",
     # Modelos con rendimiento estadísticamente indistinguible cuyos rankings se
-    # comparan entre sí (diagnóstico de identificabilidad del ranking).
+    # comparan entre sí (diagnóstico de identificabilidad del ranking). Los tres
+    # se explican con la MISMA estrategia de balanceo y la MISMA formulación del
+    # target que la configuración principal: lo único que varía es el modelo, de
+    # modo que el diagnóstico responde a si el ranking de determinantes depende
+    # de cuál de las configuraciones indistinguibles se elija para reportar.
     "MODELOS_CONCORDANCIA": ["CatBoost", "XGBoost", "LightGBM"],
+
+    # ── Contraste de H4 (NB05 §7) ────────────────────────────────────────────
+    # H4 predice que estos bloques varían más entre subregiones que el bloque de
+    # referencia. El estadístico es el coeficiente de variación de la
+    # importancia media del bloque entre subregiones, y no su rango absoluto:
+    # los bloques difieren en dos órdenes de magnitud de contribución SHAP, así
+    # que un rango absoluto crece con la magnitud del bloque en lugar de medir
+    # variación comparable entre bloques.
+    "BLOQUES_H4": ["Confianza institucional", "Corrupción y seguridad"],
+    "BLOQUE_REF_H4": "Características sociodemográficas",
     # Variables por bloque temático para las que se calcula la curva ALE.
     "VARS_ALE_POR_BLOQUE": 2,
 
@@ -241,15 +255,44 @@ def es_prueba_de_humo() -> bool:
     return PARAMETERS["MODO_EJECUCION"] == "humo"
 
 
+def gpu_disponible() -> bool:
+    """True si hay una GPU visible para torch.
+
+    Es el único lugar donde se comprueba: lo usan `hw_cfg()` para decidir el
+    dispositivo y `resumen_modo()` para avisarlo al inicio de cada notebook.
+    """
+    try:
+        import torch
+        return bool(torch.cuda.is_available())
+    except Exception:                                            # noqa: BLE001
+        return False
+
+
 def resumen_modo() -> None:
     """
-    Imprime el modo activo y los parámetros que dependen de él.
+    Imprime el modo activo, el dispositivo de cómputo y los parámetros que
+    dependen del modo.
 
     Se llama al inicio de cada notebook. En modo de humo el aviso es
     deliberadamente llamativo, para que ninguna cifra de una prueba termine
-    citada como resultado.
+    citada como resultado. El dispositivo se avisa aquí porque `hw_cfg()`
+    degrada a CPU en silencio cuando no hay GPU visible: en una corrida
+    desatendida esa degradación multiplica la duración sin producir ningún
+    error, y conviene detectarla en la primera celda y no diez horas después.
     """
     perfil = PERFILES_EJECUCION[PARAMETERS["MODO_EJECUCION"]]
+    if PARAMETERS["USAR_GPU"]:
+        if gpu_disponible():
+            print("Dispositivo: GPU detectada (CUDA disponible).")
+        else:
+            print("!" * 72)
+            print("!  USAR_GPU=True pero torch NO ve ninguna GPU: se ejecutará en CPU.")
+            print("!  La corrida real tarda mucho más y no producirá ningún error.")
+            print("!  Revisar el wheel de torch instalado antes de continuar.")
+            print("!" * 72)
+    else:
+        print("Dispositivo: CPU (USAR_GPU=False en utils/config.py).")
+    print()
     if es_prueba_de_humo():
         print("#" * 72)
         print("#  MODO PRUEBA DE HUMO — muestra reducida y presupuestos mínimos")
@@ -283,13 +326,7 @@ def hw_cfg(n_trials=None, sufijo_hp=""):
         principal; ``"_foldN"`` para los pliegues históricos, de modo que sus
         registros no sobrescriban los del modelo final.
     """
-    try:
-        import torch
-        gpu_disponible = torch.cuda.is_available()
-    except Exception:
-        gpu_disponible = False
-
-    usar_gpu = bool(PARAMETERS["USAR_GPU"]) and gpu_disponible
+    usar_gpu = bool(PARAMETERS["USAR_GPU"]) and gpu_disponible()
     trials_arboles = PARAMETERS["N_TRIALS_OPTUNA"] if n_trials is None else n_trials
 
     return {
@@ -427,11 +464,19 @@ NSNR = [-1, -2, -3, -4, -5, -6, -7, -8]
 #           Nicaragua: sin cobertura en 2023-2024).
 #
 # Justificación del año de validación (2020):
-#   Test KS entre la distribución del target en 2020 y en
-#   el test (2023+2024): estadístico=0.043, p=0.787.
-#   Las distribuciones son estadísticamente indistinguibles,
-#   lo que garantiza que Optuna calibra hiperparámetros sobre
-#   un contexto representativo del test.
+#   Test KS entre la distribución del target en 2020 y en el test
+#   (2023+2024): estadístico = 0.0549, p ≈ 0. El NB02 lo imprime en
+#   la sección de desbalance por conjunto (EDA 10.7) y es la cifra
+#   que hay que citar.
+#   El criterio es la MAGNITUD del estadístico, no el p-valor: con
+#   n = 17.219 en validación y n = 35.084 en prueba el test de KS
+#   tiene poder para declarar significativa cualquier diferencia,
+#   por pequeña que sea, así que el umbral p<0.05 no discrimina
+#   (es el mismo argumento que el NB02 imprime para Venezuela, donde
+#   el test detecta anomalía en 20 de 20 olas). Un estadístico de
+#   0.055 significa que la máxima separación entre las dos funciones
+#   de distribución acumulada es de 5,5 puntos porcentuales: 2020 es
+#   un contexto próximo al del test y Optuna calibra sobre él.
 # ====================================================
 
 SPLIT = {
@@ -496,14 +541,28 @@ SPLITS_TEMPORALES = {
 #   internacionalmente (V-Dem: poliarquía cae de 0.281 en 2016 a
 #   0.233 en 2017, y a 0.196 en 2024).
 #   Desde 2018 las encuestas de Latinobarómetro en Venezuela
-#   muestran un patrón estadísticamente anómalo: en 2018 el 73.7%
-#   declara estar "Muy satisfecho", y en 2024 el 54.5%. Este
-#   sesgo de respuesta en regímenes autoritarios está documentado
-#   (Guriev y Treisman, 2019; Norris, 2011).
+#   muestran un patrón anómalo: sobre respuestas válidas del archivo
+#   base, el 61.3% declara estar "Muy satisfecho" en 2018 y el 46.5%
+#   en 2024, frente al 21.9% de 2013. Este sesgo de respuesta en
+#   regímenes autoritarios está documentado (Guriev y Treisman, 2019;
+#   Norris, 2011).
 #   Criterio de corte: AÑO_CORTE_VEN = 2017. Los registros de
 #   Venezuela posteriores a 2017 se eliminan antes del split.
-#   Test KS Venezuela 2017 vs. otros países: p=0.163 (no sig.).
-#   Test KS Venezuela 2018 vs. otros países: p<0.001 (anomalía).
+#
+#   El criterio es la MAGNITUD del estadístico de KS entre Venezuela
+#   y el resto de los países de la misma ola, no su p-valor: con
+#   n ≈ 1.200 por país el test declara diferencia significativa en
+#   las 20 olas, incluidas las de los noventa, así que el p-valor no
+#   discrimina. Es la conclusión que el propio NB02 imprime en el
+#   diagnóstico de Venezuela.
+#     KS 1995–1998 : 0.059 – 0.085  (separación menor)
+#     KS 2016      : 0.2742
+#     KS 2017      : 0.2552   ← última ola conservada
+#     KS 2018      : 0.3495
+#     KS 2024      : 0.2253
+#   El diagnóstico del NB02 solo puede recorrer las olas hasta 2017,
+#   porque la exclusión se aplica antes: las cifras de 2018 y 2024
+#   provienen del archivo base completo (data/base/latinobarometro.csv).
 #
 # NICARAGUA
 #   Situación: Nicaragua no tiene datos de Latinobarómetro en
@@ -552,22 +611,34 @@ MAPEO_PAIS_ISO3 = {
 # VARIABLES
 # ====================================================
 
+# Variables del Latinobarómetro que quedan fuera del conjunto de predictoras.
+#
+# Los valores de ρ que se citan son la correlación de Spearman de cada variable
+# con el target sobre las olas de entrenamiento, tratando los códigos de NS/NR
+# como valores ausentes (el mismo tratamiento que aplica el resto del flujo).
+# Ninguna de estas variables entra al dataset, así que el flujo no recalcula su
+# ρ en ningún artefacto: las cifras se midieron sobre
+# data/base/latinobarometro.csv y son las que hay que citar en el documento.
 VARS_EXCLUIR_LB = [
     # ── Exclusiones por incompatibilidad técnica ──────────────────────────────
     "C_001_031",      # ruptura de codificación en 2018; incomparable entre olas
     "A_003_021",      # ausente en el conjunto de test (2023, 2024)
     "D_001_061",      # ausente en los tres conjuntos de evaluación
     "D_001_131",      # ausente en el conjunto de test
-    "X_004",          # 627 categorías; 94% categorías nuevas en test; sin señal
-    "S_700",          # sin señal en ningún período; alta cardinalidad
-    # ── Exclusiones por señal predictiva baja (|r_Spearman| < 0.05) ──────────
-    "H_002_101",      # Confianza Iglesia Católica: |r|=0.047; sin justificación política
-    "C_003_003_011",  # Preocupación desempleo: |r|=0.039; señal baja
-    "A_007_071",      # Escala Izquierda-Derecha: |r|=0.021; señal baja
+    "X_004",          # ~730 categorías, la mitad de las del test ausentes de
+                      # entrenamiento; identifica el país (ρ = -0.05)
+    "S_700",          # sin señal en ningún período (ρ = -0.001); alta cardinalidad
+    # ── Exclusiones por señal predictiva baja (|ρ_Spearman| < 0.05) ───────────
+    "H_002_101",      # Confianza Iglesia Católica: ρ = +0.030; sin justificación política
+    "A_007_071",      # Escala Izquierda-Derecha: ρ = -0.027; señal baja
     # ── Exclusiones por decisión del investigador ─────────────────────────────
-    "H_001_011",      # Confianza interpersonal: excluida por decisión metodológica
-    "S_701",          # Práctica religiosa: sin relevancia política directa
-    "X_008",          # Tamaño del municipio: sin señal (|r|=0.042) ni justificación
+    "H_001_011",      # Confianza interpersonal: ρ = +0.129; excluida por decisión
+                      # metodológica, no por falta de señal
+    "S_701",          # Práctica religiosa: sin relevancia política directa (ρ = -0.001)
+    "X_008",          # Tamaño del municipio: sin cobertura en las cinco primeras
+                      # olas de entrenamiento (1995-1998 y 2000); ρ = +0.059
+    "C_003_003_011",  # Preocupación desempleo: ρ = -0.057, por encima del umbral
+                      # de señal baja, así que no se excluye por ese criterio
 ]
 
 VARS_EXCLUIR_VDEM = [
@@ -602,9 +673,16 @@ ETIQUETAS = {
 #
 # NOTA: los dos sub-bloques anteriores de V-Dem (High-level y Mid-level)
 # se consolidan en un único bloque "Contexto democrático" con 4 variables,
-# seleccionadas por cobertura semántica y mínima multicolinealidad:
-#   Con 19 vars V-Dem: 44 pares con |r| > 0.85 (máx: 0.990)
-#   Con  4 vars V-Dem:  1 par con |r| > 0.85  (máx: 0.862)
+# seleccionadas por cobertura semántica y mínima multicolinealidad.
+# Spearman sobre los 540 país-año del archivo de V-Dem (data/base/v-dem.csv),
+# que es la base con la que se decidió la selección:
+#   Con 19 vars V-Dem: 46 pares con |r| > 0.85 (máx: 0.9901)
+#   Con  4 vars V-Dem:  1 par  con |r| > 0.85 (máx: 0.8641)
+# Las matrices que dibuja y guarda el NB02 usan otra base —los país-año del
+# dataset ya fusionado y restringido a entrenamiento—, así que sus máximos son
+# otros y no deben mezclarse con los de arriba: 0.8552 en la matriz de las 4
+# variables de V-Dem y 0.8618 en la matriz fusionada de 28 variables
+# (results/tables/correlaciones_matriz_{vdem,merge}.csv).
 # ====================================================
 
 BLOQUES = {

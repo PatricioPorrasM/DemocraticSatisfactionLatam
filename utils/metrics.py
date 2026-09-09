@@ -13,6 +13,8 @@ Contenido:
 - `bootstrap_pareado()`      : diferencia entre dos modelos con IC y P(Δ>0).
 - `comparar_modelos_bootstrap()` : comparación pareada de todos los modelos
                                contra una configuración de referencia.
+- `seleccionar_configuracion_ganadora()` : criterio único con el que se elige la
+                               configuración ganadora del E1.
 
 Ponderación: todas las funciones aceptan `sample_weight`. El proyecto reporta
 dos lecturas complementarias para el modelo principal: sin ponderar (predicción
@@ -356,12 +358,28 @@ def _f1_macro(y_t, y_p, sw=None):
     return f1_score(y_t, y_p, average="macro", zero_division=0, sample_weight=sw)
 
 
+def _f1_clase_0(y_t, y_p, sw=None):
+    """
+    F1 de la clase 0, que es la minoritaria del target en los tres conjuntos.
+
+    Es la métrica del contraste de H2: los promedios macro reparten el peso
+    entre las cuatro categorías y por tanto diluyen justo el efecto que la
+    hipótesis predice, que es sobre la clase con menos soporte. Con
+    ``labels=[0]`` el promedio macro se toma sobre una sola etiqueta, de modo
+    que el resultado es el F1 de esa clase; ``zero_division=0`` mantiene la
+    métrica definida en las réplicas bootstrap donde la clase no aparece.
+    """
+    return f1_score(y_t, y_p, labels=[0], average="macro",
+                    zero_division=0, sample_weight=sw)
+
+
 METRICAS_BOOTSTRAP = {
     "kappa_cuadratico" : _kappa_cuad,
     "kappa_lineal"     : _kappa_lin,
     "mae_ordinal"      : lambda y_t, y_p, sw=None: mean_absolute_error(y_t, y_p, sample_weight=sw),
     "accuracy"         : lambda y_t, y_p, sw=None: accuracy_score(y_t, y_p, sample_weight=sw),
     "f1_macro"         : _f1_macro,
+    "f1_clase_0"       : _f1_clase_0,
     "balanced_accuracy": lambda y_t, y_p, sw=None: balanced_accuracy_score(y_t, y_p, sample_weight=sw),
 }
 
@@ -562,3 +580,75 @@ def comparar_modelos_bootstrap(
     return (pd.DataFrame(filas)
             .sort_values("delta", ascending=False)
             .reset_index(drop=True))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIGURACIÓN GANADORA DEL E1
+# ─────────────────────────────────────────────────────────────────────────────
+
+VARIANTE_ORDINAL = "ordinal_4clases"
+
+
+def seleccionar_configuracion_ganadora(
+    resultados,
+    metrica: Optional[str] = None,
+    conjunto: Optional[str] = None,
+) -> Tuple[str, str, float]:
+    """
+    Configuración ganadora del E1: el par (modelo, estrategia de balanceo) que
+    maximiza la métrica principal en el conjunto de selección.
+
+    Es el criterio ÚNICO del proyecto y por eso vive en un solo lugar:
+
+    - el NB02 lo evalúa sobre los resultados en memoria para decidir sobre qué
+      configuración corre el E2;
+    - el NB03 lo evalúa sobre la tabla ya guardada para fijar la configuración
+      principal que heredan los notebooks 04 a 06.
+
+    Ambas decisiones tienen que ser la misma. Cuando cada notebook aplicaba su
+    propio criterio, el NB02 entrenaba el E2 con la estrategia de mayor kappa
+    PROMEDIO entre modelos mientras el NB03 buscaba la del modelo ganador: el
+    filtro del NB03 no encontraba las filas del E2 y la tabla comparativa se
+    construía sobre una sola variante del target sin avisar.
+
+    Solo entran las filas de la variante ordinal: el kappa de la variante
+    binaria no es comparable con el de cuatro clases, y el E2 se decide a
+    partir del E1, no al revés.
+
+    Parámetros
+    ----------
+    resultados : lista de diccionarios de métricas o DataFrame equivalente
+                 (la que produce `evaluar()`).
+    metrica    : métrica que ordena. Por defecto PARAMETERS["METRICA_PRINCIPAL"].
+    conjunto   : split donde se elige. Por defecto PARAMETERS["CONJUNTO_SELECCION"],
+                 que debe ser 'val': el conjunto de prueba se reserva para
+                 reportar, no para seleccionar.
+
+    Retorna
+    -------
+    (modelo, estrategia_balanceo, valor_de_la_metrica)
+    """
+    metrica  = metrica  or PARAMETERS["METRICA_PRINCIPAL"]
+    conjunto = conjunto or PARAMETERS["CONJUNTO_SELECCION"]
+
+    df = pd.DataFrame(resultados)
+    faltantes = {"modelo", "estrategia_balanceo", "split", metrica} - set(df.columns)
+    if faltantes:
+        raise ValueError(
+            f"Faltan columnas para seleccionar la configuración ganadora: "
+            f"{sorted(faltantes)}"
+        )
+
+    variante = df.get("variante_target", pd.Series(VARIANTE_ORDINAL, index=df.index))
+    elegibles = df[(df["split"] == conjunto) & (variante == VARIANTE_ORDINAL)]
+    if elegibles.empty:
+        raise ValueError(
+            f"Sin resultados de la variante '{VARIANTE_ORDINAL}' en el conjunto "
+            f"'{conjunto}': no se puede elegir la configuración ganadora del E1. "
+            f"Ejecutar el E1 completo antes del E2."
+        )
+
+    fila = elegibles.loc[elegibles[metrica].idxmax()]
+    return (str(fila["modelo"]),
+            str(fila["estrategia_balanceo"]),
+            float(fila[metrica]))
