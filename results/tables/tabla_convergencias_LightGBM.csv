@@ -1,0 +1,21 @@
+ranking,variable,etiqueta,bloque,shap_medio,convergencia,Easton,Norris,Lewis-Beck & Stegmaier,Devine
+1,A_001_001,Apoyo a la democracia,Percepción política,0.2081,Convergencia,~ Parcial,✓ Converge,✓ Converge,✓ Converge
+2,H_002_031,Confianza Gobierno,Confianza institucional,0.1632,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+3,B_001_101,País para todos / poderosos,Percepción política,0.1571,Convergencia,~ Parcial,✓ Converge,✓ Converge,✓ Converge
+4,D_001_001,Situación económica país,Evaluación económica,0.1483,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+5,B_006_061,Aprobación gobierno,Percepción política,0.1298,Convergencia,~ Parcial,✓ Converge,✓ Converge,✓ Converge
+6,v2x_egal,Componente igualitario,Contexto democrático,0.121,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
+7,C_006_003_011,Distribución ingreso justa,Evaluación económica,0.1086,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+8,G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.0905,Divergencia,✗ Diverge,~ Parcial,✗ Diverge,~ Parcial
+9,D_001_021,Economía país vs. año anterior,Evaluación económica,0.0823,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+10,H_002_041,Confianza Poder Judicial,Confianza institucional,0.0537,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+11,H_002_241,Confianza Partidos Políticos,Confianza institucional,0.0513,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+12,H_002_011,Confianza Congreso,Confianza institucional,0.05,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+13,I_001_001,Victimización delictiva,Corrupción y seguridad,0.0487,Divergencia,✗ Diverge,~ Parcial,✗ Diverge,~ Parcial
+14,v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.0457,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
+15,D_001_041,Expectativa económica país,Evaluación económica,0.0448,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+16,D_001_091,Expectativa económica personal,Evaluación económica,0.0443,Parcial,✓ Converge,✗ Diverge,✓ Converge,~ Parcial
+17,H_002_131,Confianza Televisión,Confianza institucional,0.0417,Convergencia,✓ Converge,✓ Converge,~ Parcial,✓ Converge
+18,S_001,Sexo,Características sociodemográficas,0.041,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
+19,S_101,Nivel educativo,Características sociodemográficas,0.0399,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge
+20,S_301,Nivel socioeconómico,Características sociodemográficas,0.0351,Divergencia,✗ Diverge,✗ Diverge,✗ Diverge,✗ Diverge

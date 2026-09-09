@@ -1,0 +1,21 @@
+variable,etiqueta,bloque,shap_medio,ranking,rank_Easton,rank_Norris,rank_Lewis-Beck & Stegmaier,rank_Devine
+A_001_001,Apoyo a la democracia,Percepción política,0.20806328992137813,1,3.0,1.0,2.0,2.0
+H_002_031,Confianza Gobierno,Confianza institucional,0.16315479503768807,2,1.0,2.0,3.0,1.0
+B_001_101,País para todos / poderosos,Percepción política,0.1570555099183529,3,3.0,1.0,2.0,2.0
+D_001_001,Situación económica país,Evaluación económica,0.14826270770741193,4,2.0,4.0,1.0,3.0
+B_006_061,Aprobación gobierno,Percepción política,0.12980587442418648,5,3.0,1.0,2.0,2.0
+v2x_egal,Componente igualitario,Contexto democrático,0.12099930127214399,6,,,,
+C_006_003_011,Distribución ingreso justa,Evaluación económica,0.10860652016290272,7,2.0,4.0,1.0,3.0
+G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.09046610569446703,8,4.0,3.0,4.0,3.0
+D_001_021,Economía país vs. año anterior,Evaluación económica,0.08233092899495252,9,2.0,4.0,1.0,3.0
+H_002_041,Confianza Poder Judicial,Confianza institucional,0.053655409816610156,10,1.0,2.0,3.0,1.0
+H_002_241,Confianza Partidos Políticos,Confianza institucional,0.05127200762648233,11,1.0,2.0,3.0,1.0
+H_002_011,Confianza Congreso,Confianza institucional,0.050016835319732736,12,1.0,2.0,3.0,1.0
+I_001_001,Victimización delictiva,Corrupción y seguridad,0.04870523055943118,13,4.0,3.0,4.0,3.0
+v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.04572152107813882,14,,,,
+D_001_041,Expectativa económica país,Evaluación económica,0.04482940500234588,15,2.0,4.0,1.0,3.0
+D_001_091,Expectativa económica personal,Evaluación económica,0.044321020339423006,16,2.0,4.0,1.0,3.0
+H_002_131,Confianza Televisión,Confianza institucional,0.04167570290385283,17,1.0,2.0,3.0,1.0
+S_001,Sexo,Características sociodemográficas,0.04101829063026041,18,5.0,5.0,5.0,5.0
+S_101,Nivel educativo,Características sociodemográficas,0.03985510184927619,19,5.0,5.0,5.0,5.0
+S_301,Nivel socioeconómico,Características sociodemográficas,0.03509981809952031,20,5.0,5.0,5.0,5.0

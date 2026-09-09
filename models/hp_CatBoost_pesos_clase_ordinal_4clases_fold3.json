@@ -3,18 +3,18 @@
   "estrategia_balanceo": "pesos_clase",
   "variante_target": "ordinal_4clases",
   "pliegue": "fold3",
-  "modo_ejecucion": "real",
+  "modo_ejecucion": "humo",
   "semilla": 42,
-  "n_trials_optuna": 15,
-  "mejor_kappa_val_optuna": 0.445508,
+  "n_trials_optuna": 1,
+  "mejor_kappa_val_optuna": 0.410502,
   "hp_optimizados": {
-    "iterations": 800,
-    "depth": 6,
-    "learning_rate": 0.16842941481399815,
-    "l2_leaf_reg": 4.315402535259132,
-    "bagging_temperature": 0.6191678774040926,
-    "border_count": 109,
-    "random_strength": 3.1223493592211637
+    "iterations": 500,
+    "depth": 8,
+    "learning_rate": 0.1205712628744377,
+    "l2_leaf_reg": 6.387926357773329,
+    "bagging_temperature": 0.15601864044243652,
+    "border_count": 47,
+    "random_strength": 0.5808361216819946
   },
   "hp_fijos": {
     "loss_function": "MultiClass",
@@ -27,13 +27,13 @@
     "random_seed": 42,
     "verbose": false,
     "task_type": "GPU",
-    "iterations": 800,
-    "depth": 6,
-    "learning_rate": 0.16842941481399815,
-    "l2_leaf_reg": 4.315402535259132,
-    "bagging_temperature": 0.6191678774040926,
-    "border_count": 109,
-    "random_strength": 3.1223493592211637
+    "iterations": 500,
+    "depth": 8,
+    "learning_rate": 0.1205712628744377,
+    "l2_leaf_reg": 6.387926357773329,
+    "bagging_temperature": 0.15601864044243652,
+    "border_count": 47,
+    "random_strength": 0.5808361216819946
   },
   "espacio_busqueda": {
     "iterations": {
@@ -85,21 +85,21 @@
     ],
     "nan_categoricas": "-999 como categoría explícita",
     "n_features": 28,
-    "n_registros_train": 321721,
-    "arboles_usados": 787
+    "n_registros_train": 20521,
+    "arboles_usados": 248
   },
   "params_efectivos_modelo": {
-    "iterations": 800,
-    "learning_rate": 0.16842941481399815,
-    "depth": 6,
-    "l2_leaf_reg": 4.315402535259132,
+    "iterations": 500,
+    "learning_rate": 0.1205712628744377,
+    "depth": 8,
+    "l2_leaf_reg": 6.387926357773329,
     "loss_function": "MultiClass",
-    "border_count": 109,
+    "border_count": 47,
     "random_seed": 42,
     "verbose": false,
-    "random_strength": 3.1223493592211637,
-    "bagging_temperature": 0.6191678774040926,
+    "random_strength": 0.5808361216819946,
+    "bagging_temperature": 0.15601864044243652,
     "task_type": "GPU"
   },
-  "fecha_registro": "2026-09-06T00:00:09.455629"
+  "fecha_registro": "2026-09-09T17:43:24.234994"
 }

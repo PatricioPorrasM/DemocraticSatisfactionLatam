@@ -3,10 +3,10 @@
   "estrategia_balanceo": "smotenc",
   "variante_target": "ordinal_4clases",
   "pliegue": "final",
-  "modo_ejecucion": "real",
+  "modo_ejecucion": "humo",
   "semilla": 42,
-  "n_trials_optuna": 20,
-  "mejor_kappa_val_optuna": 0.480352,
+  "n_trials_optuna": 2,
+  "mejor_kappa_val_optuna": 0.451843,
   "hp_optimizados": {
     "alpha": 0.0074593432857265485
   },
@@ -35,9 +35,9 @@
     "n_clases": 4,
     "n_coeficientes": 28,
     "umbrales_theta": [
-      -0.407294,
-      -0.0442,
-      0.396951
+      -0.408505,
+      -0.041676,
+      0.406548
     ]
   },
   "params_efectivos_modelo": {
@@ -45,5 +45,5 @@
     "max_iter": 500,
     "verbose": 0
   },
-  "fecha_registro": "2026-09-05T16:24:38.683732"
+  "fecha_registro": "2026-09-09T17:40:54.599598"
 }

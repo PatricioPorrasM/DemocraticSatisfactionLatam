@@ -1,0 +1,7 @@
+{
+  "modelo": "LightGBM",
+  "estrategia_balanceo": "smotenc",
+  "metrica": "kappa_cuadratico",
+  "conjunto_seleccion": "val",
+  "valor_metrica": 0.46054917993547906
+}

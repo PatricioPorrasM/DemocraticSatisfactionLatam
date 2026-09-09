@@ -3,10 +3,10 @@
   "estrategia_balanceo": "pesos_clase",
   "variante_target": "ordinal_4clases",
   "pliegue": "fold2",
-  "modo_ejecucion": "real",
+  "modo_ejecucion": "humo",
   "semilla": 42,
-  "n_trials_optuna": 15,
-  "mejor_kappa_val_optuna": 0.451787,
+  "n_trials_optuna": 1,
+  "mejor_kappa_val_optuna": 0.262118,
   "hp_optimizados": {
     "n_d": 24,
     "n_a": 64,
@@ -116,8 +116,8 @@
     }
   },
   "config_entrenamiento": {
-    "max_epochs": 200,
-    "patience": 20,
+    "max_epochs": 12,
+    "patience": 4,
     "batch_size": 1024,
     "virtual_batch_size": 128,
     "eval_metric": [
@@ -128,16 +128,16 @@
     "usa_sample_weight": false,
     "loss_fn": "CrossEntropyLoss ponderada por frecuencia inversa de clase",
     "pesos_clase": [
-      2.6838355048859937,
-      0.9126973137635004,
-      0.5716429042217366,
-      1.2781160319553246
+      2.5790847665847667,
+      0.9155582206716092,
+      0.5805793694690266,
+      1.253732457449985
     ],
-    "max_epochs_optuna": 100,
-    "patience_optuna": 15,
+    "max_epochs_optuna": 8,
+    "patience_optuna": 3,
     "n_features": 28,
-    "n_registros_train": 263660,
-    "epocas_entrenadas": 128,
+    "n_registros_train": 16795,
+    "epocas_entrenadas": 12,
     "entrada": "X normalizada con MinMaxScaler"
   },
   "params_efectivos_modelo": {
@@ -179,5 +179,5 @@
     "seed": 42,
     "verbose": 0
   },
-  "fecha_registro": "2026-09-05T23:56:34.991054"
+  "fecha_registro": "2026-09-09T17:42:50.979568"
 }

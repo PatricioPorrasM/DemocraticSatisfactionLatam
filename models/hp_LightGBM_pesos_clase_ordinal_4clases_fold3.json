@@ -3,10 +3,10 @@
   "estrategia_balanceo": "pesos_clase",
   "variante_target": "ordinal_4clases",
   "pliegue": "fold3",
-  "modo_ejecucion": "real",
+  "modo_ejecucion": "humo",
   "semilla": 42,
-  "n_trials_optuna": 15,
-  "mejor_kappa_val_optuna": 0.457844,
+  "n_trials_optuna": 1,
+  "mejor_kappa_val_optuna": 0.402856,
   "hp_optimizados": {
     "n_estimators": 500,
     "num_leaves": 144,
@@ -104,9 +104,9 @@
     ],
     "cat_features_dtype": "pandas.CategoricalDtype compartido entre splits",
     "n_features": 28,
-    "n_registros_train": 321721,
-    "best_iteration": 327,
-    "n_arboles_ajustados": 327
+    "n_registros_train": 20521,
+    "best_iteration": 68,
+    "n_arboles_ajustados": 68
   },
   "params_efectivos_modelo": {
     "boosting_type": "gbdt",
@@ -132,5 +132,5 @@
     "verbose": -1,
     "device": "gpu"
   },
-  "fecha_registro": "2026-09-06T00:02:09.830527"
+  "fecha_registro": "2026-09-09T17:43:28.135327"
 }

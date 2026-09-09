@@ -1,6 +1,6 @@
-,CatBoost,XGBoost,LightGBM
-#1,Apoyo a la democracia,Confianza Gobierno,Apoyo a la democracia
-#2,Confianza Gobierno,Apoyo a la democracia,Confianza Gobierno
-#3,Situación económica país,Aprobación gobierno,País para todos / poderosos
-#4,Aprobación gobierno,País para todos / poderosos,Aprobación gobierno
-#5,País para todos / poderosos,Distribución ingreso justa,Distribución ingreso justa
+,LightGBM,CatBoost,XGBoost
+#1,Apoyo a la democracia,Apoyo a la democracia,Apoyo a la democracia
+#2,Confianza Gobierno,País para todos / poderosos,Confianza Gobierno
+#3,País para todos / poderosos,Situación económica país,Situación económica país
+#4,Situación económica país,Componente igualitario,País para todos / poderosos
+#5,Aprobación gobierno,Aprobación gobierno,Componente igualitario
