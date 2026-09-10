@@ -1,7 +1,0 @@
-metrica,sin_ponderar,ponderado_X020,diferencia
-kappa_cuadratico,0.4818,0.4783,-0.0035
-mae_ordinal,0.5647,0.5699,0.0052
-accuracy,0.5084,0.5049,-0.0036
-f1_macro,0.4522,0.4487,-0.0035
-balanced_accuracy,0.4357,0.4324,-0.0033
-auroc_macro,0.7547,0.7537,-0.0011

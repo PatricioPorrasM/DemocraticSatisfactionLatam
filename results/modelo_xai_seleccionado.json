@@ -1,8 +1,8 @@
 {
-  "modelo_xai": "LightGBM",
+  "modelo_xai": "CatBoost",
   "estrategia_balanceo": "smotenc",
   "metrica": "kappa_cuadratico",
   "conjunto_seleccion": "val",
-  "valor_metrica_seleccion": 0.46054917993547906,
+  "valor_metrica_seleccion": 0.4839513711529595,
   "split_referencia": "test"
 }

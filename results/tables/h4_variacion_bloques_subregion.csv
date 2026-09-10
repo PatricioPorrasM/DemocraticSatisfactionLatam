@@ -1,7 +1,7 @@
 bloque,n_variables,importancia_media,cv_pct,rango_absoluto,minimo,maximo,subregion_max,subregion_min
-Contexto democrático,4,0.053372,27.6353,0.036885,0.040387,0.077272,Cono Sur,Región Andina
-Percepción política,4,0.132377,3.9441,0.013166,0.125016,0.138183,Cono Sur,México y Caribe
-Corrupción y seguridad,3,0.056588,3.7705,0.00495,0.05427,0.05922,México y Caribe,Centroamérica
-Evaluación económica,5,0.086152,3.0858,0.006064,0.082362,0.088427,México y Caribe,Cono Sur
-Características sociodemográficas,5,0.03081,1.7858,0.00139,0.030303,0.031692,Región Andina,Cono Sur
-Confianza institucional,7,0.057536,1.4858,0.00208,0.056812,0.058892,México y Caribe,Región Andina
+Contexto democrático,4,0.02732,52.0092,0.037328,0.009966,0.047294,Cono Sur,Brasil
+Evaluación económica,5,0.077433,4.2852,0.00829,0.071964,0.080254,Centroamérica,Cono Sur
+Confianza institucional,7,0.036849,2.605,0.002541,0.035551,0.038091,Región Andina,Brasil
+Corrupción y seguridad,3,0.031098,2.5005,0.001883,0.030409,0.032292,Región Andina,México y Caribe
+Percepción política,4,0.120036,1.6304,0.004739,0.11874,0.123478,Región Andina,México y Caribe
+Características sociodemográficas,5,0.000678,1.2599,2.3e-05,0.000666,0.000689,Cono Sur,México y Caribe

@@ -3,10 +3,10 @@
   "estrategia_balanceo": "pesos_clase",
   "variante_target": "ordinal_4clases",
   "pliegue": "fold3",
-  "modo_ejecucion": "humo",
+  "modo_ejecucion": "real",
   "semilla": 42,
-  "n_trials_optuna": 1,
-  "mejor_kappa_val_optuna": 0.409409,
+  "n_trials_optuna": 15,
+  "mejor_kappa_val_optuna": 0.446725,
   "hp_optimizados": {
     "alpha": 0.0074593432857265485
   },
@@ -35,9 +35,9 @@
     "n_clases": 4,
     "n_coeficientes": 28,
     "umbrales_theta": [
-      -0.396148,
-      -0.081386,
-      0.307754
+      -0.418518,
+      -0.08876,
+      0.284282
     ]
   },
   "params_efectivos_modelo": {
@@ -45,5 +45,5 @@
     "max_iter": 500,
     "verbose": 0
   },
-  "fecha_registro": "2026-09-09T20:15:56.650331"
+  "fecha_registro": "2026-09-10T07:16:12.137252"
 }

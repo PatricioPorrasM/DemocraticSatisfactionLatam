@@ -1,5 +1,5 @@
 conjunto,n_olas_antes,n_registros_antes,n_paises_antes,n_olas_despues,n_registros_despues,n_paises_despues,registros_excluidos,pct_excluido
-Entrenamiento,21,25383,18,21,24081,18,1302,5.13
-Validación,1,1316,18,1,1111,16,205,15.58
-Prueba,2,2323,17,2,2134,16,189,8.14
-TOTAL,24,29022,18,24,27326,18,1696,5.84
+Entrenamiento,21,398876,18,21,378592,18,20284,5.09
+Validación,1,20204,18,1,17219,16,2985,14.77
+Prueba,2,38419,17,2,35084,16,3335,8.68
+TOTAL,24,457499,18,24,430895,18,26604,5.82
