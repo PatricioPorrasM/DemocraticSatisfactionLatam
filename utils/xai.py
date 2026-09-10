@@ -18,6 +18,10 @@ vías complementarias:
    semillas o subconjuntos).
 3. `resumen_estabilidad()` — lectura conjunta de ambas salidas.
 
+Además, `alinear_dispositivo_tabnet()` prepara la red de TabNet para el
+análisis de atención, que es la vía de explicabilidad de ese modelo cuando
+`PARAMETERS["SHAP_PARA_TABNET"]` es False.
+
 Advertencia de interpretación: con predictores correlacionados los valores de
 Shapley reparten una señal compartida entre las variables implicadas, por lo
 que la lectura por bloque temático es más estable que la lectura por variable
@@ -251,3 +255,57 @@ def resumen_estabilidad(
             print("Concordancia entre rankings (ρ de Spearman por pares):")
             print(f"  mínima {min(vals):.4f} | media {np.mean(vals):.4f} | "
                   f"máxima {max(vals):.4f}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ATENCIÓN DE TABNET
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Atributos de la red de TabNet que contienen tensores pero NO están
+# registrados como buffers: `nn.Module.to()` no los mueve, así que hay que
+# moverlos a mano o el primer producto matricial de `forward_masks` falla.
+_TENSORES_NO_REGISTRADOS_TABNET = ("group_attention_matrix", "group_matrix")
+
+
+def alinear_dispositivo_tabnet(clf, forzar_cpu: bool = False):
+    """
+    Deja la red de TabNet y los lotes que recibirá en el mismo dispositivo.
+
+    `TabModel.explain()` envía cada lote a ``clf.device``, mientras que los
+    pesos viven donde quedó la red al entrenarse. Si los dos no coinciden, la
+    explicación falla. Y no basta con mover la red: ``TabNetEncoder`` guarda la
+    matriz de atención por grupos como atributo simple y no como buffer
+    registrado, de modo que ``network.to(...)`` la deja donde estaba. Una red
+    entrenada en GPU y "movida" a CPU conserva esa matriz en 'cuda' y el primer
+    producto matricial de ``forward_masks`` aborta con un error de dispositivos
+    mezclados.
+
+    Parámetros
+    ----------
+    clf        : clasificador de pytorch-tabnet ya entrenado.
+    forzar_cpu : True mueve todo a CPU. Es la vía de reserva cuando la
+                 explicación falla en GPU, por ejemplo si otro modelo inicializó
+                 antes el runtime de CUDA con una versión incompatible.
+
+    Retorna
+    -------
+    El dispositivo en el que queda la red.
+    """
+    import torch
+
+    red = getattr(clf, "network", None)
+    if red is None:
+        raise ValueError(
+            "El artefacto de TabNet no contiene la red entrenada ('network')."
+        )
+
+    destino = (torch.device("cpu") if forzar_cpu
+               else next(red.parameters()).device)
+    red.to(destino)
+    for modulo in red.modules():
+        for nombre in _TENSORES_NO_REGISTRADOS_TABNET:
+            tensor = getattr(modulo, nombre, None)
+            if isinstance(tensor, torch.Tensor) and tensor.device != destino:
+                setattr(modulo, nombre, tensor.to(destino))
+    clf.device = destino
+    return destino
