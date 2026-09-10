@@ -1,7 +1,7 @@
 bloque,n_variables,importancia,ic_inf,ic_sup,rango
-Percepción política,4,0.529865,0.521905,0.534963,1
-Evaluación económica,5,0.428351,0.421652,0.436562,2
-Confianza institucional,7,0.401368,0.394839,0.410157,3
-Contexto democrático,4,0.223702,0.193727,0.251916,4
-Corrupción y seguridad,3,0.168559,0.164383,0.174832,5
-Características sociodemográficas,5,0.153856,0.152239,0.155721,6
+Percepción política,4,0.529868,0.521909,0.534969,1
+Evaluación económica,5,0.428354,0.421658,0.436567,2
+Confianza institucional,7,0.401363,0.394834,0.410151,3
+Contexto democrático,4,0.223704,0.193727,0.251917,4
+Corrupción y seguridad,3,0.168559,0.164384,0.174832,5
+Características sociodemográficas,5,0.153857,0.152239,0.155721,6

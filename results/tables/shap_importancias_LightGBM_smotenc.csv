@@ -1,29 +1,29 @@
 variable,etiqueta,bloque,shap_medio
-A_001_001,Apoyo a la democracia,Percepción política,0.20806328992137813
-H_002_031,Confianza Gobierno,Confianza institucional,0.16315479503768807
-B_001_101,País para todos / poderosos,Percepción política,0.1570555099183529
-D_001_001,Situación económica país,Evaluación económica,0.14826270770741193
-B_006_061,Aprobación gobierno,Percepción política,0.12980587442418648
-v2x_egal,Componente igualitario,Contexto democrático,0.12099930127214399
-C_006_003_011,Distribución ingreso justa,Evaluación económica,0.10860652016290272
-G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.09046610569446703
-D_001_021,Economía país vs. año anterior,Evaluación económica,0.08233092899495252
-H_002_041,Confianza Poder Judicial,Confianza institucional,0.053655409816610156
-H_002_241,Confianza Partidos Políticos,Confianza institucional,0.05127200762648233
-H_002_011,Confianza Congreso,Confianza institucional,0.050016835319732736
-I_001_001,Victimización delictiva,Corrupción y seguridad,0.04870523055943118
-v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.04572152107813882
-D_001_041,Expectativa económica país,Evaluación económica,0.04482940500234588
-D_001_091,Expectativa económica personal,Evaluación económica,0.044321020339423006
-H_002_131,Confianza Televisión,Confianza institucional,0.04167570290385283
-S_001,Sexo,Características sociodemográficas,0.04101829063026041
-S_101,Nivel educativo,Características sociodemográficas,0.03985510184927619
-S_301,Nivel socioeconómico,Características sociodemográficas,0.03509981809952031
-A_007_001,Interés en política,Percepción política,0.034940574965032015
-G_002_011,Conoce caso de corrupción,Corrupción y seguridad,0.029387332152388226
-v2x_polyarchy,Democracia electoral,Contexto democrático,0.028806778583632474
-H_002_161,Confianza FF.AA.,Confianza institucional,0.028178297042452775
-v2xcl_rol,Igualdad ante la ley,Contexto democrático,0.028174244904861697
-S_002,Edad,Características sociodemográficas,0.02318181705921083
-S_200,Situación ocupacional,Características sociodemográficas,0.014700495155761153
-H_002_111,Confianza Policía,Confianza institucional,0.013415073666014899
+A_001_001,Apoyo a la democracia,Percepción política,0.20806432338108993
+H_002_031,Confianza Gobierno,Confianza institucional,0.1631526965630698
+B_001_101,País para todos / poderosos,Percepción política,0.1570574082526481
+D_001_001,Situación económica país,Evaluación económica,0.14826270562430593
+B_006_061,Aprobación gobierno,Percepción política,0.12980588214325153
+v2x_egal,Componente igualitario,Contexto democrático,0.12099930972063103
+C_006_003_011,Distribución ingreso justa,Evaluación económica,0.10860652514491052
+G_005_001,Progreso contra corrupción,Corrupción y seguridad,0.09046679361899385
+D_001_021,Economía país vs. año anterior,Evaluación económica,0.0823341757605692
+H_002_041,Confianza Poder Judicial,Confianza institucional,0.053655408862928515
+H_002_241,Confianza Partidos Políticos,Confianza institucional,0.05127201177233529
+H_002_011,Confianza Congreso,Confianza institucional,0.05001683793907979
+I_001_001,Victimización delictiva,Corrupción y seguridad,0.048705228729092984
+v2x_corr,Integridad institucional (corrupción),Contexto democrático,0.04572000140262274
+D_001_041,Expectativa económica país,Evaluación económica,0.04482948862559819
+D_001_091,Expectativa económica personal,Evaluación económica,0.044321015806295105
+H_002_131,Confianza Televisión,Confianza institucional,0.041672897412512296
+S_001,Sexo,Características sociodemográficas,0.0410182927413303
+S_101,Nivel educativo,Características sociodemográficas,0.03985510866397447
+S_301,Nivel socioeconómico,Características sociodemográficas,0.035099816459585584
+A_007_001,Interés en política,Percepción política,0.034940545903418996
+G_002_011,Conoce caso de corrupción,Corrupción y seguridad,0.029387328012812852
+v2x_polyarchy,Democracia electoral,Contexto democrático,0.02880677552032863
+H_002_161,Confianza FF.AA.,Confianza institucional,0.028178293289140934
+v2xcl_rol,Igualdad ante la ley,Contexto democrático,0.028177822760390544
+S_002,Edad,Características sociodemográficas,0.02318278935598051
+S_200,Situación ocupacional,Características sociodemográficas,0.014700496566438776
+H_002_111,Confianza Policía,Confianza institucional,0.013415070192283326
