@@ -11,10 +11,10 @@ CatBoost,smotenc,kappa_cuadratico,0.495,0.436,0.5521,0.0353,50,32
 CatBoost,smotenc,mae_ordinal,0.5431,0.5113,0.59,0.0215,50,32
 CatBoost,smotenc,accuracy,0.5276,0.493,0.5512,0.0169,50,32
 CatBoost,smotenc,f1_macro,0.4681,0.4236,0.5083,0.0227,50,32
-LightGBM,pesos_clase,kappa_cuadratico,0.5071,0.4454,0.5633,0.0336,50,32
+LightGBM,pesos_clase,kappa_cuadratico,0.5078,0.4459,0.5641,0.0336,50,32
 LightGBM,pesos_clase,mae_ordinal,0.6589,0.6048,0.7288,0.0315,50,32
 LightGBM,pesos_clase,accuracy,0.4864,0.4502,0.5151,0.0162,50,32
-LightGBM,pesos_clase,f1_macro,0.4817,0.4425,0.5086,0.0175,50,32
+LightGBM,pesos_clase,f1_macro,0.4815,0.4424,0.5085,0.0175,50,32
 LightGBM,sin_balanceo,kappa_cuadratico,0.4885,0.4189,0.5507,0.0366,50,32
 LightGBM,sin_balanceo,mae_ordinal,0.5431,0.5169,0.5775,0.0187,50,32
 LightGBM,sin_balanceo,accuracy,0.5286,0.5066,0.5478,0.0128,50,32

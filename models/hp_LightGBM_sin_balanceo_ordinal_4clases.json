@@ -6,7 +6,7 @@
   "modo_ejecucion": "humo",
   "semilla": 42,
   "n_trials_optuna": 2,
-  "mejor_kappa_val_optuna": 0.443053,
+  "mejor_kappa_val_optuna": 0.444902,
   "hp_optimizados": {
     "n_estimators": 800,
     "num_leaves": 22,
@@ -132,5 +132,5 @@
     "verbose": -1,
     "device": "gpu"
   },
-  "fecha_registro": "2026-09-09T19:51:41.918605"
+  "fecha_registro": "2026-09-09T20:12:35.477234"
 }

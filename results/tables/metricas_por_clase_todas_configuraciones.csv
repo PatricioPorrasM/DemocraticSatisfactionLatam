@@ -11,10 +11,10 @@ CatBoost,smotenc,0,0 — Para nada satisfecho,0.6429,0.253,0.3631,249,11.67
 CatBoost,smotenc,1,1 — No muy satisfecho,0.4093,0.436,0.4222,445,20.85
 CatBoost,smotenc,2,2 — Más bien satisfecho,0.5369,0.7297,0.6187,936,43.86
 CatBoost,smotenc,3,3 — Muy satisfecho,0.6414,0.369,0.4685,504,23.62
-LightGBM,pesos_clase,0,0 — Para nada satisfecho,0.3905,0.5301,0.4497,249,11.67
+LightGBM,pesos_clase,0,0 — Para nada satisfecho,0.3894,0.5301,0.449,249,11.67
 LightGBM,pesos_clase,1,1 — No muy satisfecho,0.4437,0.4697,0.4563,445,20.85
-LightGBM,pesos_clase,2,2 — Más bien satisfecho,0.5835,0.3697,0.4526,936,43.86
-LightGBM,pesos_clase,3,3 — Muy satisfecho,0.4795,0.6964,0.568,504,23.62
+LightGBM,pesos_clase,2,2 — Más bien satisfecho,0.5847,0.3686,0.4522,936,43.86
+LightGBM,pesos_clase,3,3 — Muy satisfecho,0.4796,0.6984,0.5687,504,23.62
 LightGBM,sin_balanceo,0,0 — Para nada satisfecho,0.6786,0.2289,0.3423,249,11.67
 LightGBM,sin_balanceo,1,1 — No muy satisfecho,0.4322,0.4225,0.4273,445,20.85
 LightGBM,sin_balanceo,2,2 — Más bien satisfecho,0.5337,0.7436,0.6214,936,43.86

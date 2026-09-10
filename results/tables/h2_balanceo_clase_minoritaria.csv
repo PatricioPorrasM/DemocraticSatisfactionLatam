@@ -5,7 +5,7 @@ XGBoost,pesos_clase,sin_balanceo,0.3304,0.3273,0.0032,-0.0391,0.0523,0.6,no dist
 XGBoost,smotenc,sin_balanceo,0.3313,0.3273,0.0041,-0.0385,0.0516,0.58,no distinguible (IC incluye 0)
 CatBoost,pesos_clase,sin_balanceo,0.4483,0.2765,0.1717,0.1313,0.2085,1.0,mejora distinguible
 CatBoost,smotenc,sin_balanceo,0.3631,0.2765,0.0866,0.0501,0.1197,1.0,mejora distinguible
-LightGBM,pesos_clase,sin_balanceo,0.4497,0.3423,0.1074,0.0593,0.1768,1.0,mejora distinguible
+LightGBM,pesos_clase,sin_balanceo,0.449,0.3423,0.1066,0.0585,0.1768,1.0,mejora distinguible
 LightGBM,smotenc,sin_balanceo,0.3232,0.3423,-0.0192,-0.0787,0.0344,0.3,no distinguible (IC incluye 0)
 TabNet,pesos_clase,sin_balanceo,0.3107,0.1979,0.1128,0.0773,0.1634,1.0,mejora distinguible
 TabNet,smotenc,sin_balanceo,0.2896,0.1979,0.0917,0.0509,0.1146,1.0,mejora distinguible
