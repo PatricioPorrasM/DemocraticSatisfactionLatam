@@ -91,7 +91,7 @@ DemocraticSatisfactionLatam/
 | `data/base/` | Datasets consolidados generados por NB01: Latinobarómetro armonizado (~490 K registros), V-Dem filtrado, tabla de frecuencias y muestra estratificada. |
 | `data/processed/` | Splits listos para ML en formato Parquet (`train.parquet`, `val.parquet`, `test.parquet` y pesos de entrenamiento), generados por NB02. |
 | `data/variables/` | Diccionario de variables: mapeo de códigos por ola (`latinobarometro_variable_mapping.csv`) y selección de 40 variables con etiquetas (`variables_selection.csv`). |
-| `logs/` | Logs de ejecución generados por `run_all.sh` al ejecutar los notebooks con Papermill. |
+| `logs/` | Logs de ejecución generados por `run_all.sh`. Cada corrida crea su propia subcarpeta con marca de tiempo (`logs/AAAAMMDD_HHMMSS/`) con un archivo por notebook, de modo que una ejecución nueva no sobrescribe el registro de la anterior. |
 | `models/` | Pipelines serializados (`.pkl`) y registros completos de hiperparámetros (`.json`) de los 15 modelos de E1 (5 algoritmos × 3 estrategias de balanceo) más el de E2 (la configuración ganadora en su variante binaria), generados por NB02. |
 | `notebooks/` | Pipeline de análisis compuesto por 6 notebooks numerados que deben ejecutarse en orden. |
 | `notebooks/output/` | Copias ejecutadas de los notebooks generadas por `run_all.sh` vía Papermill. |
@@ -296,7 +296,7 @@ definitiva, el modo queda estampado en `results/resultados_modelos.csv`
 
 #### Opción A — Ejecución automática (recomendada)
 
-Ejecuta los 6 notebooks en orden usando Papermill. Los notebooks ejecutados se guardan en `notebooks/output/` y los logs en `logs/`.
+Ejecuta los 6 notebooks en orden usando Papermill. Los notebooks ejecutados se guardan en `notebooks/output/` y la salida celda a celda queda además en `logs/AAAAMMDD_HHMMSS/<notebook>.log`, con la hora de inicio y de fin de cada uno y el modo de ejecución en el encabezado.
 
 ```bash
 # Primero una prueba de humo, para verificar que todo corre
@@ -305,6 +305,10 @@ MODO_EJECUCION=humo bash run_all.sh
 # Y después la corrida definitiva
 MODO_EJECUCION=real bash run_all.sh
 ```
+
+El script para en el primer notebook que falle —`set -e` con `pipefail`, para que el error no quede enmascarado por el `tee`— y el traceback completo queda en el log de ese notebook. Los siguientes no se ejecutan, de modo que ningún artefacto se construye sobre una etapa incompleta.
+
+Lo primero que conviene comprobar en `logs/<corrida>/01_carga_datos.log` es la línea del dispositivo: debe decir `Dispositivo: GPU detectada (CUDA disponible)`. Si aparece el aviso de que `USAR_GPU=True` pero torch no ve ninguna GPU, conviene detener la corrida y revisar el wheel de torch instalado: la ejecución no fallaría, pero duraría mucho más.
 
 **Nota**: Para ejecutar el proyecto en un servidor linux se recomienda usar la herramienta "tmux". Este proyecto fue ejecutado en un servidor con las siguientes características, y duró al rededor de 6 horas en promedio para completar la ejecución.
 
