@@ -95,6 +95,17 @@ _PARAMETERS_COMUNES = {
     # Lista y orden de los modelos en todas las tablas y figuras comparativas.
     "MODELOS": ["OLO", "XGBoost", "CatBoost", "LightGBM", "TabNet"],
 
+    # ── Contraste de H2 (NB03 §7.2) ──────────────────────────────────────────
+    # H2 compara el kappa cuadrático de MODELO_H2 contra dos referencias: la
+    # línea base ordinal (MODELO_BASE_H2) y el modelo de gradient boosting con
+    # mejor desempeño en prueba, que se elige entre MODELOS_GB_H2 usando para
+    # cada uno la estrategia que ganó en validación. Declarar aquí las tres
+    # piezas evita que el contraste quede atado a nombres escritos a mano en el
+    # notebook.
+    "MODELO_H2": "TabNet",
+    "MODELO_BASE_H2": "OLO",
+    "MODELOS_GB_H2": ["XGBoost", "CatBoost", "LightGBM"],
+
     # ── Explicabilidad (NB04) ────────────────────────────────────────────────
     # MODELO_XAI: 'auto' toma la configuración principal que seleccionó el NB03
     # (results/modelo_xai_seleccionado.json); un nombre concreto la fija a mano.
@@ -614,30 +625,31 @@ MAPEO_PAIS_ISO3 = {
 # Variables del Latinobarómetro que quedan fuera del conjunto de predictoras.
 #
 # Los valores de ρ que se citan son la correlación de Spearman de cada variable
-# con el target sobre las olas de entrenamiento, tratando los códigos de NS/NR
-# como valores ausentes (el mismo tratamiento que aplica el resto del flujo).
-# Ninguna de estas variables entra al dataset, así que el flujo no recalcula su
-# ρ en ningún artefacto: las cifras se midieron sobre
-# data/base/latinobarometro.csv y son las que hay que citar en el documento.
+# con el target sobre el conjunto de entrenamiento tal como lo construye el
+# flujo (378.592 registros: olas 1995-2018, con los códigos de NS/NR del target
+# y de la variable tratados como ausentes y sin los países sin mapeo). Ninguna
+# de estas variables entra al dataset, así que el flujo no recalcula su ρ en
+# ningún artefacto: son las cifras que hay que citar en el documento.
 VARS_EXCLUIR_LB = [
     # ── Exclusiones por incompatibilidad técnica ──────────────────────────────
     "C_001_031",      # ruptura de codificación en 2018; incomparable entre olas
+                      # (ρ = +0.008)
     "A_003_021",      # ausente en el conjunto de test (2023, 2024)
     "D_001_061",      # ausente en los tres conjuntos de evaluación
     "D_001_131",      # ausente en el conjunto de test
-    "X_004",          # ~730 categorías, la mitad de las del test ausentes de
-                      # entrenamiento; identifica el país (ρ = -0.05)
-    "S_700",          # sin señal en ningún período (ρ = -0.001); alta cardinalidad
+    "X_004",          # 696 categorías en entrenamiento, la mitad de las del test
+                      # ausentes de él; ρ = -0.002 y no significativa (p = 0.32)
+    "S_700",          # sin señal en ningún período (ρ = -0.010); alta cardinalidad
     # ── Exclusiones por señal predictiva baja (|ρ_Spearman| < 0.05) ───────────
-    "H_002_101",      # Confianza Iglesia Católica: ρ = +0.030; sin justificación política
-    "A_007_071",      # Escala Izquierda-Derecha: ρ = -0.027; señal baja
+    "H_002_101",      # Confianza Iglesia Católica: ρ = +0.048; sin justificación política
+    "A_007_071",      # Escala Izquierda-Derecha: ρ = -0.041; señal baja
     # ── Exclusiones por decisión del investigador ─────────────────────────────
-    "H_001_011",      # Confianza interpersonal: ρ = +0.129; excluida por decisión
+    "H_001_011",      # Confianza interpersonal: ρ = +0.117; excluida por decisión
                       # metodológica, no por falta de señal
-    "S_701",          # Práctica religiosa: sin relevancia política directa (ρ = -0.001)
+    "S_701",          # Práctica religiosa: sin relevancia política directa (ρ = +0.014)
     "X_008",          # Tamaño del municipio: sin cobertura en las cinco primeras
-                      # olas de entrenamiento (1995-1998 y 2000); ρ = +0.059
-    "C_003_003_011",  # Preocupación desempleo: ρ = -0.057, por encima del umbral
+                      # olas de entrenamiento (1995-1998 y 2000); ρ = +0.045
+    "C_003_003_011",  # Preocupación desempleo: ρ = -0.052, por encima del umbral
                       # de señal baja, así que no se excluye por ese criterio
 ]
 

@@ -141,7 +141,11 @@ Responde la pregunta de investigación PI1: ¿qué familia de modelos ofrece el 
 
 **Modelo principal:** reporte detallado con la matriz de confusión en conteos y en porcentajes por clase real —con los errores ordinales graves (distancia ≥ 2 clases) resaltados— y el desglose de precision, recall y F1 por categoría del target con su soporte.
 
-**Contraste de H2:** calcula el desglose por categoría de las 15 configuraciones y, para cada modelo, la diferencia pareada del F1 de la clase 0 —la minoritaria— entre cada estrategia de balanceo y su propia línea base sin balanceo, con el mismo bootstrap de clústeres país-año. Se usa el F1 de la clase 0 y no el macro porque el promedio entre las cuatro categorías diluye el efecto que la hipótesis predice. La regla de decisión se declara en el notebook antes de los resultados y se evalúa por separado para `pesos_clase` y para `smotenc`. No requiere reentrenar ningún modelo: reutiliza las predicciones ya reconstruidas.
+**Efecto del balanceo sobre la clase minoritaria (§7.1, respaldo del OE3):** calcula el desglose por categoría de las 15 configuraciones y, para cada modelo, la diferencia pareada del F1 de la clase 0 —la minoritaria— entre cada estrategia de balanceo y su propia línea base sin balanceo, con el mismo bootstrap de clústeres país-año. Se usa el F1 de la clase 0 y no el macro porque el promedio entre las cuatro categorías diluye el efecto que se quiere medir. La regla de lectura se declara antes de los resultados y se evalúa por separado para `pesos_clase` y para `smotenc`.
+
+**Contraste de H2 (§7.2):** compara el kappa cuadrático de TabNet contra sus dos referencias —la línea base ordinal y el modelo de gradient boosting con mejor desempeño en prueba— con bootstrap pareado de clústeres país-año. Los tres modelos entran con la estrategia que ganó en **validación**, que es el criterio declarado del protocolo; el notebook añade las comparaciones con la estrategia que maximiza el kappa de TabNet en prueba como análisis de sensibilidad, y señala cuándo las dos no coinciden. La regla de decisión —una cláusula por cada mitad de la hipótesis— se declara antes de los resultados. Las tres piezas del contraste se fijan en `PARAMETERS["MODELO_H2"]`, `PARAMETERS["MODELO_BASE_H2"]` y `PARAMETERS["MODELOS_GB_H2"]`.
+
+Ninguno de los dos apartados reentrena nada: reutilizan las predicciones ya reconstruidas.
 
 **Incertidumbre:** bootstrap de clústeres país-año (1.000 repeticiones) para el intervalo de confianza de cada métrica, y bootstrap pareado para la diferencia entre cada configuración y la principal. Es la única inferencia que el notebook hace sobre diferencias entre modelos: el test de Friedman con las estrategias como bloques se descartó porque con n = 3 bloques su potencia es nula, los bloques no son conjuntos de datos independientes y el contraste ignora la variabilidad muestral del conjunto de prueba.
 
@@ -420,7 +424,7 @@ La estrategia de balanceo se **re-aplica sobre el target binario** en lugar de h
 | ID | Enunciado | Notebook de contraste |
 | --- | --- | --- |
 | H1 | Los modelos de gradient boosting superan a la regresión logística ordinal en Kappa cuadrático | NB03 |
-| H2 | Las estrategias de balanceo mejoran el F1 de la clase minoritaria (clase 0) respecto a la línea base sin balanceo | NB03 §7.1 |
+| H2 | TabNet obtiene un kappa cuadrático superior al de la regresión logística ordinal, pero inferior al del modelo de gradient boosting con mejor desempeño en el conjunto de prueba | NB03 §7.2 |
 | H3 | Los bloques de confianza institucional, corrupción y evaluación económica concentran ≥ 60% de las variables del top-15 SHAP | NB06 |
 | H4 | La contribución SHAP de los bloques de confianza institucional y de corrupción y seguridad presenta mayor variación relativa entre subregiones —coeficiente de variación de su importancia media entre las cinco subregiones— que la del bloque de características sociodemográficas | NB05 §7 |
 | H5 | La correlación de Spearman entre los rankings de importancia SHAP de cada par de subregiones es ≥ 0.7, indicando determinantes robustos en toda América Latina | NB05 §7 |
