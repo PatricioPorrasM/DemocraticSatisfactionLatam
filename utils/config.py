@@ -124,12 +124,15 @@ _PARAMETERS_COMUNES = {
     # True añade el gráfico de las variables que más pesan en los errores graves.
     "LIME_SOBRE_ERRORES": True,
     "NIVEL_CLUSTER_XAI": "pais_anio",
-    # Modelos con rendimiento estadísticamente indistinguible cuyos rankings se
-    # comparan entre sí (diagnóstico de identificabilidad del ranking). Los tres
-    # se explican con la MISMA estrategia de balanceo y la MISMA formulación del
-    # target que la configuración principal: lo único que varía es el modelo, de
-    # modo que el diagnóstico responde a si el ranking de determinantes depende
-    # de cuál de las configuraciones indistinguibles se elija para reportar.
+    # Modelos de gradient boosting cuyos rankings se comparan entre sí
+    # (diagnóstico de identificabilidad del ranking). Los tres se explican con la
+    # MISMA estrategia de balanceo y la MISMA formulación del target que la
+    # configuración principal: lo único que varía es el modelo, de modo que el
+    # diagnóstico responde a si el ranking de determinantes depende del algoritmo
+    # elegido. Mantener la estrategia constante es lo que aísla ese efecto; no
+    # implica que las tres configuraciones tengan un rendimiento indistinguible,
+    # porque con la estrategia ganadora dos de ellas sí difieren de la principal
+    # con intervalos que excluyen el cero.
     "MODELOS_CONCORDANCIA": ["CatBoost", "XGBoost", "LightGBM"],
 
     # ── Contraste de H4 (NB05 §7) ────────────────────────────────────────────
@@ -649,8 +652,11 @@ VARS_EXCLUIR_LB = [
     "S_701",          # Práctica religiosa: sin relevancia política directa (ρ = +0.014)
     "X_008",          # Tamaño del municipio: sin cobertura en las cinco primeras
                       # olas de entrenamiento (1995-1998 y 2000); ρ = +0.045
-    "C_003_003_011",  # Preocupación desempleo: ρ = -0.052, por encima del umbral
-                      # de señal baja, así que no se excluye por ese criterio
+    "C_003_003_011",  # Preocupación desempleo: ρ = -0.052 apenas supera el umbral
+                      # de |ρ| < 0.05, de modo que no entra en el grupo de señal
+                      # baja; se excluye porque esa señal sigue siendo débil y el
+                      # marco conceptual no aporta una justificación teórica que la
+                      # compense, el mismo criterio aplicado a X_008
 ]
 
 VARS_EXCLUIR_VDEM = [
