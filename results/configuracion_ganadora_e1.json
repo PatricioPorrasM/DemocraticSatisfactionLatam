@@ -1,0 +1,7 @@
+{
+  "modelo": "CatBoost",
+  "estrategia_balanceo": "smotenc",
+  "metrica": "kappa_cuadratico",
+  "conjunto_seleccion": "val",
+  "valor_metrica": 0.4839513711529595
+}

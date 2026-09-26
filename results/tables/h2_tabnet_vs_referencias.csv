@@ -1,0 +1,5 @@
+rol,clausula,comparacion,kappa_a,kappa_b,delta,ic_inf,ic_sup,p_delta_favor_a,conclusion
+criterio declarado (validación),1 — superior a la línea base ordinal,TabNet [smotenc] − OLO [smotenc],0.5248,0.5308,-0.006,-0.0158,0.005,0.149,no distinguible (IC incluye 0)
+criterio declarado (validación),2 — inferior al mejor gradient boosting,TabNet [smotenc] − CatBoost [smotenc],0.5248,0.5386,-0.0137,-0.025,-0.0017,0.012,cláusula cumplida
+sensibilidad (óptimo en prueba),1 — superior a la línea base ordinal,TabNet [pesos_clase] − OLO [smotenc],0.5374,0.5308,0.0066,-0.0065,0.018,0.847,no distinguible (IC incluye 0)
+sensibilidad (óptimo en prueba),2 — inferior al mejor gradient boosting,TabNet [pesos_clase] − CatBoost [smotenc],0.5374,0.5386,-0.0011,-0.0106,0.0095,0.409,no distinguible (IC incluye 0)

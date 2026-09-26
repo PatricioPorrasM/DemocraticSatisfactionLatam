@@ -5,10 +5,11 @@ Funciones de visualización reutilizables para el proyecto de tesis.
 
 Organización:
 - Sección 1: helpers base (colores, guardado)
-- Sección 2: notebook 03 — evaluación comparativa
-- Sección 3: notebook 04 — explicabilidad XAI
-- Sección 4: notebook 05 — estabilidad temporal y regional
-- Sección 5: notebook 06 — contraste teórico
+- Sección 2: notebook 02 — EDA y matrices de correlación
+- Sección 3: notebook 03 — evaluación comparativa
+- Sección 4: notebook 04 — explicabilidad XAI
+- Sección 5: notebook 05 — estabilidad temporal y regional
+- Sección 6: notebook 06 — contraste teórico
 
 Convención: todas las funciones que generan figuras reciben opcionalmente
 `nombre_archivo` para guardar automáticamente. Si es None, no guardan.
@@ -18,7 +19,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import matplotlib.ticker as mticker
 import seaborn as sns
 from pathlib import Path
 from typing import Optional, List, Dict, Tuple
@@ -81,7 +81,9 @@ def _barra_bloques(ax_bar: plt.Axes, variables: List[str],
         ax_bar.barh(i, 1, color=color, edgecolor="none")
 
     ax_bar.set_xlim(0, 1)
-    ax_bar.set_ylim(-0.5, len(variables) - 0.5)
+    # El eje Y se invierte para que la primera variable quede arriba, igual que
+    # en el heatmap adyacente (seaborn dibuja la fila 0 en la parte superior).
+    ax_bar.set_ylim(len(variables) - 0.5, -0.5)
     ax_bar.axis("off")
 
     # Leyenda de bloques
@@ -94,8 +96,169 @@ def _barra_bloques(ax_bar: plt.Axes, variables: List[str],
                   bbox_to_anchor=(0, -0.02), fontsize=8, frameon=True)
 
 
+def _bloques_en_eje(ax: plt.Axes, variables: List[str],
+                    bloques_lb: Optional[List[str]] = None,
+                    ancho: float = 0.55, sep: float = 0.25) -> List[mpatches.Patch]:
+    """
+    Dibuja la franja de bloques temáticos DENTRO del eje del heatmap.
+
+    A diferencia de `_barra_bloques`, que usa un eje aparte, aquí los
+    rectángulos se ubican en las coordenadas de datos del propio heatmap, de
+    modo que la alineación se mantiene incluso con `square=True`.
+
+    Retorna los parches para construir la leyenda.
+    """
+    if bloques_lb is None:
+        bloques_lb = [bloque_de(v) for v in variables]
+
+    colores_bloques = THEME.get("blocks", {})
+    for i, bloque in enumerate(bloques_lb):
+        ax.add_patch(mpatches.Rectangle(
+            (-ancho - sep, i), ancho, 1,
+            facecolor=colores_bloques.get(bloque, "#AAAAAA"),
+            edgecolor="none", clip_on=False, zorder=5,
+        ))
+
+    vistos = {}
+    for b in bloques_lb:
+        if b not in vistos:
+            vistos[b] = colores_bloques.get(b, "#AAAAAA")
+    return [mpatches.Patch(color=c, label=b) for b, c in vistos.items()]
+
+
 # ═════════════════════════════════════════════════════════════════════════════
-# SECCIÓN 2 — EVALUACIÓN COMPARATIVA (notebook 03)
+# SECCIÓN 2 — EDA Y MATRICES DE CORRELACIÓN (notebook 02)
+# ═════════════════════════════════════════════════════════════════════════════
+
+def plot_matriz_correlacion(
+    datos: pd.DataFrame,
+    variables: Optional[List[str]] = None,
+    titulo: str = "Matriz de correlación",
+    subtitulo: Optional[str] = None,
+    metodo: str = "spearman",
+    ordenar_por_bloque: bool = True,
+    mostrar_bloques: bool = True,
+    anotar: Optional[bool] = None,
+    triangular: bool = True,
+    umbral_alerta: float = 0.85,
+    nombre_archivo: Optional[str] = None,
+) -> pd.DataFrame:
+    """
+    Heatmap de la matriz de correlación entre variables.
+
+    Diseñada para las tres matrices del NB02: Latinobarómetro, V-Dem y el
+    dataset fusionado. Devuelve la matriz calculada para poder exportarla.
+
+    Parámetros
+    ----------
+    datos             : DataFrame con las variables a correlacionar.
+    variables         : subconjunto de columnas. Si None usa todas las numéricas.
+    titulo            : título principal del gráfico.
+    subtitulo         : segunda línea del título (unidad de análisis, n, etc.).
+    metodo            : 'spearman' (por defecto), 'pearson' o 'kendall'.
+    ordenar_por_bloque: reordena las variables según el orden de BLOQUES.
+    mostrar_bloques   : dibuja la barra lateral de colores por bloque temático.
+    anotar            : escribe el coeficiente en cada celda. Si None se
+                        activa automáticamente con 30 variables o menos.
+    triangular        : muestra solo el triángulo inferior y la diagonal.
+    umbral_alerta     : informa por consola los pares con |r| por encima
+                        de este valor (multicolinealidad).
+    nombre_archivo    : nombre para guardar la figura. None = no guardar.
+
+    Retorna
+    -------
+    DataFrame cuadrado con los coeficientes de correlación.
+    """
+    if variables is None:
+        variables = [c for c in datos.columns
+                     if pd.api.types.is_numeric_dtype(datos[c])]
+    variables = [v for v in variables if v in datos.columns]
+
+    if ordenar_por_bloque:
+        ordenadas = [v for bloque in BLOQUES for v in BLOQUES[bloque]
+                     if v in variables]
+        ordenadas += [v for v in variables if v not in ordenadas]
+        variables = ordenadas
+
+    bloques_lb = [bloque_de(v) for v in variables]
+    corr = datos[variables].corr(method=metodo)
+
+    etiquetas = [ETIQUETAS_FEATURES.get(v, v) for v in variables]
+    corr_plot = corr.copy()
+    corr_plot.index   = etiquetas
+    corr_plot.columns = etiquetas
+
+    n = len(variables)
+    if anotar is None:
+        anotar = n <= 30
+    # Solo tiene sentido pintar la barra de bloques si hay más de uno
+    mostrar_bloques = mostrar_bloques and len(set(bloques_lb)) > 1
+
+    lado = max(6.0, 0.42 * n + 3.5)
+    mask = np.triu(np.ones_like(corr_plot, dtype=bool), k=1) if triangular else None
+
+    fig, ax = plt.subplots(figsize=(lado, lado))
+
+    sns.heatmap(
+        corr_plot, mask=mask, annot=anotar, fmt=".2f",
+        cmap="RdBu_r", center=0, vmin=-1, vmax=1,
+        square=True, linewidths=0.3, ax=ax,
+        annot_kws={"size": max(5.5, 9 - 0.12 * n)},
+        cbar_kws={"label": f"r {metodo.capitalize()}", "shrink": 0.55},
+    )
+    titulo_full = titulo if subtitulo is None else f"{titulo}\n{subtitulo}"
+    ax.set_title(titulo_full, fontweight="bold", pad=12)
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.tick_params(axis="x", labelsize=max(6, 9 - 0.06 * n), rotation=90)
+    ax.tick_params(axis="y", labelsize=max(6, 9 - 0.06 * n), rotation=0)
+
+    if mostrar_bloques:
+        ancho_barra, sep_barra = 0.55, 0.25
+        patches = _bloques_en_eje(ax, variables, bloques_lb,
+                                  ancho=ancho_barra, sep=sep_barra)
+        # Desplaza las etiquetas del eje Y para que la franja de bloques no
+        # las tape: el desplazamiento se calcula en puntos a partir del
+        # tamaño real de celda tras un primer render.
+        fig.canvas.draw()
+        celda_pt = ax.get_window_extent().width / max(n, 1) / fig.dpi * 72
+        ax.tick_params(axis="y", pad=(ancho_barra + sep_barra) * celda_pt + 3)
+
+        # Con el triángulo superior enmascarado esa zona queda libre: es el
+        # lugar natural para la leyenda sin tapar celdas ni etiquetas.
+        if triangular and n >= 10:
+            ax.legend(handles=patches, loc="upper right", fontsize=9,
+                      frameon=True, title="Bloque temático", title_fontsize=9)
+        else:
+            ax.legend(handles=patches, loc="upper left",
+                      bbox_to_anchor=(0, -0.25), fontsize=8, frameon=True,
+                      title="Bloque temático", title_fontsize=8)
+
+    if nombre_archivo:
+        save_figure(nombre_archivo)
+    plt.show()
+
+    # Reporte de pares altamente correlacionados
+    pares = []
+    for i in range(n):
+        for j in range(i):
+            r = corr.iloc[i, j]
+            if pd.notna(r) and abs(r) >= umbral_alerta:
+                pares.append((variables[i], variables[j], r))
+    print(f"  Variables: {n} | método: {metodo}")
+    if pares:
+        print(f"  Pares con |r| ≥ {umbral_alerta}: {len(pares)}")
+        for a, b, r in sorted(pares, key=lambda t: -abs(t[2])):
+            print(f"    {ETIQUETAS_FEATURES.get(a, a):<38} ~ "
+                  f"{ETIQUETAS_FEATURES.get(b, b):<38} r={r:+.3f}")
+    else:
+        print(f"  Ningún par supera |r| = {umbral_alerta} (sin multicolinealidad extrema)")
+
+    return corr
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# SECCIÓN 3 — EVALUACIÓN COMPARATIVA (notebook 03)
 # ═════════════════════════════════════════════════════════════════════════════
 
 def plot_metricas_comparativas(
@@ -212,6 +375,132 @@ def plot_matrices_confusion(
     plt.show()
 
 
+def plot_matriz_confusion_modelo(
+    y_true,
+    y_pred,
+    etiquetas: Optional[Dict] = None,
+    titulo: str = "Matriz de confusión",
+    subtitulo: Optional[str] = None,
+    resaltar_distancia: Optional[int] = 2,
+    nombre_archivo: Optional[str] = None,
+) -> None:
+    """
+    Matriz de confusión del modelo principal en dos paneles:
+    conteos absolutos y porcentaje por clase real.
+
+    Parámetros
+    ----------
+    y_true, y_pred     : etiquetas reales y predichas.
+    etiquetas          : dict {clase: etiqueta}. Por defecto ETIQUETAS.
+    titulo             : título principal.
+    subtitulo          : segunda línea del título (modelo, estrategia, n).
+    resaltar_distancia : marca en rojo las celdas con distancia ordinal
+                         mayor o igual a este valor. None desactiva el resaltado.
+    nombre_archivo     : nombre para guardar. None = no guardar.
+    """
+    from sklearn.metrics import confusion_matrix
+
+    clases = sorted(set(np.asarray(y_true).ravel().tolist()) |
+                    set(np.asarray(y_pred).ravel().tolist()))
+    clases = [int(c) for c in clases]
+    ets    = etiquetas if etiquetas is not None else (
+        ETIQUETAS if len(clases) == len(ETIQUETAS) else {})
+    # Eje X: etiqueta partida en varias líneas; eje Y: etiqueta en una línea
+    etiq_x = ["\n".join(ets[c].split()) if c in ets else f"Clase {c}"
+              for c in clases]
+    etiq_y = [ets[c] if c in ets else f"Clase {c}" for c in clases]
+
+    cm_n   = confusion_matrix(y_true, y_pred, labels=clases)
+    cm_pct = confusion_matrix(y_true, y_pred, labels=clases, normalize="true") * 100
+
+    fig, axes = plt.subplots(1, 2, figsize=(7 + 1.4 * len(clases), 5.5))
+    for ax, datos, fmt, etiqueta_cb, sub in [
+        (axes[0], cm_n,   ",d",  "Registros",        "Conteos absolutos"),
+        (axes[1], cm_pct, ".1f", "% por clase real", "Normalizada por fila"),
+    ]:
+        sns.heatmap(
+            datos, annot=True, fmt=fmt, cmap="Blues", ax=ax,
+            xticklabels=etiq_x, yticklabels=etiq_y,
+            linewidths=0.4, annot_kws={"size": 9},
+            cbar_kws={"label": etiqueta_cb, "shrink": 0.7},
+        )
+        ax.set_title(sub, fontsize=10, fontweight="bold")
+        ax.set_xlabel("Predicho")
+        ax.set_ylabel("Real")
+        ax.set_xticklabels(etiq_x, rotation=0, fontsize=9)
+        ax.set_yticklabels(etiq_y, rotation=0, fontsize=9)
+        if resaltar_distancia is not None:
+            for i in range(len(clases)):
+                for j in range(len(clases)):
+                    if abs(clases[i] - clases[j]) >= resaltar_distancia:
+                        ax.add_patch(plt.Rectangle(
+                            (j, i), 1, 1, fill=False,
+                            edgecolor=THEME["semantic"]["danger"], lw=2.0))
+
+    titulo_full = titulo if subtitulo is None else f"{titulo}\n{subtitulo}"
+    if resaltar_distancia is not None:
+        titulo_full += (f"\nContorno rojo: error ordinal ≥ {resaltar_distancia} clases")
+    fig.suptitle(titulo_full, fontweight="bold", fontsize=12)
+
+    if nombre_archivo:
+        save_figure(nombre_archivo)
+    plt.show()
+
+
+def plot_metricas_por_clase(
+    df_clases: pd.DataFrame,
+    titulo: str = "Precision, recall y F1 por categoría",
+    subtitulo: Optional[str] = None,
+    nombre_archivo: Optional[str] = None,
+) -> None:
+    """
+    Barras agrupadas de precision, recall y F1 para cada categoría del target.
+
+    Parámetros
+    ----------
+    df_clases      : DataFrame devuelto por `utils.metrics.metricas_por_clase`.
+                     Las filas de promedio (clase nula) se ignoran.
+    titulo         : título principal.
+    subtitulo      : segunda línea del título (modelo, estrategia, split).
+    nombre_archivo : nombre para guardar. None = no guardar.
+    """
+    df_p = df_clases[df_clases["clase"].notna()].copy()
+    if df_p.empty:
+        print("  ⚠ Sin categorías para graficar.")
+        return
+
+    etiquetas = df_p["etiqueta"].tolist()
+    metricas  = [("precision", "Precision"), ("recall", "Recall"), ("f1", "F1")]
+    colores   = ["#4C78A8", "#F58518", "#54A24B"]
+
+    x     = np.arange(len(df_p))
+    ancho = 0.8 / len(metricas)
+
+    fig, ax = plt.subplots(figsize=(max(8, 2.2 * len(df_p)), 5))
+    for i, ((col, etiq), color) in enumerate(zip(metricas, colores)):
+        vals = df_p[col].values
+        barras = ax.bar(x + i * ancho, vals, ancho * 0.92,
+                        label=etiq, color=color, edgecolor="white")
+        for b, v in zip(barras, vals):
+            ax.text(b.get_x() + b.get_width() / 2, v + 0.012,
+                    f"{v:.3f}", ha="center", fontsize=8)
+
+    ax.set_xticks(x + ancho * (len(metricas) - 1) / 2)
+    ax.set_xticklabels(
+        [f"{e}\n(n={int(s):,})" for e, s in zip(etiquetas, df_p["soporte"])],
+        fontsize=9)
+    ax.set_ylim(0, 1.08)
+    ax.set_ylabel("Valor de la métrica")
+    titulo_full = titulo if subtitulo is None else f"{titulo}\n{subtitulo}"
+    ax.set_title(titulo_full, fontweight="bold")
+    ax.legend(fontsize=9, ncol=3, loc="upper right")
+    ax.grid(True, axis="y", alpha=0.3)
+
+    if nombre_archivo:
+        save_figure(nombre_archivo)
+    plt.show()
+
+
 def plot_rendimiento_por_pais(
     df_mae: pd.DataFrame,
 
@@ -258,7 +547,7 @@ def plot_rendimiento_por_pais(
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECCIÓN 3 — EXPLICABILIDAD XAI (notebook 04)
+# SECCIÓN 4 — EXPLICABILIDAD XAI (notebook 04)
 # ═════════════════════════════════════════════════════════════════════════════
 
 def plot_shap_bar_bloques(
@@ -298,6 +587,64 @@ def plot_shap_bar_bloques(
             vistos[b] = THEME.get("blocks", {}).get(b, "#AAAAAA")
     patches = [mpatches.Patch(color=c, label=b) for b, c in vistos.items()]
     ax.legend(handles=patches, fontsize=8, loc="lower right")
+
+    if nombre_archivo:
+        save_figure(nombre_archivo)
+    plt.show()
+
+
+def plot_importancia_con_ic(
+    df_boot: pd.DataFrame,
+    top_n: int = 15,
+    titulo: str = "Importancia global con intervalo de confianza",
+    subtitulo: Optional[str] = None,
+    columna_valor: str = "importancia",
+    nombre_archivo: Optional[str] = None,
+) -> None:
+    """
+    Barras horizontales de importancia con barras de error del bootstrap.
+
+    Parámetros
+    ----------
+    df_boot       : salida de `utils.xai.bootstrap_importancia_shap`, con las
+                    columnas etiqueta, importancia, ic_inf, ic_sup y rango.
+    top_n         : número de variables a mostrar.
+    titulo        : título principal.
+    subtitulo     : segunda línea del título (modelo, clúster, réplicas).
+    columna_valor : columna con la estimación puntual.
+    nombre_archivo: nombre para guardar. None = no guardar.
+    """
+    top = df_boot.head(top_n).iloc[::-1]
+    etiquetas = [
+        f"{e}  [{int(a)}–{int(b)}]"
+        for e, a, b in zip(top["etiqueta"], top["rango_ic_inf"], top["rango_ic_sup"])
+    ] if {"rango_ic_inf", "rango_ic_sup"}.issubset(top.columns) else list(top["etiqueta"])
+
+    colores = [THEME.get("blocks", {}).get(b, "#AAAAAA")
+               for b in top.get("bloque", ["" ] * len(top))]
+    err_inf = (top[columna_valor] - top["ic_inf"]).clip(lower=0).values
+    err_sup = (top["ic_sup"] - top[columna_valor]).clip(lower=0).values
+
+    fig, ax = plt.subplots(figsize=(11, max(5, top_n * 0.42)))
+    ax.barh(etiquetas, top[columna_valor].values, color=colores,
+            edgecolor="white", linewidth=0.4)
+    ax.errorbar(top[columna_valor].values, np.arange(len(top)),
+                xerr=[err_inf, err_sup], fmt="none",
+                ecolor=THEME["semantic"]["text"], elinewidth=1.2, capsize=3)
+    ax.set_xlabel("|SHAP| medio (con IC 95% por bootstrap de clústeres)")
+    titulo_full = titulo if subtitulo is None else f"{titulo}\n{subtitulo}"
+    ax.set_title(titulo_full, fontweight="bold")
+    ax.grid(True, axis="x", alpha=0.3)
+    ax.tick_params(axis="y", labelsize=9)
+
+    vistos = {}
+    for b in top.get("bloque", []):
+        if b and b not in vistos:
+            vistos[b] = THEME.get("blocks", {}).get(b, "#AAAAAA")
+    if vistos:
+        patches = [mpatches.Patch(color=c, label=b) for b, c in vistos.items()]
+        ax.legend(handles=patches, fontsize=8, loc="lower right",
+                  title="Bloque temático", title_fontsize=8)
 
     if nombre_archivo:
         save_figure(nombre_archivo)
@@ -402,7 +749,9 @@ def plot_ale(
     ax.fill_between(ale_quantiles, ale_values, alpha=0.15, color=color)
     ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
     ax.set_xlabel(etiq)
-    ax.set_ylabel("Efecto ALE sobre satisfacción democrática")
+    # La curva describe el desplazamiento de la PREDICCIÓN del modelo respecto
+    # de su promedio, no un efecto sobre la satisfacción observada.
+    ax.set_ylabel("Cambio en la predicción del modelo (ALE)")
     ax.set_title(titulo, fontweight="bold")
     ax.grid(True, alpha=0.3)
 
@@ -420,135 +769,8 @@ def plot_ale(
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECCIÓN 4 — ESTABILIDAD TEMPORAL Y REGIONAL (notebook 05)
+# SECCIÓN 5 — ESTABILIDAD TEMPORAL Y REGIONAL (notebook 05)
 # ═════════════════════════════════════════════════════════════════════════════
-
-def plot_heatmap_estabilidad(
-    df_rankings: pd.DataFrame,
-    metrica: str = "mean_abs_shap",
-    titulo: str = "Importancia SHAP por bloque temático",
-    nombre_archivo: Optional[str] = None,
-) -> None:
-    """
-    Heatmap de importancia SHAP por variable y bloque temático,
-    con barra lateral de bloques temáticos.
-
-    Parámetros
-    ----------
-    df_rankings   : DataFrame con índice=variable, columnas=bloques o modelos,
-                    valores=importancia (|SHAP| medio normalizado).
-    metrica       : nombre de la métrica para el colorbar.
-    titulo        : título del gráfico.
-    nombre_archivo: nombre para guardar. None = no guardar.
-    """
-    # Ordenar variables por bloque
-    vars_ord   = []
-    bloqs_ord  = []
-    for bloque in BLOQUES:
-        for v in BLOQUES[bloque]:
-            if v in df_rankings.index:
-                vars_ord.append(v)
-                bloqs_ord.append(bloque)
-
-    # Variables no clasificadas al final
-    for v in df_rankings.index:
-        if v not in vars_ord:
-            vars_ord.append(v)
-            bloqs_ord.append("Sin clasificar")
-
-    df_plot = df_rankings.loc[vars_ord]
-    etiq_y  = [ETIQUETAS_FEATURES.get(v, v) for v in vars_ord]
-    df_plot.index = etiq_y
-
-    fig, (ax_bar, ax_heat) = plt.subplots(
-        1, 2, figsize=(12, max(8, len(vars_ord) * 0.38)),
-        gridspec_kw={"width_ratios": [0.04, 0.96]},
-    )
-    _barra_bloques(ax_bar, vars_ord, bloqs_ord)
-
-    sns.heatmap(
-        df_plot, annot=True, fmt=".3f", cmap="YlOrRd",
-        linewidths=0.3, ax=ax_heat,
-        annot_kws={"size": 8},
-        cbar_kws={"label": metrica, "shrink": 0.6},
-    )
-    ax_heat.set_title(titulo, fontweight="bold", pad=12)
-    ax_heat.set_xlabel("Subregión")
-    ax_heat.set_ylabel("")
-    ax_heat.tick_params(axis="y", labelsize=9)
-
-    # Líneas separadoras entre bloques
-    n_acum = 0
-    bloques_vistos = []
-    for v, b in zip(vars_ord, bloqs_ord):
-        n_acum += 1
-        if b not in bloques_vistos:
-            bloques_vistos.append(b)
-        else:
-            if bloqs_ord[vars_ord.index(v) - 1] != b:
-                ax_heat.axhline(n_acum - 1, color="white", linewidth=2)
-
-    if nombre_archivo:
-        save_figure(nombre_archivo)
-    plt.show()
-
-
-def plot_bump_chart(
-    df_rankings: pd.DataFrame,
-    top_n: int = 15,
-    titulo: str = "Cambio en ranking de importancia SHAP",
-    nombre_archivo: Optional[str] = None,
-) -> None:
-    """
-    Bump chart del ranking de importancia SHAP entre estrategias o modelos.
-
-    Muestra las top_n variables más importantes
-    y traza su trayectoria de ranking.
-
-    Parámetros
-    ----------
-    df_rankings   : DataFrame con índice=variable, columnas=bloques o modelos,
-                    valores=importancia. Se calcula el ranking internamente.
-    top_n         : número de variables a incluir.
-    titulo        : título del gráfico.
-    nombre_archivo: nombre para guardar. None = no guardar.
-    """
-    # Calcular rankings (1 = más importante)
-    df_rank = df_rankings.rank(ascending=False, method="min")
-    sp_cols = list(df_rank.columns)
-
-    # Seleccionar top_n por la última columna disponible
-    ultimo_sp = sp_cols[-1]
-    top_vars  = df_rank[ultimo_sp].sort_values().head(top_n).index.tolist()
-    df_top    = df_rank.loc[top_vars, sp_cols]
-
-    fig, ax = plt.subplots(figsize=(8, max(6, top_n * 0.5)))
-
-    for var in top_vars:
-        bloque = bloque_de(var)
-        color  = THEME.get("blocks", {}).get(bloque, "#888888")
-        y_vals = df_top.loc[var].values
-        ax.plot(sp_cols, y_vals, marker="o", linewidth=2, markersize=8,
-                color=color, alpha=0.85)
-        # Etiqueta al final
-        ax.text(sp_cols[-1], y_vals[-1],
-                f"  {ETIQUETAS_FEATURES.get(var, var)}",
-                va="center", fontsize=8, color=color)
-
-    ax.invert_yaxis()
-    ax.set_ylabel("Ranking de importancia (1 = más importante)")
-    ax.set_title(titulo, fontweight="bold")
-    ax.set_xticks(sp_cols)
-    ax.set_xticklabels([sp
-                        for sp in sp_cols], fontsize=9)
-    ax.grid(True, axis="y", alpha=0.3)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    if nombre_archivo:
-        save_figure(nombre_archivo)
-    plt.show()
-
 
 def plot_spearman_estabilidad(
     df_correlaciones: pd.DataFrame,
@@ -628,7 +850,7 @@ def plot_shap_por_subregion(
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SECCIÓN 5 — CONTRASTE TEÓRICO (notebook 06)
+# SECCIÓN 6 — CONTRASTE TEÓRICO (notebook 06)
 # ═════════════════════════════════════════════════════════════════════════════
 
 def plot_convergencias_teoricas(

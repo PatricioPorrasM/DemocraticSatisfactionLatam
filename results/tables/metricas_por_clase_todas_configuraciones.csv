@@ -1,0 +1,61 @@
+modelo,estrategia_balanceo,clase,etiqueta,precision,recall,f1,soporte,pct_soporte
+CatBoost,pesos_clase,0,0 — Para nada satisfecho,0.3834,0.5062,0.4363,3969,11.31
+CatBoost,pesos_clase,1,1 — No muy satisfecho,0.4253,0.4311,0.4282,7414,21.13
+CatBoost,pesos_clase,2,2 — Más bien satisfecho,0.5795,0.38,0.459,14746,42.03
+CatBoost,pesos_clase,3,3 — Muy satisfecho,0.4991,0.7056,0.5847,8955,25.52
+CatBoost,sin_balanceo,0,0 — Para nada satisfecho,0.6217,0.1673,0.2636,3969,11.31
+CatBoost,sin_balanceo,1,1 — No muy satisfecho,0.4526,0.4583,0.4554,7414,21.13
+CatBoost,sin_balanceo,2,2 — Más bien satisfecho,0.521,0.7247,0.6062,14746,42.03
+CatBoost,sin_balanceo,3,3 — Muy satisfecho,0.6142,0.4112,0.4926,8955,25.52
+CatBoost,smotenc,0,0 — Para nada satisfecho,0.4489,0.35,0.3933,3969,11.31
+CatBoost,smotenc,1,1 — No muy satisfecho,0.4321,0.3729,0.4003,7414,21.13
+CatBoost,smotenc,2,2 — Más bien satisfecho,0.5347,0.6328,0.5796,14746,42.03
+CatBoost,smotenc,3,3 — Muy satisfecho,0.5664,0.5149,0.5394,8955,25.52
+LightGBM,pesos_clase,0,0 — Para nada satisfecho,0.3792,0.5223,0.4394,3969,11.31
+LightGBM,pesos_clase,1,1 — No muy satisfecho,0.4436,0.4315,0.4375,7414,21.13
+LightGBM,pesos_clase,2,2 — Más bien satisfecho,0.5891,0.3713,0.4555,14746,42.03
+LightGBM,pesos_clase,3,3 — Muy satisfecho,0.4895,0.7167,0.5817,8955,25.52
+LightGBM,sin_balanceo,0,0 — Para nada satisfecho,0.617,0.2086,0.3118,3969,11.31
+LightGBM,sin_balanceo,1,1 — No muy satisfecho,0.4681,0.4288,0.4476,7414,21.13
+LightGBM,sin_balanceo,2,2 — Más bien satisfecho,0.5198,0.7372,0.6097,14746,42.03
+LightGBM,sin_balanceo,3,3 — Muy satisfecho,0.6048,0.4077,0.4871,8955,25.52
+LightGBM,smotenc,0,0 — Para nada satisfecho,0.5584,0.2036,0.2984,3969,11.31
+LightGBM,smotenc,1,1 — No muy satisfecho,0.4471,0.5004,0.4723,7414,21.13
+LightGBM,smotenc,2,2 — Más bien satisfecho,0.5251,0.6528,0.582,14746,42.03
+LightGBM,smotenc,3,3 — Muy satisfecho,0.571,0.4468,0.5013,8955,25.52
+OLO,pesos_clase,0,0 — Para nada satisfecho,0.2896,0.618,0.3944,3969,11.31
+OLO,pesos_clase,1,1 — No muy satisfecho,0.3034,0.2099,0.2481,7414,21.13
+OLO,pesos_clase,2,2 — Más bien satisfecho,0.5411,0.2641,0.3549,14746,42.03
+OLO,pesos_clase,3,3 — Muy satisfecho,0.4662,0.7439,0.5732,8955,25.52
+OLO,sin_balanceo,0,0 — Para nada satisfecho,0.5714,0.13,0.2118,3969,11.31
+OLO,sin_balanceo,1,1 — No muy satisfecho,0.4288,0.3909,0.409,7414,21.13
+OLO,sin_balanceo,2,2 — Más bien satisfecho,0.4959,0.8004,0.6124,14746,42.03
+OLO,sin_balanceo,3,3 — Muy satisfecho,0.6519,0.2635,0.3753,8955,25.52
+OLO,smotenc,0,0 — Para nada satisfecho,0.2923,0.6032,0.3937,3969,11.31
+OLO,smotenc,1,1 — No muy satisfecho,0.3076,0.2153,0.2533,7414,21.13
+OLO,smotenc,2,2 — Más bien satisfecho,0.54,0.2808,0.3695,14746,42.03
+OLO,smotenc,3,3 — Muy satisfecho,0.4696,0.736,0.5734,8955,25.52
+TabNet,pesos_clase,0,0 — Para nada satisfecho,0.3616,0.521,0.4269,3969,11.31
+TabNet,pesos_clase,1,1 — No muy satisfecho,0.4082,0.3704,0.3884,7414,21.13
+TabNet,pesos_clase,2,2 — Más bien satisfecho,0.5748,0.362,0.4442,14746,42.03
+TabNet,pesos_clase,3,3 — Muy satisfecho,0.4871,0.7263,0.5831,8955,25.52
+TabNet,sin_balanceo,0,0 — Para nada satisfecho,0.5774,0.2058,0.3035,3969,11.31
+TabNet,sin_balanceo,1,1 — No muy satisfecho,0.4394,0.474,0.456,7414,21.13
+TabNet,sin_balanceo,2,2 — Más bien satisfecho,0.5271,0.6553,0.5843,14746,42.03
+TabNet,sin_balanceo,3,3 — Muy satisfecho,0.5746,0.4709,0.5176,8955,25.52
+TabNet,smotenc,0,0 — Para nada satisfecho,0.3369,0.4621,0.3897,3969,11.31
+TabNet,smotenc,1,1 — No muy satisfecho,0.4055,0.3747,0.3895,7414,21.13
+TabNet,smotenc,2,2 — Más bien satisfecho,0.5419,0.3863,0.4511,14746,42.03
+TabNet,smotenc,3,3 — Muy satisfecho,0.4952,0.6788,0.5727,8955,25.52
+XGBoost,pesos_clase,0,0 — Para nada satisfecho,0.387,0.5084,0.4395,3969,11.31
+XGBoost,pesos_clase,1,1 — No muy satisfecho,0.4428,0.43,0.4363,7414,21.13
+XGBoost,pesos_clase,2,2 — Más bien satisfecho,0.5834,0.3789,0.4594,14746,42.03
+XGBoost,pesos_clase,3,3 — Muy satisfecho,0.4899,0.7162,0.5818,8955,25.52
+XGBoost,sin_balanceo,0,0 — Para nada satisfecho,0.5988,0.2023,0.3024,3969,11.31
+XGBoost,sin_balanceo,1,1 — No muy satisfecho,0.4674,0.4191,0.4419,7414,21.13
+XGBoost,sin_balanceo,2,2 — Más bien satisfecho,0.5216,0.7322,0.6092,14746,42.03
+XGBoost,sin_balanceo,3,3 — Muy satisfecho,0.5976,0.4268,0.4979,8955,25.52
+XGBoost,smotenc,0,0 — Para nada satisfecho,0.4774,0.3222,0.3848,3969,11.31
+XGBoost,smotenc,1,1 — No muy satisfecho,0.4783,0.3282,0.3892,7414,21.13
+XGBoost,smotenc,2,2 — Más bien satisfecho,0.5237,0.6767,0.5905,14746,42.03
+XGBoost,smotenc,3,3 — Muy satisfecho,0.5592,0.516,0.5367,8955,25.52
