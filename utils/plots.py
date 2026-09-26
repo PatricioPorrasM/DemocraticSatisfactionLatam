@@ -330,7 +330,9 @@ def plot_matrices_confusion(
     """
     from sklearn.metrics import confusion_matrix
 
-    etiq_cortas = ["Nada\nsat.", "No muy\nsat.", "Más bien\nsat.", "Muy\nsat."]
+    # Orden descendente de satisfacción: clase 0 = Muy satisfecho,
+    # clase 3 = Nada satisfecho. Ver ETIQUETAS en utils/config.py.
+    etiq_cortas = ["Muy\nsat.", "Más bien\nsat.", "No muy\nsat.", "Nada\nsat."]
     sps = ["sin_balanceo", "pesos_clase", "smotenc"]
 
     if solo_mejor and mejor_modelo:

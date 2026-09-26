@@ -37,7 +37,7 @@ from pathlib import Path
 
 # ┌───────────────────────────────────────────────────────────────────────┐
 # │  ESTA ES LA LÍNEA QUE SE EDITA:  "real"  o  "humo"                    │
-MODO = "real"
+MODO = "humo"
 # └───────────────────────────────────────────────────────────────────────┘
 
 # La variable de entorno, si está definida, tiene prioridad sobre MODO: es la
@@ -192,7 +192,7 @@ PERFILES_EJECUCION = {
         "N_MUESTRAS_SHAP_OLO": 500,
         "CASOS_LIME_REPRESENTATIVOS": 100,  # estratificados por clase × subregión
         "CASOS_LIME_ERRORES": 50,           # mayor distancia ordinal |ŷ - y|
-        "CASOS_LIME_DISCORDANTES": 50,      # poliarquía alta y satisfacción baja
+        "CASOS_LIME_CONCORDANTES": 50,      # poliarquía alta y satisfacción predicha alta
     },
 
     "humo": {
@@ -228,7 +228,7 @@ PERFILES_EJECUCION = {
         "N_MUESTRAS_SHAP_OLO": 50,
         "CASOS_LIME_REPRESENTATIVOS": 8,
         "CASOS_LIME_ERRORES": 4,
-        "CASOS_LIME_DISCORDANTES": 4,
+        "CASOS_LIME_CONCORDANTES": 4,
     },
 }
 
@@ -555,11 +555,18 @@ SPLITS_TEMPORALES = {
 #   internacionalmente (V-Dem: poliarquía cae de 0.281 en 2016 a
 #   0.233 en 2017, y a 0.196 en 2024).
 #   Desde 2018 las encuestas de Latinobarómetro en Venezuela
-#   muestran un patrón anómalo: sobre respuestas válidas del archivo
-#   base, el 61.3% declara estar "Muy satisfecho" en 2018 y el 46.5%
-#   en 2024, frente al 21.9% de 2013. Este sesgo de respuesta en
-#   regímenes autoritarios está documentado (Guriev y Treisman, 2019;
-#   Norris, 2011).
+#   muestran un cambio abrupto de distribución: sobre respuestas
+#   válidas del archivo base, la categoría de insatisfacción extrema
+#   ("Nada satisfecho", código original 4) pasa del 21.9% en 2013 al
+#   61.3% en 2018, y se mantiene en el 46.5% en 2024, mientras la
+#   poliarquía se desploma.
+#   La DIRECCIÓN de ese cambio es la esperable —más insatisfacción a
+#   medida que el régimen se deteriora— y por sí sola no constituye
+#   una anomalía. Lo que justifica la exclusión es la MAGNITUD de la
+#   divergencia frente al resto de la región, más la coincidencia
+#   temporal con el quiebre institucional de 2017; no un argumento de
+#   sesgo de respuesta o expresión estratégica.
+#   Véase ERRATA.md, sección 4.1.
 #   Criterio de corte: AÑO_CORTE_VEN = 2017. Los registros de
 #   Venezuela posteriores a 2017 se eliminan antes del split.
 #
@@ -677,13 +684,28 @@ N_CLASES = 4
 
 # ====================================================
 # ETIQUETAS DEL TARGET
+#
+# La escala original de A_003_031 en el Latinobarómetro es DESCENDENTE:
+# el código 1 es el nivel máximo de satisfacción y el 4 el mínimo. Se
+# verificó en las 24 olas; 23 conservan etiquetas de valor en el .dta y
+# las 23 coinciden (la de 2011 no las trae).
+#
+#   código original 1 = Muy satisfecho      -> clase 0
+#   código original 2 = Más bien satisfecho -> clase 1
+#   código original 3 = No muy satisfecho   -> clase 2
+#   código original 4 = Nada satisfecho     -> clase 3
+#
+# El NB02 recodifica con un desplazamiento que PRESERVA el orden
+# ({1:0, 2:1, 3:2, 4:3}), de modo que un valor alto de `target` indica
+# MENOS satisfacción. Este diccionario estuvo invertido hasta la
+# corrección documentada en ERRATA.md.
 # ====================================================
 
 ETIQUETAS = {
-    0: "Para nada satisfecho",
-    1: "No muy satisfecho",
-    2: "Más bien satisfecho",
-    3: "Muy satisfecho",
+    0: "Muy satisfecho",
+    1: "Más bien satisfecho",
+    2: "No muy satisfecho",
+    3: "Nada satisfecho",
 }
 
 # ====================================================

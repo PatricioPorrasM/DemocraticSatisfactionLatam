@@ -12,14 +12,16 @@ Este repositorio implementa un marco comparativo, explicable y reproducible para
 
 Se comparan cinco familias de modelos: Regresión Logística Ordinal (OLO), XGBoost, LightGBM, CatBoost y TabNet, bajo dos experimentos secuenciales: el primero evalúa estrategias de manejo del desbalance de clases; el segundo compara las formulaciones de la variable objetivo. La explicabilidad se trabaja con SHAP (TreeSHAP), LIME y gráficos de efectos locales acumulados (ALE), y su alcance son las familias de árboles: el detalle está en la sección del NB04.
 
-**Variable objetivo:** satisfacción con la democracia (A_003_031), 4 clases ordinales:
+**Variable objetivo:** satisfacción con la democracia (A_003_031), 4 clases ordinales. La escala original del Latinobarómetro es **descendente** —el código 1 es el nivel máximo de satisfacción— y la recodificación preserva ese orden, de modo que un valor alto de `target` indica **menos** satisfacción:
 
-| Clase | Etiqueta |
-|---|---|
-| 0 | Para nada satisfecho |
-| 1 | No muy satisfecho |
-| 2 | Más bien satisfecho |
-| 3 | Muy satisfecho |
+| Clase | Código original | Etiqueta |
+|---|---|---|
+| 0 | 1 | Muy satisfecho |
+| 1 | 2 | Más bien satisfecho |
+| 2 | 3 | No muy satisfecho |
+| 3 | 4 | Nada satisfecho |
+
+> Este orden estuvo invertido en versiones anteriores del repositorio y del documento de tesis. La corrección, su verificación y sus consecuencias están en [`ERRATA.md`](ERRATA.md).
 
 **Métrica primaria:** Kappa cuadrático (Cohen's kappa con pesos cuadráticos), que penaliza los errores de predicción proporcionalmente a la distancia ordinal entre clases.
 
@@ -159,7 +161,7 @@ Analiza además el MAE ordinal por país y subregión y evalúa las formulacione
 
 ### NB04 — `04_explicabilidad_xai.ipynb`
 
-Responde el OE4 y aporta la evidencia de H3: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el modelo seleccionado en NB03 y calcula sus valores SHAP globales (importancia por variable y agregada por bloque temático) y locales (beeswarm por observación) con `TreeExplainer`. Genera gráficos ALE para detectar efectos no lineales y umbrales. Cuantifica la incertidumbre del ranking de importancias con un bootstrap de clústeres país-año: intervalo del valor |SHAP|, intervalo del rango de cada variable, porcentaje de réplicas en que entra en el top-k, y concordancia (ρ de Spearman y W de Kendall) entre los rankings de los tres modelos de gradient boosting, calculados con la misma estrategia de balanceo para aislar el efecto del algoritmo. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de distancia ordinal máxima y 50 con discordancia institucional en cualquiera de las dos direcciones (poliarquía > 0,6 con satisfacción predicha ≤ 1, o poliarquía < 0,3 con satisfacción predicha ≥ 2); las tres cuotas se fijan en `PARAMETERS["CASOS_LIME_*"]`. Documenta errores graves (distancia ordinal ≥ 2).
+Responde el OE4 y aporta la evidencia de H3: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el modelo seleccionado en NB03 y calcula sus valores SHAP globales (importancia por variable y agregada por bloque temático) y locales (beeswarm por observación) con `TreeExplainer`. Genera gráficos ALE para detectar efectos no lineales y umbrales. Cuantifica la incertidumbre del ranking de importancias con un bootstrap de clústeres país-año: intervalo del valor |SHAP|, intervalo del rango de cada variable, porcentaje de réplicas en que entra en el top-k, y concordancia (ρ de Spearman y W de Kendall) entre los rankings de los tres modelos de gradient boosting, calculados con la misma estrategia de balanceo para aislar el efecto del algoritmo. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de distancia ordinal máxima y 50 con concordancia institucional en cualquiera de las dos direcciones (poliarquía > 0,6 con satisfacción predicha alta, `clase_pred ≤ 1`, o poliarquía < 0,3 con satisfacción predicha baja, `clase_pred ≥ 2`); las tres cuotas se fijan en `PARAMETERS["CASOS_LIME_*"]`. Sobre el conjunto de prueba actual la segunda rama no selecciona ningún caso, porque la poliarquía mínima es 0,3350. Documenta errores graves (distancia ordinal ≥ 2).
 
 **Alcance de SHAP:** el flujo cubre las familias de árboles. `calcular_shap()` ramifica por tipo de modelo: `trees` → `TreeExplainer`, `olo` → `KernelExplainer`, y cualquier otro tipo lanza `ValueError`. La rama de `KernelExplainer` está prevista para el caso en que la configuración seleccionada fuese la regresión logística ordinal, pero es condicional y no se ejecutó en esta corrida, porque la ganadora fue una configuración de gradient boosting. TabNet no está cubierto y el proyecto no calcula sus máscaras de atención. En consecuencia, el trabajo **no compara explicaciones entre familias de modelos**: los contrastes de H3, H4 y H5 y el análisis de concordancia se resuelven dentro de las familias de árboles, sobre la formulación ordinal de cuatro clases.
 
@@ -390,7 +392,7 @@ El proyecto ejecuta dos experimentos secuenciales sobre el mismo split temporal 
 
 La distribución del target en validación y en prueba no es idéntica: el test de Kolmogorov–Smirnov entre ambas da un estadístico de 0,0549 con p < 0,001. El desplazamiento es moderado —la clase mayoritaria es la misma y su peso pasa del 44,0 % al 42,0 %— y la elección de 2020 responde a la restricción temporal (es el único año que no está en train ni en test y tiene ola disponible), no a un supuesto de igualdad distribucional.
 
-**Casos especiales:** Venezuela se excluye a partir de 2018 por sesgo de respuesta documentado en regímenes autoritarios; el test de Kolmogorov–Smirnov entre su distribución y la del resto de los países alcanza un estadístico de 0,2552 en 2017 (p < 0,001). Nicaragua se excluye de val/test por falta de cobertura en los años de prueba.
+**Casos especiales:** Venezuela se excluye a partir de 2018 por la divergencia distributiva de su target frente al resto de la región —el test de Kolmogorov–Smirnov alcanza un estadístico de 0,2552 en 2017 (p < 0,001)— y porque el quiebre coincide con la instalación de la Asamblea Nacional Constituyente en agosto de 2017. Nicaragua se excluye de val/test por falta de cobertura en los años de prueba.
 
 ---
 
@@ -415,7 +417,7 @@ Toma la **configuración ganadora de E1** —el algoritmo con mayor kappa cuadr�
 | Formulación | Descripción |
 |---|---|
 | `ordinal_4clases` | 4 clases ordinales; formulación principal — reutiliza el modelo de E1 |
-| `binario` | 2 clases: {0,1}→Insatisfecho, {2,3}→Satisfecho |
+| `binario` | 2 clases: {0,1}→Satisfecho (0), {2,3}→Insatisfecho (1); la clase positiva es la insatisfacción |
 
 La estrategia de balanceo se **re-aplica sobre el target binario** en lugar de heredar el ajuste hecho sobre las cuatro clases (los pesos de clase se recalculan por frecuencia inversa sobre las dos clases; SMOTE-NC se vuelve a ejecutar con el target binario), de modo que la única diferencia entre las dos filas comparadas sea la formulación. Los hiperparámetros se optimizan de nuevo para la variante binaria. El criterio con el que se elige la configuración ganadora está en un solo lugar, `utils.metrics.seleccionar_configuracion_ganadora`, y el NB03 verifica que su selección coincide con la que usó el NB02.
 

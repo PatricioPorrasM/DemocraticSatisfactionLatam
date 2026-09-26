@@ -362,6 +362,11 @@ def _f1_clase_0(y_t, y_p, sw=None):
     """
     F1 de la clase 0, que es la minoritaria del target en los tres conjuntos.
 
+    La escala del target es descendente, así que la clase 0 es «Muy
+    satisfecho» (véase ``ETIQUETAS`` en ``utils/config.py``): la categoría de
+    menor prevalencia es la de los más satisfechos, no la de los más
+    insatisfechos.
+
     Es la métrica del contraste de H2: los promedios macro reparten el peso
     entre las cuatro categorías y por tanto diluyen justo el efecto que la
     hipótesis predice, que es sobre la clase con menos soporte. Con
