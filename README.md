@@ -10,7 +10,7 @@ Universidad de Investigación de Tecnología Experimental Yachay · Octubre de 2
 
 Este repositorio implementa un marco comparativo, explicable y reproducible para predecir la **satisfacción con la democracia** en América Latina a partir de datos tabulares del Latinobarómetro y del V-Dem durante el periodo 1995–2024.
 
-Se comparan cinco familias de modelos: Regresión Logística Ordinal (OLO), XGBoost, LightGBM, CatBoost y TabNet, bajo dos experimentos secuenciales: el primero evalúa estrategias de manejo del desbalance de clases; el segundo compara las formulaciones de la variable objetivo. La explicabilidad se trabaja con SHAP (TreeSHAP/KernelExplainer), LIME y gráficos de efectos locales acumulados (ALE).
+Se comparan cinco familias de modelos: Regresión Logística Ordinal (OLO), XGBoost, LightGBM, CatBoost y TabNet, bajo dos experimentos secuenciales: el primero evalúa estrategias de manejo del desbalance de clases; el segundo compara las formulaciones de la variable objetivo. La explicabilidad se trabaja con SHAP (TreeSHAP), LIME y gráficos de efectos locales acumulados (ALE), y su alcance son las familias de árboles: el detalle está en la sección del NB04.
 
 **Variable objetivo:** satisfacción con la democracia (A_003_031), 4 clases ordinales:
 
@@ -159,7 +159,9 @@ Analiza además el MAE ordinal por país y subregión y evalúa las formulacione
 
 ### NB04 — `04_explicabilidad_xai.ipynb`
 
-Responde el OE4 y aporta la evidencia de H3: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el mejor modelo seleccionado en NB03. Calcula valores SHAP globales (importancia por bloque temático) y locales (beeswarm por observación) usando TreeExplainer para modelos de árbol y KernelExplainer para OLO. Genera gráficos ALE para detectar efectos no lineales y umbrales. Cuantifica la incertidumbre del ranking de importancias con un bootstrap de clústeres país-año: intervalo del valor |SHAP|, intervalo del rango de cada variable, porcentaje de réplicas en que entra en el top-k, y concordancia (ρ de Spearman y W de Kendall) entre los rankings de los modelos cuyo rendimiento el NB03 no distingue entre sí. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de mayor error ordinal y 50 con discordancia institucional (alta poliarquía + baja satisfacción predicha); las tres cuotas se fijan en `PARAMETERS["CASOS_LIME_*"]`. Para TabNet incluye análisis de pesos de atención nativos. Documenta errores graves (distancia ordinal ≥ 2).
+Responde el OE4 y aporta la evidencia de H3: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el modelo seleccionado en NB03 y calcula sus valores SHAP globales (importancia por variable y agregada por bloque temático) y locales (beeswarm por observación) con `TreeExplainer`. Genera gráficos ALE para detectar efectos no lineales y umbrales. Cuantifica la incertidumbre del ranking de importancias con un bootstrap de clústeres país-año: intervalo del valor |SHAP|, intervalo del rango de cada variable, porcentaje de réplicas en que entra en el top-k, y concordancia (ρ de Spearman y W de Kendall) entre los rankings de los tres modelos de gradient boosting, calculados con la misma estrategia de balanceo para aislar el efecto del algoritmo. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de distancia ordinal máxima y 50 con discordancia institucional en cualquiera de las dos direcciones (poliarquía > 0,6 con satisfacción predicha ≤ 1, o poliarquía < 0,3 con satisfacción predicha ≥ 2); las tres cuotas se fijan en `PARAMETERS["CASOS_LIME_*"]`. Documenta errores graves (distancia ordinal ≥ 2).
+
+**Alcance de SHAP:** el flujo cubre las familias de árboles. `calcular_shap()` ramifica por tipo de modelo: `trees` → `TreeExplainer`, `olo` → `KernelExplainer`, y cualquier otro tipo lanza `ValueError`. La rama de `KernelExplainer` está prevista para el caso en que la configuración seleccionada fuese la regresión logística ordinal, pero es condicional y no se ejecutó en esta corrida, porque la ganadora fue una configuración de gradient boosting. TabNet no está cubierto y el proyecto no calcula sus máscaras de atención. En consecuencia, el trabajo **no compara explicaciones entre familias de modelos**: los contrastes de H3, H4 y H5 y el análisis de concordancia se resuelven dentro de las familias de árboles, sobre la formulación ordinal de cuatro clases.
 
 **Genera:** `results/shap/*.parquet`, `results/tables/shap_importancias_*.csv`, `results/tables/lime_*.csv`, `results/tables/errores_graves_*.csv`, `results/figures/04_*.png`
 
@@ -464,8 +466,9 @@ H4 y H5 se contrastan sobre la **configuración seleccionada en E1** y en su **f
 |---|---|
 | `xgboost`, `lightgbm`, `catboost` | Modelos de gradient boosting |
 | `pytorch-tabnet` | Modelo de deep learning tabular |
-| `scikit-learn` | Regresión logística ordinal, métricas, imputación MICE, pipelines |
-| `shap` | Explicabilidad global y local (TreeSHAP, KernelExplainer) |
+| `mord` | Regresión logística ordinal acumulativa (`LogisticIT`); línea base del estudio |
+| `scikit-learn` | Métricas, imputación MICE, escalado y pipelines |
+| `shap` | Explicabilidad global y local (TreeSHAP; rama `KernelExplainer` no ejecutada en esta corrida) |
 | `lime` | Explicaciones locales por instancia |
 | `alibi` | Gráficos ALE (Accumulated Local Effects) |
 | `optuna` | Optimización de hiperparámetros (TPE sampler) |
