@@ -1,7 +1,7 @@
 # Explainable Tabular Deep Learning and Gradient Boosting Models for Predicting Satisfaction with Democracy in Latin America
 
 Trabajo de titulación — Magíster en Inteligencia Artificial  
-Universidad de Investigación de Tecnología Experimental Yachay · Julio 2026  
+Universidad de Investigación de Tecnología Experimental Yachay · Octubre de 2026  
 **Autor:** Mario Patricio Porras Martínez | **Tutor:** Ph.D. Erick Eduardo Cuenca Pauta
 
 ---
@@ -86,7 +86,7 @@ DemocraticSatisfactionLatam/
 | Carpeta | Contenido |
 |---|---|
 | `data/raw_zip/` | Archivos `.zip` originales de Latinobarómetro y V-Dem, versionados en el repositorio como fuente de verdad. |
-| `data/raw_latinobarometro/` | 24 archivos Stata (`.dta`) descomprimidos automáticamente por NB01, uno por ola encuestada (1995–2024). |
+| `data/raw_latinobarometro/` | 24 archivos Stata (`.dta`) descomprimidos automáticamente por NB01, uno por ola encuestada. |
 | `data/raw_v-dem/` | Dataset CSV de V-Dem Core v16 descomprimido automáticamente por NB01. |
 | `data/base/` | Datasets consolidados generados por NB01: Latinobarómetro armonizado (~490 K registros), V-Dem filtrado, tabla de frecuencias y muestra estratificada. |
 | `data/processed/` | Splits listos para ML en formato Parquet (`train.parquet`, `val.parquet`, `test.parquet` y pesos de entrenamiento), generados por NB02. |
@@ -123,7 +123,7 @@ Preprocesa los datos consolidados y ejecuta los dos experimentos del proyecto. U
 
 **EDA** (secciones 10 y 12): distribución del target, missingness por variable y conjunto, correlaciones de Spearman de cada feature con el target y tres matrices de correlación entre features —Latinobarómetro (nivel individual), V-Dem (nivel país-año) y dataset fusionado— para documentar la redundancia informativa.
 
-**Experimento E1:** entrena 5 algoritmos × 3 estrategias de balanceo = 15 modelos. Cada modelo se optimiza con Optuna (TPE, maximizando el kappa cuadrático en validación): 50 ensayos para los árboles de gradiente y 20 para la línea base ordinal y para TabNet, cuyo costo por ensayo es mucho mayor. La línea base es una regresión logística ordinal acumulativa (`mord.LogisticIT`); si `mord` no está instalado la ejecución se detiene, en lugar de sustituirla por un modelo multinomial.
+**Experimento E1:** entrena 5 algoritmos × 3 estrategias de balanceo = 15 modelos. Cada modelo se optimiza con Optuna (TPE, maximizando el kappa cuadrático en validación): 50 ensayos para los árboles de gradiente y 20 para la línea base ordinal y para TabNet, cuyo costo por ensayo es mucho mayor. La línea base es una regresión logística ordinal acumulativa (`mord.LogisticIT`); si `mord` no está instalado la ejecución se detiene.
 
 **Experimento E2:** toma la configuración ganadora de E1 (algoritmo × estrategia de balanceo) y la entrena bajo 2 formulaciones de la variable objetivo (ordinal de 4 clases y binaria). Un solo entrenamiento adicional.
 
@@ -135,7 +135,7 @@ Preprocesa los datos consolidados y ejecuta los dos experimentos del proyecto. U
 
 ### NB03 — `03_evaluacion_comparativa.ipynb`
 
-Responde la pregunta de investigación PI1: ¿qué familia de modelos ofrece el mejor equilibrio entre rendimiento predictivo e interpretabilidad? Calcula 8 métricas agregadas en validación y en prueba para los 15 modelos de E1 y genera sus matrices de confusión normalizadas (% por clase real).
+Responde el OE2 y aporta la evidencia de H1 y H2: ¿qué modelo predice mejor la clase de satisfacción democrática en 2023–2024? Calcula 8 métricas agregadas en validación y en prueba para los 15 modelos de E1 y genera sus matrices de confusión normalizadas (% por clase real). La comparación es predictiva: la interpretabilidad no se evalúa como dimensión comparable entre familias, porque solo los tres modelos de gradient boosting reciben valores SHAP.
 
 **Separación entre selección y evaluación:** la configuración principal (modelo × estrategia) se elige maximizando el kappa cuadrático en el conjunto de **validación** (2020); el conjunto de prueba (2023–2024) se usa solo para reportar. La selección se escribe en `results/modelo_xai_seleccionado.json`, que es la fuente única para los notebooks 04, 05 y 06.
 
@@ -149,17 +149,17 @@ Ninguno de los dos apartados reentrena nada: reutilizan las predicciones ya reco
 
 **Incertidumbre:** bootstrap de clústeres país-año (1.000 repeticiones) para el intervalo de confianza de cada métrica, y bootstrap pareado para la diferencia entre cada configuración y la principal. Es la única inferencia que el notebook hace sobre diferencias entre modelos: el test de Friedman con las estrategias como bloques se descartó porque con n = 3 bloques su potencia es nula, los bloques no son conjuntos de datos independientes y el contraste ignora la variabilidad muestral del conjunto de prueba.
 
-**Métricas ponderadas:** cada métrica se reporta también ponderada por el factor de expansión muestral `X_020`, para distinguir el rendimiento sobre la muestra encuestada del rendimiento sobre la población que representa.
+**Métricas ponderadas:** para el modelo principal, las métricas agregadas, la matriz de confusión, el desglose por clase y el intervalo bootstrap se recalculan ponderando por el factor de expansión muestral `X_020`, para distinguir el rendimiento sobre la muestra encuestada del rendimiento sobre la población que representa. Las tablas comparativas de las 15 configuraciones (`results/resultados_modelos.csv`) se reportan sin ponderar; la columna `ponderado` identifica cada lectura.
 
 Analiza además el MAE ordinal por país y subregión y evalúa las formulaciones de E2.
 
-**Genera:** `results/tables/metricas_*.csv`, `results/tables/metricas_por_clase_*.csv`, `results/tables/metricas_por_clase_todas_configuraciones.csv`, `results/tables/h2_balanceo_clase_minoritaria.csv`, `results/tables/matriz_confusion_*.csv`, `results/tables/bootstrap_ic_modelos.csv`, `results/tables/bootstrap_pareado_vs_principal.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
+**Genera:** `results/tables/metricas_*.csv`, `results/tables/metricas_ponderadas_vs_no_*.csv`, `results/tables/bootstrap_ic_principal_ponderado.csv`, `results/tables/metricas_por_clase_*.csv`, `results/tables/metricas_por_clase_todas_configuraciones.csv`, `results/tables/h2_balanceo_clase_minoritaria.csv`, `results/tables/matriz_confusion_*.csv`, `results/tables/bootstrap_ic_modelos.csv`, `results/tables/bootstrap_pareado_vs_principal.csv`, `results/tables/mae_por_pais_test.csv`, `results/figures/03_*.png`, `results/modelo_xai_seleccionado.json`
 
 ---
 
 ### NB04 — `04_explicabilidad_xai.ipynb`
 
-Responde PI2 y OE4: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el mejor modelo seleccionado en NB03. Calcula valores SHAP globales (importancia por bloque temático) y locales (beeswarm por observación) usando TreeExplainer para modelos de árbol y KernelExplainer para OLO. Genera gráficos ALE para detectar efectos no lineales y umbrales. Cuantifica la incertidumbre del ranking de importancias con un bootstrap de clústeres país-año: intervalo del valor |SHAP|, intervalo del rango de cada variable, porcentaje de réplicas en que entra en el top-k, y concordancia (ρ de Spearman y W de Kendall) entre los rankings de los modelos cuyo rendimiento el NB03 no distingue entre sí. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de mayor error ordinal y 50 con discordancia institucional (alta poliarquía + baja satisfacción predicha); las tres cuotas se fijan en `PARAMETERS["CASOS_LIME_*"]`. Para TabNet incluye análisis de pesos de atención nativos. Documenta errores graves (distancia ordinal ≥ 2).
+Responde el OE4 y aporta la evidencia de H3: ¿qué variables explican la satisfacción con la democracia y cuáles son sus efectos no lineales? Carga el mejor modelo seleccionado en NB03. Calcula valores SHAP globales (importancia por bloque temático) y locales (beeswarm por observación) usando TreeExplainer para modelos de árbol y KernelExplainer para OLO. Genera gráficos ALE para detectar efectos no lineales y umbrales. Cuantifica la incertidumbre del ranking de importancias con un bootstrap de clústeres país-año: intervalo del valor |SHAP|, intervalo del rango de cada variable, porcentaje de réplicas en que entra en el top-k, y concordancia (ρ de Spearman y W de Kendall) entre los rankings de los modelos cuyo rendimiento el NB03 no distingue entre sí. Aplica LIME sobre 200 casos: 100 representativos (estratificados por clase × subregión), 50 de mayor error ordinal y 50 con discordancia institucional (alta poliarquía + baja satisfacción predicha); las tres cuotas se fijan en `PARAMETERS["CASOS_LIME_*"]`. Para TabNet incluye análisis de pesos de atención nativos. Documenta errores graves (distancia ordinal ≥ 2).
 
 **Genera:** `results/shap/*.parquet`, `results/tables/shap_importancias_*.csv`, `results/tables/lime_*.csv`, `results/tables/errores_graves_*.csv`, `results/figures/04_*.png`
 
@@ -167,7 +167,7 @@ Responde PI2 y OE4: ¿qué variables explican la satisfacción con la democracia
 
 ### NB05 — `05_estabilidad_temporal_regional.ipynb`
 
-Responde PI3 y la tercera cláusula del OE3: ¿son robustos los determinantes identificados a través de subregiones geográficas? Evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de prueba entre las 5 subregiones. Calcula correlaciones de Spearman entre cada par de subregiones y evalúa el umbral sobre el **mínimo** de esas correlaciones → prueba H5. Calcula el coeficiente de variación de la importancia media de cada bloque temático entre subregiones y compara los bloques que H4 predice contra el bloque de referencia, con la regla de decisión declarada antes de los resultados → prueba H4. Incluye el MAE ordinal por país y estrategia de balanceo. La estabilidad **temporal** del rendimiento se estima por separado en la sección 19 del NB02.
+Responde la tercera cláusula del OE3 y aporta la evidencia de H4 y H5: ¿son robustos los determinantes identificados a través de subregiones geográficas? Evalúa la **estabilidad regional** comparando los rankings SHAP dentro del conjunto de prueba entre las 5 subregiones. Calcula correlaciones de Spearman entre cada par de subregiones y evalúa el umbral sobre el **mínimo** de esas correlaciones → prueba H5. Calcula el coeficiente de variación de la importancia media de cada bloque temático entre subregiones y compara los bloques que H4 predice contra el bloque de referencia, con la regla de decisión declarada antes de los resultados → prueba H4. Incluye el MAE ordinal por país y estrategia de balanceo. La estabilidad **temporal** del rendimiento se estima por separado en la sección 19 del NB02.
 
 **Genera:** `results/tables/spearman_subregiones.csv`, `results/tables/h4_variacion_bloques_subregion.csv`, `results/tables/mae_subregiones.csv`, `results/tables/mae_por_pais_todos.csv`, `results/figures/05_*.png`
 
@@ -175,7 +175,9 @@ Responde PI3 y la tercera cláusula del OE3: ¿son robustos los determinantes id
 
 ### NB06 — `06_contraste_teorico.ipynb`
 
-Responde OE5: ¿coinciden los patrones explicativos algorítmicos con las predicciones de la teoría democrática? Codifica cuatro marcos teóricos — Easton (1975), Norris (2011), Lewis-Beck & Stegmaier (2000) y Devine (2024) — según los bloques temáticos que priorizan. Cuantifica la convergencia como el porcentaje de variables top-N del SHAP que caen en el bloque predicho por cada teoría. Genera un heatmap de convergencia (bloque × teoría), una tabla de clasificación variable a variable (converge / parcial / diverge) y análisis de divergencias (variables importantes algorítmicamente pero no predichas por ninguna teoría). Prueba H3 (confianza + corrupción + economía ≥ 60% del top-15). Exporta tablas para el capítulo de discusión de la tesis.
+Responde OE5: ¿coinciden los patrones explicativos algorítmicos con las predicciones de la teoría democrática? Codifica cuatro marcos teóricos — Easton (1975), Norris (2011), Lewis-Beck & Stegmaier (2000) y Devine (2024) — según los bloques temáticos que priorizan. Cuantifica la convergencia como el porcentaje de variables top-N del SHAP que caen en el bloque predicho por cada teoría. Genera un heatmap de convergencia (bloque × teoría), una tabla de clasificación variable a variable (converge / parcial / diverge) y análisis de divergencias (variables importantes algorítmicamente pero no predichas por ninguna teoría). Exporta tablas para el capítulo de discusión.
+
+**Sobre H3:** el contraste de H3 se resuelve con la importancia SHAP **agregada por bloque** que calcula el NB04 (`shap_bloques_ic_*.csv`), porque la hipótesis está enunciada sobre la contribución predictiva y no sobre el número de variables. El NB06 añade, como criterio descriptivo, el recuento de variables de los tres bloques dentro del top-N. Los dos criterios no son equivalentes: el recuento trata por igual a bloques cuya contribución agregada difiere en un orden de magnitud, de modo que puede satisfacerse aunque la agregación no lo haga. La lectura que se reporta es la de la agregación.
 
 **Genera:** `results/tables/contraste_teorico_*.csv`, `results/tables/tabla_convergencias_*.csv`, `results/tables/tabla_maestra_xai_*.csv`, `results/figures/06_*.png`
 
@@ -314,7 +316,7 @@ El script para en el primer notebook que falle —`set -e` con `pipefail`, para 
 
 Lo primero que conviene comprobar en `logs/<corrida>/01_carga_datos.log` es la línea del dispositivo: debe decir `Dispositivo: GPU detectada (CUDA disponible)`. Si aparece el aviso de que `USAR_GPU=True` pero torch no ve ninguna GPU, conviene detener la corrida y revisar el wheel de torch instalado: la ejecución no fallaría, pero duraría mucho más.
 
-**Nota**: Para ejecutar el proyecto en un servidor linux se recomienda usar la herramienta "tmux". Este proyecto fue ejecutado en un servidor con las siguientes características, y duró al rededor de 6 horas en promedio para completar la ejecución.
+**Nota**: Para ejecutar el proyecto en un servidor linux se recomienda usar la herramienta "tmux". Este proyecto fue ejecutado en un servidor con las siguientes características, y la corrida definitiva acumuló alrededor de 12 horas y 16 minutos, sumando la duración de los seis notebooks. El NB02 concentra casi todo ese tiempo (unas 12 h 11 min): es el que ejecuta los 16 entrenamientos con HPO de Optuna más los tres pliegues temporales.
 
 | Componente | Especificación |
 |---|---|
@@ -381,16 +383,18 @@ El proyecto ejecuta dos experimentos secuenciales sobre el mismo split temporal 
 | Conjunto | Olas | Descripción |
 |---|---|---|
 | Train | 1995–2018 (21 olas) | Entrenamiento; Venezuela incluida hasta 2017 |
-| Val | 2020 (1 ola) | Calibración Optuna; KS test p=0.787 vs. distribución del test |
+| Val | 2020 (1 ola) | Calibración Optuna y criterio de selección; única ola disponible que no pertenece a train ni a test |
 | Test | 2023–2024 (2 olas) | Evaluación final; sin Venezuela ni Nicaragua |
 
-**Casos especiales:** Venezuela se excluye a partir de 2018 por sesgo de respuesta documentado en regímenes autoritarios (KS test p<0.001 entre 2018 y el patrón histórico). Nicaragua se excluye de val/test por falta de cobertura en los años de prueba.
+La distribución del target en validación y en prueba no es idéntica: el test de Kolmogorov–Smirnov entre ambas da un estadístico de 0,0549 con p < 0,001. El desplazamiento es moderado —la clase mayoritaria es la misma y su peso pasa del 44,0 % al 42,0 %— y la elección de 2020 responde a la restricción temporal (es el único año que no está en train ni en test y tiene ola disponible), no a un supuesto de igualdad distribucional.
+
+**Casos especiales:** Venezuela se excluye a partir de 2018 por sesgo de respuesta documentado en regímenes autoritarios; el test de Kolmogorov–Smirnov entre su distribución y la del resto de los países alcanza un estadístico de 0,2552 en 2017 (p < 0,001). Nicaragua se excluye de val/test por falta de cobertura en los años de prueba.
 
 ---
 
 ### Experimento E1 — Estrategias de balanceo de clases
 
-Compara los **5 algoritmos** bajo **3 estrategias de manejo del desbalance de clases**, produciendo 15 modelos entrenados. Identifica qué combinación maximiza el Kappa cuadrático en el conjunto de test.
+Compara los **5 algoritmos** bajo **3 estrategias de manejo del desbalance de clases**, produciendo 15 modelos entrenados. Identifica qué combinación maximiza el Kappa cuadrático en el conjunto de **validación** (2020); el conjunto de prueba (2023–2024) queda reservado y solo se usa para reportar el desempeño de la configuración ya seleccionada.
 
 | Estrategia | Descripción |
 |---|---|
@@ -425,7 +429,7 @@ La estrategia de balanceo se **re-aplica sobre el target binario** en lugar de h
 | --- | --- | --- |
 | H1 | Los modelos de gradient boosting superan a la regresión logística ordinal en Kappa cuadrático | NB03 |
 | H2 | TabNet obtiene un kappa cuadrático superior al de la regresión logística ordinal, pero inferior al del modelo de gradient boosting con mejor desempeño en el conjunto de prueba | NB03 §7.2 |
-| H3 | Los bloques de confianza institucional, corrupción y evaluación económica concentran ≥ 60% de las variables del top-15 SHAP | NB06 |
+| H3 | La confianza institucional, la percepción de la corrupción y la evaluación económica concentran la mayor contribución predictiva atribuida por SHAP | NB04 (agregación por bloque) · NB06 (recuento del top-N) |
 | H4 | La contribución SHAP de los bloques de confianza institucional y de corrupción y seguridad presenta mayor variación relativa entre subregiones —coeficiente de variación de su importancia media entre las cinco subregiones— que la del bloque de características sociodemográficas | NB05 §7 |
 | H5 | La correlación de Spearman entre los rankings de importancia SHAP de cada par de subregiones es ≥ 0.7, indicando determinantes robustos en toda América Latina | NB05 §7 |
 
